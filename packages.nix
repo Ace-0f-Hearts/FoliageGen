@@ -5,6 +5,12 @@
 , stdenv
 , cmake
 , ninja
+, jsoncpp
+, libpkgconf
+, pkg-config
+, sdl3
+, loguru
+, doxygen
 }:
 
 # stdenv.mkDerivation now accepts a list of named parameters that describe
@@ -19,8 +25,7 @@ stdenv.mkDerivation {
     "^src.*"
     "^test.*"
     "CMakeLists.txt"
-    "^Shaders.*"
-    "^includes.*"
+    "main.cpp"
   ];
 
   # We now list the dependencies similar to the devShell before.
@@ -28,11 +33,18 @@ stdenv.mkDerivation {
   # at compile time) and normal `buildInputs` (runnable on target
   # platform at run time) is an important preparation for cross-compilation.
   nativeBuildInputs = [ cmake ninja ];
-  buildInputs = [];
+  buildInputs = [
+    jsoncpp
+    libpkgconf
+    pkg-config
+    sdl3
+    loguru
+    doxygen
+   ];
 
   installPhase = ''
       mkdir -p $out/bin
-      cp ProceduralFoliageGenerator $out/bin
+      cp generator $out/bin
     '';
   # Instruct the build process to run tests.
   # The generic builder script of `mkDerivation` handles all the default

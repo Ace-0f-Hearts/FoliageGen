@@ -6,12 +6,13 @@
 #define GENERATOR_OCDTYPESV10_H
 #include "OcdTypesV9.h"
 
-
-class OcdTypesV10
+namespace Ocd
 {
+    class OcdTypesV10
+    {
     public:
-    using Format = OcdTypesV9::Format;
-};
-
+        using Format = OcdTypesV9::Format;
+    };
+}
 
 #endif //GENERATOR_OCDTYPESV10_H

@@ -10,7 +10,9 @@
 , pkg-config
 , sdl3
 , loguru
+, cimg
 , doxygen
+, boost
 }:
 
 # stdenv.mkDerivation now accepts a list of named parameters that describe
@@ -40,6 +42,8 @@ stdenv.mkDerivation {
     sdl3
     loguru
     doxygen
+    cimg
+    boost
    ];
 
   installPhase = ''
@@ -50,4 +54,5 @@ stdenv.mkDerivation {
   # The generic builder script of `mkDerivation` handles all the default
   # command lines of several build systems, so it knows how to run our tests.
   doCheck = true;
+  configureFlags = [ "BOOST_LDFLAGS=-L${boost}/lib" ];
 }

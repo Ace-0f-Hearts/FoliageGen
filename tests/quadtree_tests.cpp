@@ -12,7 +12,7 @@
 BOOST_AUTO_TEST_SUITE(QuadtreeCheckSuite)
 
 
-BOOST_AUTO_TEST_CASE(Test_Quadtree_InitialiazionEmpty)
+BOOST_AUTO_TEST_CASE(Test_Quadtree_InitialiazionWithZeroPoints)
 {
     std::vector<Spatial2D> points = {};
     BoundingBox2D bounding_box = {{-2.2,-2.2},{2.1,2.1}};
@@ -24,43 +24,60 @@ BOOST_AUTO_TEST_CASE(Test_Quadtree_InitialiazionEmpty)
     auto expected_number_of_items = 0;
     auto actual_number_of_items = quadtree.item_count();
 
+    auto expected_depth = -1;
+    auto actual_depth = quadtree.depth();
+
     BOOST_CHECK_EQUAL(expected_number_of_nodes, actual_number_of_nodes);
     BOOST_CHECK_EQUAL(expected_number_of_items, actual_number_of_items);
+    BOOST_CHECK_EQUAL(expected_depth, actual_depth);
 }
 
-BOOST_AUTO_TEST_CASE(Test_Quadtree_InitialiazionRoot)
+BOOST_AUTO_TEST_CASE(Test_Quadtree_InitialiazionWithOnlyTwoLayers)
 {
     std::vector<Spatial2D> points = {{1, 1}, {-1, -1},  {-2, 1}, };
     BoundingBox2D bounding_box = {{-2.2,-2.2},{2.1,2.1}};
     Quadtree quadtree(points, bounding_box);
 
-    auto expected = 1;
-    auto actual = quadtree.node_count();
+    auto expected_number_of_nodes = 1;
+    auto actual_number_of_nodes = quadtree.node_count();
 
-    BOOST_CHECK_EQUAL(expected, actual);
+    auto expected_depth = 1;
+    auto actual_depth = quadtree.depth() ;
+
+    BOOST_CHECK_EQUAL(expected_number_of_nodes, actual_number_of_nodes);
+    BOOST_CHECK_EQUAL(expected_depth, actual_depth);
 }
 
-BOOST_AUTO_TEST_CASE(Test_Quadtree_InitializationFirstLayer)
+BOOST_AUTO_TEST_CASE(Test_Quadtree_InitializationWithOnlyThreeLayers)
 {
     std::vector<Spatial2D> points = {{1, 1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
     BoundingBox2D bounding_box = {{-2.2,-2.2},{2.1,2.1}};
     Quadtree quadtree(points, bounding_box);
 
-    auto expected = 4;
-    auto actual = quadtree.node_count();
+    auto expected_number_of_nodes = 4;
+    auto actual_number_of_nodes = quadtree.node_count();
 
-    BOOST_CHECK_EQUAL(expected, actual);
+    auto expected_depth = 2;
+    auto actual_depth = quadtree.depth();
+
+    BOOST_CHECK_EQUAL(expected_number_of_nodes, actual_number_of_nodes);
+    BOOST_CHECK_EQUAL(expected_depth, actual_depth);
 }
 
-BOOST_AUTO_TEST_CASE(Test_Quadtree_InitialiazionMoreLayers)
+BOOST_AUTO_TEST_CASE(Test_Quadtree_InitialiazionComplex)
 {
     std::vector<Spatial2D> points = {{1.2, 1},{0.8,1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
     BoundingBox2D bounding_box = {{-2.2,-2.2},{2.1,2.1}};
     Quadtree quadtree(points, bounding_box);
-    auto expected = 5;
-    auto actual = quadtree.node_count();
+    auto expected_number_of_nodes = 5;
+    auto actual_number_of_nodes = quadtree.node_count();
 
-    BOOST_CHECK_EQUAL(expected, actual);
+    auto expected_depth = 3;
+    auto actual_depth = quadtree.depth();
+
+
+    BOOST_CHECK_EQUAL(expected_number_of_nodes, actual_number_of_nodes);
+    BOOST_CHECK_EQUAL(expected_depth, actual_depth);
 }
 
 BOOST_AUTO_TEST_CASE(Test_Quadtree_Equality)
@@ -125,7 +142,6 @@ BOOST_AUTO_TEST_CASE(Test_Quadtree_FindClosestNeighbours)
 
     bool res = expected_neighbour_idx == actual_neighbour_idx;
     BOOST_TEST(res);
-    // BOOST_CHECK_EQUAL_COLLECTIONS(expected_neighbour_idx.begin(),expected_neighbour_idx.end(),actual_neighbour_idx.begin(),actual_neighbour_idx.end());
 }
 
 

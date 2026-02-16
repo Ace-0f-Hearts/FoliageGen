@@ -36,13 +36,10 @@ Quadtree::Quadtree(std::vector<Spatial2D> const& data, BoundingBox2D const& boun
     data_.push_back(bounding_box.min());
     data_.push_back(bounding_box.max());
 
-    for (int i = 0; i < data.size(); i++)
-    {
-        AllocateItemIndex(i,bounding_box);
-    }
+    Load(data,bounding_box);
 }
 
-Quadtree::Quadtree(const Quadtree& other) : node_count_(other.node_count_), item_count_(other.item_count_), data_(other.data_), index_tree_(other.index_tree_) {}
+Quadtree::Quadtree(const Quadtree& other) = default;
 
 Quadtree& Quadtree::operator=(const Quadtree& other)
 {
@@ -70,7 +67,7 @@ int Quadtree::FindNearestNeighbour(const Spatial2D& query_point) const
     float distance_to_closest_neighbour = bbox.GetSmallestBoundingCircleRadius() * 2;
     boost::heap::priority_queue<Proximity> search_heap;
 
-    Proximity of_root = Proximity{0,0};
+    auto of_root = Proximity{0,0};
 
     // heap.push(of_root);
 
@@ -81,7 +78,7 @@ int Quadtree::FindNearestNeighbour(const Spatial2D& query_point) const
 
         if (distance < distance_to_closest_neighbour)
         {
-            Proximity d = Proximity{distance, idx};
+            auto d = Proximity{distance, idx};
             search_heap.push(d);
         }
     }
@@ -214,9 +211,41 @@ bool Quadtree::operator==(const Quadtree& rhs) const
     return equal;
 }
 
+void Quadtree::BulkLoad(const std::vector<Spatial2D>& data)
+{
+    auto bounding_box = BoundingBox2D({data_[item_count()],data_[item_count() + 1]});
+    BulkLoad(data,bounding_box);
+}
+
 void Quadtree::BulkLoad(const std::vector<Spatial2D>& data, const BoundingBox2D& bounding_box)
 {
-    throw NotImplementedError();
+    Clean();
+    data_.push_back(bounding_box.min());
+    data_.push_back(bounding_box.max());
+    Load(data,bounding_box);
+}
+
+void Quadtree::Clean()
+{
+    data_.clear();
+    index_tree_.clear();
+
+    node_count_ = 0;
+    item_count_ = 0;
+}
+
+int Quadtree::depth()
+{
+
+    auto idx = std::ranges::find_if_not(index_tree_.crbegin(), index_tree_.crend(),[](int i) {return i == -1;});
+
+
+    if (idx == index_tree_.crend()) // No index found
+        return -1;
+
+    auto d = std::ranges::distance(index_tree_.crend(), idx) * (-1) - 1;
+    printf("idx : %d\t d : %d\n",*idx,d);
+    return std::ceil((d >> 2) / 4.0f) + 1;
 }
 
 std::vector<int> Quadtree::FindNearestNeighbours(const Spatial2D& point, const unsigned int amount) const
@@ -394,5 +423,12 @@ void Quadtree::AllocateNode(int tree_idx, BoundingBox2D& bbox)
     data_.push_back(bbox.max());
 }
 
+void Quadtree::Load(const std::vector<Spatial2D> data,const BoundingBox2D& bounding_box)
+{
+    for (size_t i = 0; i < data.size(); i++)
+    {
+        AllocateItemIndex(i,bounding_box);
+    }
+}
 
 

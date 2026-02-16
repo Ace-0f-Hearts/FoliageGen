@@ -67,6 +67,9 @@ public:
     Quadtree(const Quadtree& other);
     Quadtree& operator=(const Quadtree& other);
 
+    void Clean();
+
+    void BulkLoad(const std::vector<Spatial2D>& data);
     void BulkLoad(const std::vector<Spatial2D>& data, const BoundingBox2D& bounding_box);
     [[nodiscard]] int FindNearestNeighbour(const Spatial2D& query_point) const;
     [[nodiscard]] std::vector<int> FindNearestNeighbours(const Spatial2D& point, const unsigned int amount) const;
@@ -74,6 +77,11 @@ public:
     bool operator==(const Quadtree&) const;
     Spatial2D operator[](int idx) const;
 
+    [[nodiscard]] int depth();
+    /**
+     *
+     * @return Returns the full size of the quadtree, including both the number of items and number of nodes.
+     */
     [[nodiscard]] int size() const;
     [[nodiscard]] int node_count() const;
     [[nodiscard]] int item_count() const;
@@ -85,6 +93,8 @@ private:
     constexpr static size_t kRoot = 0;
     constexpr static size_t kMax_tree_size = 4096; //TODO: Recalc
 
+
+    void Load(std::vector<Spatial2D> data, const BoundingBox2D& bounding_box);
     void AllocateItemIndex(int index_to_allocate, const BoundingBox2D& bbox);
 
     void AllocateNode(int tree_idx, BoundingBox2D& bbox);

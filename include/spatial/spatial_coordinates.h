@@ -19,7 +19,7 @@ public:
     SpatialCoordinate(SpatialCoordinate& other);
     SpatialCoordinate(const SpatialCoordinate& other);
 
-    virtual ~SpatialCoordinate();
+    ~SpatialCoordinate();
 
     /**
      * Calculates the space of this spatial coordinate relative to \code other\endcode.

@@ -40,6 +40,9 @@ public:
 
     static unsigned int dim();
 
+    [[nodiscard]] float diagonal() const;
+    [[nodiscard]] float width() const;
+    [[nodiscard]] float height() const;
     [[nodiscard]] SpatialCoordinate<D> max() const;
     [[nodiscard]] SpatialCoordinate<D> min() const;
 
@@ -51,6 +54,23 @@ private:
 
 };
 
+template <unsigned int D>
+float BoundingBox<D>::diagonal() const
+{
+    return std::sqrt(width() * width() + height() * height());
+}
+
+template <unsigned int D>
+float BoundingBox<D>::width() const
+{
+    return max_[0] - min_[0];
+}
+
+template <unsigned int D>
+float BoundingBox<D>::height() const
+{
+    return max_[1] - min_[1];
+}
 
 template <unsigned int D>
 BoundingBox<D>::BoundingBox(SpatialCoordinate<D> min, SpatialCoordinate<D> max): max_{max}, min_{min}

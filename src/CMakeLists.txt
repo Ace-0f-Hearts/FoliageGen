@@ -7,8 +7,8 @@ set(CMAKE_BUILD_TYPE Debug)
 file(GLOB SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/*.c
         ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/mapfeatures/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/mapfeatures/*.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/orienteering/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/orienteering/*.c
         ${CMAKE_CURRENT_SOURCE_DIR}/foliage/*.c
         ${CMAKE_CURRENT_SOURCE_DIR}/foliage/*.cpp
 
@@ -26,15 +26,17 @@ add_subdirectory(botanics_math)
 add_subdirectory(ocad)
 add_subdirectory(utility)
 add_subdirectory(spatial)
+add_subdirectory(foliage)
 
 message("${CMAKE_SOURCE_DIR}")
 
 target_link_libraries(foliage_generator_lib
-        PUBLIC
+        PUBLIC #TODO: This is not nice, need to figure out a better way
         spatial
         utility
         ocad
-        botanics_math #TODO: This is not nice, need to figure out a better way
+        botanics_math
+        foliage
         PRIVATE
         jsoncpp
         SDL3::SDL3

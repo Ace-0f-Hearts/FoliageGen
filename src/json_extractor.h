@@ -6,18 +6,18 @@
 #define GENERATOR_JSONEXTRACTOR_H
 #include <json/value.h>
 
-#include "SpeciesAttribute.h"
+#include "species_attribute.h"
 
 
 class JsonExtractor
 {
     using Value = Json::Value;
 public:
-    JsonExtractor();
-    ~JsonExtractor();
+    static std::vector<SpeciesAttribute> Extract(Value root);
 
-    std::vector<SpeciesAttribute> Extract(Value root,char* err = nullptr);
 private:
+    static Gaussian ParseGaussian(Value root);
+    static Range ParseRange(Value root);
 
 };
 

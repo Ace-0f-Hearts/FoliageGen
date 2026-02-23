@@ -2,13 +2,13 @@
 // Created by ace on 2026-01-26.
 //
 
-#ifndef GENERATOR_OCDTYPES_H
-#define GENERATOR_OCDTYPES_H
+#ifndef OCAD_OCDTYPES_H
+#define OCAD_OCDTYPES_H
 #include <cstdint>
 
-namespace Ocd
+namespace Ocad
 {
-    class OcdTypesGeneric
+    class Generic
     {
     public:
         using u64 = uint64_t;
@@ -24,11 +24,11 @@ namespace Ocd
         struct FileHeaderGeneric
         {
             u16 ocadMark = 0x0cad;
-            u8 fileType;
-            u8 fileStatus; /// Since V9
-            uint16_t version;
-            u8 subversion;
-            u8 subsubversion; /// Since V10
+            u8 fileType{};
+            u8 fileStatus{}; /// Since V9
+            uint16_t version{};
+            u8 subversion{};
+            u8 subsubversion{}; /// Since V10
         };
 
         template <unsigned int N>
@@ -54,7 +54,7 @@ namespace Ocd
         };
 
 
-        struct OcdCoord
+        struct OcadCoord
         {
             u32 x;
             u32 y;
@@ -82,4 +82,4 @@ namespace Ocd
 }
 
 
-#endif //GENERATOR_OCDTYPES_H
+#endif //OCAD_OCDTYPES_H

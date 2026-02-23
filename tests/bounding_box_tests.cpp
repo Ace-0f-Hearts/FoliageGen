@@ -29,10 +29,10 @@ BOOST_AUTO_TEST_CASE(Test_BoundingBox2D_DistanceFromPointProducesExpectedDistanc
     const float exp3 = 0;
     const float exp4 = 0;
 
-    const auto act1 = bounding_box.CalculateDistance(p1);
-    const auto act2 = bounding_box.CalculateDistance(p2);
-    const auto act3 = bounding_box.CalculateDistance(p3);
-    const auto act4 = bounding_box.CalculateDistance(p4);
+    const auto act1 = bounding_box.DistanceTo(p1);
+    const auto act2 = bounding_box.DistanceTo(p2);
+    const auto act3 = bounding_box.DistanceTo(p3);
+    const auto act4 = bounding_box.DistanceTo(p4);
 
     BOOST_CHECK_EQUAL(exp1,act1);
     BOOST_CHECK_EQUAL(exp2,act2);
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(Test_BoundingBox2D_SmallestBoundingCircleRadiusEqualsExpect
 
     const float expected = std::sqrt(3.f*3.f + 4.f*4.f) / 2.f;
 
-    const auto actual = bounding_box.GetSmallestBoundingCircleRadius();
+    const auto actual = bounding_box.GetRadiusOfSmallestBoundingCircle();
 
     BOOST_CHECK_EQUAL(expected,actual);
 }
@@ -55,10 +55,10 @@ BOOST_AUTO_TEST_CASE(Test_BoundingBox2D_SubspaceCalculation)
 {
     BoundingBox2D bounding_box = {{-1,-1},{1,1}};
 
-    auto zeroth_quadrant = bounding_box.CalculateSubspaceOf({0.5,0.5});
-    auto first_quadrant = bounding_box.CalculateSubspaceOf({-0.5,0.5});
-    auto second_quadrant = bounding_box.CalculateSubspaceOf({0.5,-0.5});
-    auto third_quadrant = bounding_box.CalculateSubspaceOf({-0.5,-0.5});
+    auto zeroth_quadrant = bounding_box.GetSubspaceOf({0.5,0.5});
+    auto first_quadrant = bounding_box.GetSubspaceOf({-0.5,0.5});
+    auto second_quadrant = bounding_box.GetSubspaceOf({0.5,-0.5});
+    auto third_quadrant = bounding_box.GetSubspaceOf({-0.5,-0.5});
 
     BOOST_CHECK_EQUAL(zeroth_quadrant,BoundingBox2D({0,0},{1,1}));
     BOOST_CHECK_EQUAL(first_quadrant,BoundingBox2D({-1,0},{0,1}));

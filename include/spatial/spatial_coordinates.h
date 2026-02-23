@@ -15,6 +15,7 @@ template <unsigned int N>
 class SpatialCoordinate
 {
 public:
+    SpatialCoordinate();
     SpatialCoordinate(const std::initializer_list<float>& values);
     SpatialCoordinate(SpatialCoordinate& other);
     SpatialCoordinate(const SpatialCoordinate& other);
@@ -39,19 +40,29 @@ public:
     float operator[](int i) const;
     SpatialCoordinate operator+(const SpatialCoordinate& other) const;
     SpatialCoordinate operator-(const SpatialCoordinate& other) const;
-    SpatialCoordinate operator*(int n) const;
-    SpatialCoordinate operator/(int n) const;
+    SpatialCoordinate operator*(float n) const;
+    SpatialCoordinate operator/(float n) const;
     bool operator==(SpatialCoordinate other) const;
     void operator+=(SpatialCoordinate other);
     void operator-=(SpatialCoordinate other);
-    void operator*=(int mul);
-    void operator/=(int div);
+    void operator*=(float mul);
+    void operator/=(float div);
 
-    [[nodiscard]] float Distance(SpatialCoordinate other) const;
+    [[nodiscard]] float DistanceTo(SpatialCoordinate other) const;
 
 private:
     float coordinates_[N];
 };
+
+template <unsigned int N>
+SpatialCoordinate<N>::SpatialCoordinate() : coordinates_{}
+{
+    for (int i = 0; i < N; i++)
+    {
+        coordinates_[i] = 0.0f;
+    }
+}
+
 
 template <unsigned int N>
 SpatialCoordinate<N>::SpatialCoordinate(const std::initializer_list<float>& values): coordinates_{}
@@ -126,7 +137,7 @@ SpatialCoordinate<N> SpatialCoordinate<N>::operator-(const SpatialCoordinate& ot
 }
 
 template <unsigned int N>
-SpatialCoordinate<N> SpatialCoordinate<N>::operator*(int n) const
+SpatialCoordinate<N> SpatialCoordinate<N>::operator*(float n) const
 {
     SpatialCoordinate result(*this);
     for (int i = 0; i < N; i++)
@@ -135,7 +146,7 @@ SpatialCoordinate<N> SpatialCoordinate<N>::operator*(int n) const
 }
 
 template <unsigned int N>
-SpatialCoordinate<N> SpatialCoordinate<N>::operator/(int n) const
+SpatialCoordinate<N> SpatialCoordinate<N>::operator/(float n) const
 {
     SpatialCoordinate result(*this);
     for (int i = 0; i < N; i++)
@@ -169,21 +180,21 @@ void SpatialCoordinate<N>::operator-=(SpatialCoordinate other)
 }
 
 template <unsigned int N>
-void SpatialCoordinate<N>::operator*=(int mul)
+void SpatialCoordinate<N>::operator*=(float mul)
 {
     for (int i = 0; i < N; i++)
         coordinates_[i] *= mul;
 }
 
 template <unsigned int N>
-void SpatialCoordinate<N>::operator/=(int div)
+void SpatialCoordinate<N>::operator/=(float div)
 {
     for (int i = 0; i < N; i++)
         coordinates_[i] /= div;
 }
 
 template <unsigned int N>
-float SpatialCoordinate<N>::Distance(SpatialCoordinate other) const
+float SpatialCoordinate<N>::DistanceTo(SpatialCoordinate other) const
 {
     float result = 0;
     for (int i = 0; i < N; i++)

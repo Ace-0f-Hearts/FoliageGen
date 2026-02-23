@@ -2,13 +2,13 @@
 // Created by ace on 2026-01-26.
 //
 
-#ifndef GENERATOR_OCDTYPESV12_H
-#define GENERATOR_OCDTYPESV12_H
-#include "OcdTypesV11.h"
+#ifndef OCAD_OCDTYPESV12_H
+#define OCAD_OCDTYPESV12_H
+#include "ocad_types_v11.h"
 
-namespace Ocd
+namespace Ocad
 {
-    class OcdTypesV12
+    class OcadTypesV12
     {
     public:
         using u64 = uint64_t;
@@ -21,18 +21,18 @@ namespace Ocd
         using i16 = int16_t;
         using i8 = int8_t;
 
-        struct FileHeader : OcdTypesV11::Format::FileHeader
+        struct FileHeader : OcadTypesV11::Format::FileHeader
         {
-            u32 RESERVED_MEMBER[2];
-            u32 firstMultiRepBlock;
+            u32 RESERVED_MEMBER[2]{};
+            u32 firstMultiRepBlock{};
         };
 
-        using BaseSymbol = OcdTypesV11::BaseSymbol;
-        using AreaSymbolGeneric = OcdTypesV11::AreaSymbolGeneric;
+        using BaseSymbol = OcadTypesV11::BaseSymbol;
+        using AreaSymbolGeneric = OcadTypesV11::AreaSymbolGeneric;
 
         struct AreaSymbol
         {
-            using Element = OcdTypesV11::Format::PointSymbol::Element;
+            using Element = OcadTypesV11::Format::PointSymbol::Element;
 
             BaseSymbol base;
 
@@ -49,7 +49,7 @@ namespace Ocd
 
         struct Object
         {
-            using IndexEntryType = OcdTypesV11::Format::Object::IndexEntryType;
+            using IndexEntryType = OcadTypesV11::Format::Object::IndexEntryType;
 
             i32 symbol;
             u8 type;
@@ -70,23 +70,23 @@ namespace Ocd
             u8 object_string_type;
             u8 RESERVED_MEMBER;
 
-            OcdTypesGeneric::OcdCoord coords[1];
+            Generic::OcadCoord coords[1];
         };
 
         struct Format
         {
             using FileHeader = FileHeader;
             using BaseSymbol = BaseSymbol;
-            using PointSymbol = OcdTypesV11::Format::PointSymbol;
-            using LineSymbol = OcdTypesV11::Format::LineSymbol;
+            using PointSymbol = OcadTypesV11::Format::PointSymbol;
+            using LineSymbol = OcadTypesV11::Format::LineSymbol;
             using AreaSymbol = AreaSymbol;
-            using TextSymbol = OcdTypesV11::Format::TextSymbol;
-            using LineTextSymbol = OcdTypesV11::Format::LineTextSymbol;
-            using RectSymbol = OcdTypesV11::Format::RectangleSymbol;
+            using TextSymbol = OcadTypesV11::Format::TextSymbol;
+            using LineTextSymbol = OcadTypesV11::Format::LineTextSymbol;
+            using RectSymbol = OcadTypesV11::Format::RectangleSymbol;
             using Object = Object;
-            using Encoding = OcdTypesGeneric::Custom8BitEncoding;
+            using Encoding = Generic::Custom8BitEncoding;
         };
     };
 }
 
-#endif //GENERATOR_OCDTYPESV12_H
+#endif //OCAD_OCDTYPESV12_H

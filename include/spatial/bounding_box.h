@@ -22,24 +22,22 @@ public:
 
     BoundingBox(const BoundingBox& other);
 
-    float GetSmallestBoundingCircleRadius();
+    float GetRadiusOfSmallestBoundingCircle();
 
-    [[nodiscard]] BoundingBox CalculateSubspaceOf(SpatialCoordinate<D> point) const;
+    [[nodiscard]] BoundingBox GetSubspaceOf(SpatialCoordinate<D> point) const;
 
     [[nodiscard]] SpatialCoordinate<D> GetCentroid() const;
 
     /**
-     * Using Euclidean distance
+     * Calculated shortest distance to point using Euclidean distance
      * @param point
      * @return
      */
-    [[nodiscard]] float CalculateDistance(SpatialCoordinate<D> point) const;
+    [[nodiscard]] float DistanceTo(SpatialCoordinate<D> point) const;
 
-
-    BoundingBox GetSubspaceByIndex(int index) const;
+    [[nodiscard]] BoundingBox GetSubspaceByIndex(int index) const;
 
     static unsigned int dim();
-
     [[nodiscard]] float diagonal() const;
     [[nodiscard]] float width() const;
     [[nodiscard]] float height() const;
@@ -87,7 +85,7 @@ BoundingBox<D>::BoundingBox(const BoundingBox& other): max_(other.max_), min_(ot
 {}
 
 template <unsigned int D>
-float BoundingBox<D>::GetSmallestBoundingCircleRadius()
+float BoundingBox<D>::GetRadiusOfSmallestBoundingCircle()
 {
     float result = 0;
     for (int i = 0; i < D; i++)
@@ -99,7 +97,7 @@ float BoundingBox<D>::GetSmallestBoundingCircleRadius()
 }
 
 template <unsigned int D>
-BoundingBox<D> BoundingBox<D>::CalculateSubspaceOf(SpatialCoordinate<D> point) const
+BoundingBox<D> BoundingBox<D>::GetSubspaceOf(SpatialCoordinate<D> point) const
 {
     auto origin = GetCentroid();
 
@@ -133,7 +131,7 @@ SpatialCoordinate<D> BoundingBox<D>::GetCentroid() const
 }
 
 template <unsigned int D>
-float BoundingBox<D>::CalculateDistance(SpatialCoordinate<D> point) const
+float BoundingBox<D>::DistanceTo(SpatialCoordinate<D> point) const
 {
     float result = 0;
     for (int i = 0; i < D; i++)

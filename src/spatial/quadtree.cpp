@@ -64,7 +64,7 @@ int Quadtree::FindNearestNeighbour(const Spatial2D& query_point) const
     auto bbox = BoundingBox2D(data_[node_idx],data_[node_idx + 1]);
 
     bool first_best_found = false;
-    float distance_to_closest_neighbour = bbox.GetSmallestBoundingCircleRadius() * 2;
+    float distance_to_closest_neighbour = bbox.GetRadiusOfSmallestBoundingCircle() * 2;
     boost::heap::priority_queue<Proximity> search_heap;
 
     auto of_root = Proximity{0,0};
@@ -74,7 +74,7 @@ int Quadtree::FindNearestNeighbour(const Spatial2D& query_point) const
     for(int idx = 0; idx < std::pow(2,bbox.dim()); ++idx)
     {
         auto sub_bbox = bbox.GetSubspaceByIndex(idx);
-        auto distance = sub_bbox.CalculateDistance(query_point);
+        auto distance = sub_bbox.DistanceTo(query_point);
 
         if (distance < distance_to_closest_neighbour)
         {
@@ -112,7 +112,7 @@ int Quadtree::FindNearestNeighbour(const Spatial2D& query_point) const
                 }
                 continue;
             }
-            auto distance_to_node = query_point.Distance(data_[node_idx]);
+            auto distance_to_node = query_point.DistanceTo(data_[node_idx]);
 
             if (distance_to_node < distance_to_closest_neighbour)
             {
@@ -126,7 +126,7 @@ int Quadtree::FindNearestNeighbour(const Spatial2D& query_point) const
             for(int idx = 0; idx < 1 << bbox.dim(); ++idx)
             {
                 auto sub_bbox = bbox.GetSubspaceByIndex(idx);
-                auto distance = sub_bbox.CalculateDistance(query_point);
+                auto distance = sub_bbox.DistanceTo(query_point);
 
 
                 if (distance < distance_to_closest_neighbour)
@@ -256,7 +256,7 @@ std::vector<int> Quadtree::FindNearestNeighbours(const Spatial2D& point, const u
     auto bbox = BoundingBox2D(data_[node_idx],data_[node_idx + 1]);
 
     bool first_best_found = false;
-    float distance_to_nth_closest_neighbour = bbox.GetSmallestBoundingCircleRadius() * 2;
+    float distance_to_nth_closest_neighbour = bbox.GetRadiusOfSmallestBoundingCircle() * 2;
     boost::heap::priority_queue<Proximity> search_heap;
     search_heap.reserve(log2(item_count() + node_count()));
 
@@ -271,7 +271,7 @@ std::vector<int> Quadtree::FindNearestNeighbours(const Spatial2D& point, const u
     for(int idx = 0; idx < std::pow(2,bbox.dim()); ++idx)
     {
         auto sub_bbox = bbox.GetSubspaceByIndex(idx);
-        auto distance = sub_bbox.CalculateDistance(point);
+        auto distance = sub_bbox.DistanceTo(point);
 
         if (distance < distance_to_nth_closest_neighbour)
         {
@@ -299,7 +299,7 @@ std::vector<int> Quadtree::FindNearestNeighbours(const Spatial2D& point, const u
                 first_best_found = true;
                 continue;
             }
-            auto distance_to_node = point.Distance(data_[node_idx]);
+            auto distance_to_node = point.DistanceTo(data_[node_idx]);
 
             auto d = Distance{of_node.proximity,node_idx};
 
@@ -325,7 +325,7 @@ std::vector<int> Quadtree::FindNearestNeighbours(const Spatial2D& point, const u
             for(int idx = 0; idx < std::pow(2,bbox.dim()); ++idx)
             {
                 auto sub_bbox = bbox.GetSubspaceByIndex(idx);
-                auto distance = sub_bbox.CalculateDistance(point);
+                auto distance = sub_bbox.DistanceTo(point);
 
                 if (distance < distance_to_nth_closest_neighbour)
                 {
@@ -379,7 +379,7 @@ void Quadtree::AllocateItemIndex(const int index_to_allocate, const BoundingBox2
 
     while (index_tree_[child_idx] > item_count_)
     {
-        bbox = bbox.CalculateSubspaceOf(point_to_allocate);
+        bbox = bbox.GetSubspaceOf(point_to_allocate);
         centroid = bbox.GetCentroid();
 
         parent_idx = child_idx;
@@ -399,7 +399,7 @@ void Quadtree::AllocateItemIndex(const int index_to_allocate, const BoundingBox2
             int cell = parent_idx;
 
 
-            prev_bbox = prev_bbox.CalculateSubspaceOf(data_[prev_idx]);
+            prev_bbox = prev_bbox.GetSubspaceOf(data_[prev_idx]);
             AllocateNode(cell,prev_bbox); // Allocate parent of both previous and current idx
 
             centroid = prev_bbox.GetCentroid();

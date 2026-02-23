@@ -2,16 +2,18 @@
 // Created by ace on 2026-01-26.
 //
 
-#ifndef GENERATOR_OCDTYPESV9_H
-#define GENERATOR_OCDTYPESV9_H
+#ifndef OCAD_OCDTYPESV9_H
+#define OCAD_OCDTYPESV9_H
 #include <cstddef>
 #include <cstdint>
 #include <sys/types.h>
 
+#include "ocad_helper.h"
 
-namespace Ocd
+
+namespace Ocad
 {
-    class OcdTypesV9
+    class OcadTypesV9
     {
     public:
         using u64 = uint64_t;
@@ -69,7 +71,7 @@ namespace Ocd
             i16 offset_y;
         };
 
-        struct FileHeader : public Ocd::OcdTypesGeneric::FileHeaderGeneric
+        struct FileHeader : public Ocad::Generic::FileHeaderGeneric
         {
             u32 firstSymbolBlock;
             u32 firstObjectBlock;
@@ -91,11 +93,11 @@ namespace Ocd
 
         struct BaseSymbol
         {
-            using IndexEntryType = Ocd::SymbolIndexEntry;
-            static constexpr int symbolNumberFactor = 1000;
+            using IndexEntryType = SymbolIndexEntry;
+            static constexpr int kSymbolNumberFactor = 1000;
 
             u32 size;
-            u32 symNum;
+            u32 sym_num;
             u8 objectType;
             u8 flags;
             u8 selected;
@@ -109,7 +111,7 @@ namespace Ocd
             u16 group;
             u16 numOfColors;
             u16 colors[14];
-            Ocd::OcdTypesGeneric::PascalString<31> name;
+            Ocad::Generic::PascalString<31> name;
             Icon icon;
         };
 
@@ -219,7 +221,7 @@ namespace Ocd
         {
             BaseSymbol base;
 
-            Ocd::OcdTypesGeneric::PascalString<31> text;
+            Ocad::Generic::PascalString<31> text;
             BasicTextAttributes basic;
             FramingAttributes framing;
         };
@@ -262,7 +264,7 @@ namespace Ocd
         {
             BaseSymbol base;
 
-            Ocd::OcdTypesGeneric::PascalString<31> font_name;
+            Ocad::Generic::PascalString<31> font_name;
             BasicTextAttributes basic;
             SpecialTextAttributes special;
             u16 RESERVED_MEMBER;
@@ -281,9 +283,9 @@ namespace Ocd
             u16 cell_height;
             u16 RESERVED_MEMBER1[2];;
             u16 unnumbered_cells;
-            Ocd::OcdTypesGeneric::PascalString<3> unnumbered_text;
+            Ocad::Generic::PascalString<3> unnumbered_text;
             u16 RESERVED_MEMBER2;
-            Ocd::OcdTypesGeneric::PascalString<31> RESERVED_MEMBER3;
+            Ocad::Generic::PascalString<31> RESERVED_MEMBER3;
             u16 RESERVED_MEMBER4;
             u16 font_size_V10; /// Since V10
             u16 RESERVED_MEMBER5[4];
@@ -292,8 +294,8 @@ namespace Ocd
 
         struct ObjectIndex
         {
-            Ocd::OcdTypesGeneric::OcdCoord bottom_left_bound;
-            Ocd::OcdTypesGeneric::OcdCoord top_right_bound;
+            Ocad::Generic::OcadCoord bottom_left_bound;
+            Ocad::Generic::OcadCoord top_right_bound;
             u32 pos;
             u32 size;
             i32 symbol;
@@ -337,7 +339,7 @@ namespace Ocd
             u32 RESERVED_MEMBER2;
             u32 height_V10_ONLY; /// V10 only; unit: mm
 
-            Ocd::OcdTypesGeneric::OcdCoord coords[1];
+            Ocad::Generic::OcadCoord coords[1];
         };
 
         struct Format
@@ -352,10 +354,10 @@ namespace Ocd
             using LineTextSymbol = LineTextSymbol;
             using RectangleSymbol = RectSymbol;
             using Object = Object;
-            using Encoding = Ocd::OcdTypesGeneric::Custom8BitEncoding;
+            using Encoding = Ocad::Generic::Custom8BitEncoding;
         };
     };
 }
 
 
-#endif //GENERATOR_OCDTYPESV9_H
+#endif //OCAD_OCDTYPESV9_H

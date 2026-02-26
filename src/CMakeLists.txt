@@ -39,7 +39,6 @@ target_link_libraries(foliage_generator_lib
         foliage
         PRIVATE
         jsoncpp
-        SDL3::SDL3
         loguru::loguru
 )
 

@@ -10,7 +10,7 @@ class SlopeMap : public TextureMap
 {
 public:
     SlopeMap(CImg<> const& map);
-    float SlopeAt(Coord2 const& coord);
+    [[nodiscard]] float SlopeAt(Coord2 const& coord) const;
 };
 
 #endif //PROCEDURALFOLIAGEGENERATOR_SLOPE_MAP_H

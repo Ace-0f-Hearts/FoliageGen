@@ -20,11 +20,11 @@ class TextureMap
 public:
     TextureMap() = delete;
     TextureMap(CImg<> const& map);
-    ~TextureMap();
-    Dim2 Dim() const;
+    ~TextureMap() = default;
+    [[nodiscard]] Dim2 Dim() const;
 protected:
-    float At(Coord2 const& coord) const;
-    CImg<> map() const;
+    [[nodiscard]] float At(Coord2 const& coord) const;
+    [[nodiscard]] CImg<> map() const;
 private:
     CImg<> map_;
 };

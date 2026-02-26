@@ -7,10 +7,6 @@ TextureMap::TextureMap(const CImg<>& map) : map_(map)
 {
 }
 
-TextureMap::~TextureMap()
-{
-}
-
 Dim2 TextureMap::Dim() const
 {
     return Dim2(map_.height(), map_.width());

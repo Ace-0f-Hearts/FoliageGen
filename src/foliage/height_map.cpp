@@ -34,9 +34,9 @@ Vec3 HeightMap::NormalAt(const Coord2 coord) const
 
 float HeightMap::SlopeAt(const Coord2 coord) const
 {
-    auto normal = NormalAt(coord);
+    const auto normal = NormalAt(coord);
     std::cout << normal << std::endl;
-    auto dot = Dot(normal,kUp) / (Normal(normal) * Normal(kUp));
+    const auto dot = Dot(normal,kUp) / (Normal(normal) * Normal(kUp));
     return std::fabsf(std::acosf(dot) - static_cast<float>(M_PI / 2));
 }
 

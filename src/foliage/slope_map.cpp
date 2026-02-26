@@ -8,7 +8,7 @@ SlopeMap::SlopeMap(CImg<> const& map) : TextureMap(map)
 {
 }
 
-float SlopeMap::SlopeAt(Coord2 const& coord)
+float SlopeMap::SlopeAt(Coord2 const& coord) const
 {
     return At(coord);
 }

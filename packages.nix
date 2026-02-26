@@ -8,11 +8,15 @@
 , jsoncpp
 , libpkgconf
 , pkg-config
-, sdl3
-, loguru
 , cimg
+, loguru
 , doxygen
 , boost
+, libx11
+, imagemagick
+, libz
+, libpng
+, libjpeg
 }:
 
 # stdenv.mkDerivation now accepts a list of named parameters that describe
@@ -39,11 +43,14 @@ stdenv.mkDerivation {
     jsoncpp
     libpkgconf
     pkg-config
-    sdl3
+    cimg
+    libx11
     loguru
     doxygen
-    cimg
     boost
+    libjpeg
+    libpng
+    libz
    ];
 
   installPhase = ''

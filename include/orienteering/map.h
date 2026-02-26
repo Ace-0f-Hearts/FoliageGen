@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "../../src/orienteering/MapCoord.h"
 
 
 namespace Orienteering

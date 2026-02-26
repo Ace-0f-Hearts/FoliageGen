@@ -23,15 +23,15 @@ class HeightMap : public TextureMap
 public:
     HeightMap() = delete;
     HeightMap(const CImg<>& height_map, float horizontal_scale = 1, float vertical_scale = 1);
-    float HeightAt(Coord2 coord) const;
-    float SlopeAt(Coord2 coord) const;
-    Vec3 NormalAt(Coord2 coord) const;
+    [[nodiscard]] float HeightAt(Coord2 coord) const;
+    [[nodiscard]] float SlopeAt(Coord2 coord) const;
+    [[nodiscard]] Vec3 NormalAt(Coord2 coord) const;
 
-    float vertical_scale() const;
-    float horizontal_scale() const;
+    [[nodiscard]] float vertical_scale() const;
+    [[nodiscard]] float horizontal_scale() const;
 
 private:
-    float HeightAtOrValue(Coord2 coord, float value) const;
+    [[nodiscard]] float HeightAtOrValue(Coord2 coord, float value) const;
 
     float horizontal_scale_;
     float vertical_scale_;

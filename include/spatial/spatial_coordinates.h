@@ -47,12 +47,35 @@ public:
     void operator-=(SpatialCoordinate other);
     void operator*=(float mul);
     void operator/=(float div);
+    void operator=(std::initializer_list<float> values);
+    void operator=(const SpatialCoordinate& other) const;
 
     [[nodiscard]] float DistanceTo(SpatialCoordinate other) const;
 
 private:
     float coordinates_[N];
 };
+
+
+template <unsigned int N>
+void SpatialCoordinate<N>::operator=(std::initializer_list<float> values)
+{
+    int i = 0;
+    for (auto value : values)
+    {
+        coordinates_[i] = value;
+        ++i;
+    }
+}
+
+template <unsigned int N>
+void SpatialCoordinate<N>::operator=(const SpatialCoordinate& other) const
+{
+    for (int i = 0; i < N; i++)
+    {
+        coordinates_[i] = other.coordinates_[i];
+    }
+}
 
 template <unsigned int N>
 SpatialCoordinate<N>::SpatialCoordinate() : coordinates_{}

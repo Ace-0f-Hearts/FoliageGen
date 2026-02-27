@@ -41,14 +41,12 @@ namespace Ocad
         template<class OcadBaseSymbol>
         void SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base);
 
-        void FillPathCoords(PathObject* object, bool is_area, uint32_t num_points,
+        static void FillPathCoords(PathObject* object, bool is_area, uint32_t num_points,
                     const Generic::OcadCoord* ocd_points);
-        void SetPointFlags(Object* object, uint32_t pos, bool is_area, Generic::OcadCoord ocd_point);
+        static void SetPointFlags(std::vector<OcadCoordinate>& object, uint32_t pos, bool is_area, Generic::OcadCoord ocd_point);
 
-        OcadCoordinate ConvertOcadPoint(const Generic::OcadCoord& ocad_point);
+        static OcadCoordinate ConvertOcadPoint(const Generic::OcadCoord& ocad_point);
 
-        template <class S>
-        SymbolType GetSymbolType(S& symbol);
     private:
 
         std::vector<char> buffer_;

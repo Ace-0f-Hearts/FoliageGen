@@ -125,7 +125,7 @@ void OcadImporter::FillPathCoords(PathObject *object, bool is_area, uint32_t num
     for (auto i = 0u; i < num_points; i++)
     {
         path[i] = ConvertOcadPoint(ocd_points[i]);
-        SetPointFlags(object, i, is_area, ocd_points[i]);
+        SetPointFlags(path, i, is_area, ocd_points[i]);
     }
 
     // For path objects, create closed parts where the position of the last point is equal to that of the first point
@@ -171,6 +171,49 @@ void OcadImporter::FillPathCoords(PathObject *object, bool is_area, uint32_t num
             start = i + 1;
         }
     }
+}
 
+void OcadImporter::SetPointFlags(std::vector<OcadCoordinate>& object, uint32_t pos, bool is_area, Generic::OcadCoord ocd_point)
+{
+    if (ocd_point.IsFirstCurvePoint() && pos > 0)
+    {
+        object[pos-1].SetCurveStart(true);
+    }
+    if (ocd_point.IsDashPoint() || ocd_point.IsCornerPoint())
+    {
+        object[pos].SetDashPoint(true);
+    }
+    if (ocd_point.IsFirstHolePoint() && pos > 1 && is_area)
+    {
+        object[pos-1].SetHolePoint(true);
+    }
 
 }
+
+OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_point)
+{
+    OcadCoordinate result;
+
+    float x = ocad_point.x;
+    float y = ocad_point.y;
+
+    uint8_t flags = 0;
+    if (ocad_point.IsFirstCurvePoint())
+    {
+        flags|= OcadCoordinate::CurveStart;
+    }
+    if (ocad_point.IsFirstHolePoint())
+    {
+        flags |= OcadCoordinate::HolePoint;
+    }
+    if (ocad_point.IsDashPoint())
+    {
+        flags |= OcadCoordinate::DashPoint;
+    }
+
+    result.coordinate() = Spatial2D({x, y});
+    result.flags() = flags;
+    return result;
+}
+
+

@@ -224,7 +224,7 @@ uint32_t Ocad::OcadEntityIndex<F, T>::firstBlock() const
 }
 
 template <class F>
-Ocad::OcadFile<F>::OcadFile() {}
+Ocad::OcadFile<F>::OcadFile() = default;
 
 template <class F>
 Ocad::OcadFile<F>::OcadFile(const std::vector<char>& data) noexcept
@@ -234,12 +234,6 @@ symbol_index_(*this),
 object_index_(*this)
 {
     assert(data.data() == byte_array_.data());
-}
-
-template <class F>
-const std::vector<char>& Ocad::OcadFile<F>::ConstByteArray() const
-{
-    return byte_array_;
 }
 
 template <class F>

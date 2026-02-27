@@ -27,7 +27,7 @@ public:
     std::vector<FileFormat*>& file_formats();
 private:
     const FileFormat* FindFormat(std::function<bool (const FileFormat*)> predicate) const;
-    const FileFormat* FindFormatForData(const std::filesystem::path& path) const;
+    [[nodiscard]] const FileFormat* FindFormatForData(const std::filesystem::path& path) const;
     std::vector<FileFormat*> file_formats_;
 };
 

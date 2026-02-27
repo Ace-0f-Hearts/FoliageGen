@@ -234,7 +234,7 @@ namespace Ocad
         /**
          * Constructs a new empty file.
          *
-         * The internal byte array is initialized with headers and the
+         * The internal byte array is initialised with headers and the
          * first index blocks for parameter strings, symbols and objects.
          */
         OcadFile();
@@ -257,11 +257,6 @@ namespace Ocad
          */
         ~OcadFile() = default;
 
-
-        /**
-         * Returns the raw data.
-         */
-        [[nodiscard]] const std::vector<char>& ConstByteArray() const;
 
         /**
          * Returns the raw data.

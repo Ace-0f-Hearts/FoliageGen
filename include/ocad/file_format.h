@@ -19,7 +19,7 @@ public:
     [[nodiscard]] virtual std::unique_ptr<Importer> CreateImporter(std::filesystem::path path, Orienteering::Map map) const;
     virtual bool UnderstandsHeader(const char *buffer, int total_read) const;
 
-    std::vector<string> extensions() const;
+    [[nodiscard]] std::vector<string> extensions() const;
     std::vector<string> extensions();
 private:
 

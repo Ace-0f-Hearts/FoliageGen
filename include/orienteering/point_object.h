@@ -13,8 +13,9 @@ namespace Orienteering
     {
 
     public:
-
-        void SetPoint(Spatial2D);
+        PointObject() = delete;
+        PointObject(Symbol*);
+        void SetPoint(const Spatial2D& point);
     protected:
     private:
 

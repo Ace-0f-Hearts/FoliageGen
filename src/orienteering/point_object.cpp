@@ -1,0 +1,14 @@
+//
+// Created by ace on 2026-03-01.
+//
+#include <orienteering/point_object.h>
+
+PointObject::PointObject(Symbol* symbol) : Object(symbol)
+{
+}
+
+void PointObject::SetPoint(const Spatial2D& point)
+{
+    this->coordinates().clear();
+    this->coordinates().push_back(point);
+}

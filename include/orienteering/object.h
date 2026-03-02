@@ -10,6 +10,8 @@
 
 using namespace Orienteering;
 
+class PolyPath;
+
 namespace Orienteering
 {
 
@@ -35,6 +37,7 @@ namespace Orienteering
     protected:
         ObjectType type_;
         Symbol* symbol_;
+        Spatial::PolyPath coordinates_;
     private:
     };
 

@@ -14,14 +14,15 @@ namespace Orienteering
     public:
         PathObject() = delete;
         PathObject(Symbol* symbol);
-        ~PathObject() override = default;
+
 
         [[nodiscard]] bool IsClosed() const;
-        [[nodiscard]] bool Contains(Spatial2D) const;
+        [[nodiscard]] bool Contains(const Spatial2D& point) const;
 
-        void SetPoints(std::vector<Spatial2D>);
-        void AddPoint(Spatial2D);
-        void RemovePoint(Spatial2D);
+        void SetPoints(const std::vector<Spatial2D>& points);
+        void AppendPoint(const Spatial2D& point);
+        void RemovePoint(const Spatial2D& point);
+        void Clear();
 
 
     protected:

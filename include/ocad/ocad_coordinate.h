@@ -7,7 +7,6 @@
 
 #include <spatial/spatial_coordinates.h>
 
-#include "ocad_helper.h"
 
 
 /**

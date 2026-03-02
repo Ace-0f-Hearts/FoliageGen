@@ -354,7 +354,7 @@ namespace Ocad
             using LineTextSymbol = LineTextSymbol;
             using RectangleSymbol = RectSymbol;
             using Object = Object;
-            using Encoding = Ocad::Generic::Custom8BitEncoding;
+            using Encoding = Generic::Custom8BitEncoding;
         };
     };
 }

@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <ocad/importer.h>
 
-Importer::Importer(const std::filesystem::path& path, Orienteering::Map map) : path_(path), map_(map)
+Importer::Importer(const std::filesystem::path& path, Orienteering::Map& map) : path_(path), map_(map)
 {
 }
 

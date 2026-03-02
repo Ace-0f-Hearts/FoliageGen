@@ -59,13 +59,13 @@ namespace Ocad
             u32 x;
             u32 y;
 
-            bool IsFirstCurvePoint() const;
-            bool IsSecondCurvePoint() const;
-            bool NoLeftLine() const;
-            bool IsCornerPoint() const;
-            bool IsFirstHolePoint() const;
-            bool NoRightLine() const;
-            bool IsDashPoint() const;
+            [[nodiscard]] bool IsFirstCurvePoint() const;
+            [[nodiscard]] bool IsSecondCurvePoint() const;
+            [[nodiscard]] bool NoLeftLine() const;
+            [[nodiscard]] bool IsCornerPoint() const;
+            [[nodiscard]] bool IsFirstHolePoint() const;
+            [[nodiscard]] bool NoRightLine() const;
+            [[nodiscard]] bool IsDashPoint() const;
 
 
             enum XFlags
@@ -88,6 +88,8 @@ namespace Ocad
         {
         };
     };
+
+
 }
 
 

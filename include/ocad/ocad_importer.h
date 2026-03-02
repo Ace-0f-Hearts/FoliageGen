@@ -11,14 +11,18 @@
 #include "importer.h"
 #include "ocad_coordinate.h"
 #include "ocad_helper.h"
+#include "ocad_types.h"
 #include "orienteering/point_object.h"
+
+
+class Object;
 
 namespace Ocad
 {
     class OcadImporter : public Importer
     {
     public:
-        OcadImporter(const std::filesystem::path& path, Map map);
+        OcadImporter(const std::filesystem::path& path, Map& map);
 
         constexpr static size_t kBuffer_size = 4096 * 8;
 
@@ -49,7 +53,7 @@ namespace Ocad
 
     private:
 
-        std::vector<char> buffer_;
+        std::vector<std::byte> buffer_;
 
         uint8_t ocad_version_;
         std::map<unsigned int, Symbol*> symbol_index_;

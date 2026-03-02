@@ -5,24 +5,24 @@
 #include <ocad/ocad_importer.h>
 
 
-#include "../../include/spatial/orienteering_path.h"
-#include "ocad/ocad_helper.h"
-#include "ocad/ocad_types_v10.h"
-#include "ocad/ocad_types_v11.h"
-#include "ocad/ocad_types_v12.h"
-#include "ocad/ocad_types_v9.h"
-#include "orienteering/object.h"
-#include "orienteering/path_object.h"
+#include <ocad/ocad_helper.h>
+#include <ocad/ocad_types_v10.h>
+#include <ocad/ocad_types_v11.h>
+#include <ocad/ocad_types_v12.h>
+#include <ocad/ocad_types_v9.h>
+#include <orienteering/object.h>
+#include <orienteering/path_object.h>
 
 using namespace Ocad;
 
-Ocad::OcadImporter::OcadImporter(const std::filesystem::path& path, Map map) : Importer(path, map), buffer_(kBuffer_size)
+Ocad::OcadImporter::OcadImporter(const std::filesystem::path& path, Map& map) : Importer(path, map),
+    buffer_(kBuffer_size), ocad_version_(0)
 {
 }
 
 bool Ocad::OcadImporter::ImportImplementation()
 {
-    input_stream_.readsome(buffer_.data(),kBuffer_size);
+    input_stream_.readsome(reinterpret_cast<char*>(buffer_.data()),kBuffer_size);
 
     if (buffer_.empty())
     {

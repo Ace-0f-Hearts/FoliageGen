@@ -76,7 +76,7 @@ namespace Ocad
         struct Format
         {
             using FileHeader = FileHeader;
-            using BaseSymbol = OcadTypesV11::Format::BaseSymbol;
+            using BaseSymbol = BaseSymbol;
             using PointSymbol = OcadTypesV11::Format::PointSymbol;
             using LineSymbol = OcadTypesV11::Format::LineSymbol;
             using AreaSymbol = AreaSymbol;

@@ -13,7 +13,7 @@ class Importer
 {
 public:
     Importer() = delete;
-    Importer(const std::filesystem::path& path, Orienteering::Map map);
+    Importer(const std::filesystem::path& path, Orienteering::Map& map);
     Importer(const Importer&) = delete;
     Importer(Importer&&) = delete;
 

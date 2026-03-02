@@ -17,9 +17,11 @@ bool Importer::DoImport()
 {
 
     ImportImplementation();
+    return true;
 }
 
 bool Importer::ImportImplementation()
 {
+    return false;
 }
 

@@ -27,6 +27,7 @@ add_subdirectory(ocad)
 add_subdirectory(utility)
 add_subdirectory(spatial)
 add_subdirectory(foliage)
+add_subdirectory(orienteering)
 
 message("${CMAKE_SOURCE_DIR}")
 
@@ -36,6 +37,7 @@ target_link_libraries(foliage_generator_lib
         utility
         ocad
         botanics_math
+        orienteering
         foliage
         PRIVATE
         jsoncpp

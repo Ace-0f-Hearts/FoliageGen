@@ -16,7 +16,7 @@ add_executable(tests ${TEST_FILES})
 add_custom_command(TARGET tests POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/assets
-        ${CMAKE_CURRENT_BINARY_DIR}/assets[
+        ${CMAKE_CURRENT_BINARY_DIR}/assets
         COMMENT "Copy assets directory to testing directory")
 
 target_compile_features(tests PRIVATE cxx_std_17)

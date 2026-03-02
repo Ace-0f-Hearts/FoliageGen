@@ -532,7 +532,7 @@ template <class F, class T>
 }
 
 template< class BlockType >
-const BlockType* GetBlockChecked(const std::vector<std::byte>& byte_array, uint32_t pos)
+const BlockType* Ocad::GetBlockChecked(const std::vector<std::byte>& byte_array, uint32_t pos)
 {
     extern const void* GetBlockCheckedRaw(const std::vector<std::byte>& byte_array_raw, uint32_t pos_raw, uint32_t block_size);
     return reinterpret_cast<const BlockType*>(GetBlockCheckedRaw(byte_array, pos, sizeof(BlockType)));

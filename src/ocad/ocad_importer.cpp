@@ -1,6 +1,7 @@
 //
 // Created by ace on 2026-02-19.
 //
+#include <iostream>
 #include <ocad/ocad_importer.h>
 
 #include <loguru.hpp>
@@ -19,6 +20,13 @@ using namespace Ocad;
 OcadImporter::OcadImporter(const std::filesystem::path& path, Map& map) : Importer(path, map),
     buffer_(kBuffer_size), ocad_version_(0)
 {
+    input_stream_.open(path_.string(), std::ios::in | std::ios::binary);
+    if (!input_stream_.good())
+    {
+        std::cerr << "Failed to open file: " << input_stream_.rdstate() << std::endl;
+        throw std::invalid_argument("Cannot open file!");
+
+    }
 }
 
 bool OcadImporter::ImportImplementation()
@@ -39,9 +47,11 @@ bool OcadImporter::ImportImplementation()
 
     auto header = reinterpret_cast<const Generic::FileHeaderGeneric*>(buffer_.data());
 
-    if (header->version != 0x0cad)
+    std::cout << header->version << std::endl;
+    std::cout << output_amount << std::endl;
+    if (header->vendor_mark != 0x0cad)
     {
-        LOG_F(ERROR, "Invalid data in header.");
+        LOG_F(ERROR, "Invalid data in header: %d.",header->vendor_mark);
         throw std::invalid_argument("Invalid data");
     }
 

@@ -15,6 +15,8 @@
 #include <orienteering/object.h>
 #include <orienteering/path_object.h>
 
+#include "ocad/ocad_types_v2018.h"
+
 using namespace Ocad;
 
 OcadImporter::OcadImporter(const std::filesystem::path& path, Map& map) : Importer(path, map),
@@ -47,8 +49,6 @@ bool OcadImporter::ImportImplementation()
 
     auto header = reinterpret_cast<const Generic::FileHeaderGeneric*>(buffer_.data());
 
-    std::cout << header->version << std::endl;
-    std::cout << output_amount << std::endl;
     if (header->vendor_mark != 0x0cad)
     {
         LOG_F(ERROR, "Invalid data in header: %d.",header->vendor_mark);
@@ -67,6 +67,11 @@ bool OcadImporter::ImportImplementation()
         ImportImplementation<OcadTypesV11::Format>();
         break;
     case 12:
+        ImportImplementation<OcadTypesV12::Format>();
+        break;
+    case 2018:
+        LOG_F(WARNING,"Support OCAD version %d files is experimental.",header->version);
+        static_assert(std::is_same_v<OcadTypesV12::Format,OcadTypesV2018::Format>);
         ImportImplementation<OcadTypesV12::Format>();
         break;
     default:

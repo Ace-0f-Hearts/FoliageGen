@@ -26,7 +26,7 @@ const void* Ocad::GetBlockCheckedRaw(const std::vector<std::byte>& byte_array, u
     if ((static_cast<uint64_t>(pos) + block_size > std::numeric_limits<uint32_t>::max()
         || pos + block_size - 1 >= static_cast<uint32_t>(byte_array.size())))
     {
-        LOG_F(WARNING,"Ocd::getBlockChecked: Requested data block is out of bounds");
+        LOG_F(WARNING,"Ocd::GetBlockChecked: Requested data block is out of bounds");
         return nullptr;
     }
 
@@ -40,7 +40,7 @@ const void* Ocad::GetBlockCheckedRaw(const std::vector<std::byte>& byte_array, u
  * @param byte_array
  * @return
  */
-std::vector<char>& addPadding(std::vector<char>& byte_array)
+std::vector<char>& AddPadding(std::vector<char>& byte_array)
 {
     const std::vector padding ((0x7ffffff8 - byte_array.size()) % 8,'\0' );
     byte_array.insert(byte_array.end(),padding.cbegin(),padding.cend());

@@ -6,6 +6,7 @@
 #define OCAD_OCDHELPER_H
 #include <cassert>
 #include <cstdint>
+#include <iostream>
 #include <iterator>
 #include <loguru.hpp>
 #include <type_traits>

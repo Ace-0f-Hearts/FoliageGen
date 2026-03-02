@@ -41,11 +41,6 @@ namespace Orienteering
     private:
     };
 
-
-
-
-
-
 }
 
 

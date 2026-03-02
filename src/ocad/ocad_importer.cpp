@@ -1,38 +1,39 @@
 //
 // Created by ace on 2026-02-19.
 //
-#include <loguru.hpp>
 #include <ocad/ocad_importer.h>
 
+#include <loguru.hpp>
 
 #include <ocad/ocad_helper.h>
 #include <ocad/ocad_types_v10.h>
 #include <ocad/ocad_types_v11.h>
 #include <ocad/ocad_types_v12.h>
 #include <ocad/ocad_types_v9.h>
+
 #include <orienteering/object.h>
 #include <orienteering/path_object.h>
 
 using namespace Ocad;
 
-Ocad::OcadImporter::OcadImporter(const std::filesystem::path& path, Map& map) : Importer(path, map),
+OcadImporter::OcadImporter(const std::filesystem::path& path, Map& map) : Importer(path, map),
     buffer_(kBuffer_size), ocad_version_(0)
 {
 }
 
-bool Ocad::OcadImporter::ImportImplementation()
+bool OcadImporter::ImportImplementation()
 {
-    input_stream_.readsome(reinterpret_cast<char*>(buffer_.data()),kBuffer_size);
+    input_stream_.readsome(reinterpret_cast<char*>(buffer_.data()), kBuffer_size);
 
     if (buffer_.empty())
     {
-        LOG_F(ERROR,"File buffer is empty!");
+        LOG_F(ERROR, "File buffer is empty!");
         throw std::invalid_argument("File buffer is empty!");
     }
 
     if (buffer_.size() < sizeof(Generic::FileHeaderGeneric))
     {
-        LOG_F(ERROR,"File buffer does not contain a header!");
+        LOG_F(ERROR, "File buffer does not contain a header!");
         throw std::invalid_argument("File buffer does not contain a header!");
     }
 
@@ -40,46 +41,44 @@ bool Ocad::OcadImporter::ImportImplementation()
 
     if (header->version != 0x0cad)
     {
-        LOG_F(ERROR,"Invalid data in header.");
+        LOG_F(ERROR, "Invalid data in header.");
         throw std::invalid_argument("Invalid data");
     }
 
     switch (header->version)
     {
-        case 9:
-            ImportImplementation<OcadTypesV9::Format>();
-            break;
-        case 10:
-            ImportImplementation<OcadTypesV10::Format>();
-            break;
-        case 11:
-            ImportImplementation<OcadTypesV11::Format>();
-            break;
-        case 12:
-            ImportImplementation<OcadTypesV12::Format>();
-            break;
-        default:
+    case 9:
+        ImportImplementation<OcadTypesV9::Format>();
+        break;
+    case 10:
+        ImportImplementation<OcadTypesV10::Format>();
+        break;
+    case 11:
+        ImportImplementation<OcadTypesV11::Format>();
+        break;
+    case 12:
+        ImportImplementation<OcadTypesV12::Format>();
+        break;
+    default:
         throw std::invalid_argument("Invalid format");
-
     }
     return true;
 }
 
 template <class F>
-void Ocad::OcadImporter::ImportImplementation()
+void OcadImporter::ImportImplementation()
 {
     OcadFile<F> file(buffer_);
 
     if (!file.header())
-        LOG_F(ERROR,"Incomplete or missing header!");
+        LOG_F(ERROR, "Incomplete or missing header!");
 
     ImportSymbols(file);
     ImportObjects(file);
-
 }
 
 template <class F>
-void Ocad::OcadImporter::ImportObjects(OcadFile<F>& file)
+void OcadImporter::ImportObjects(OcadFile<F>& file)
 {
     for (auto object : file.objects())
     {
@@ -102,21 +101,21 @@ void OcadImporter::ImportSymbols(OcadFile<F>& file)
     }
 }
 
-template<class S>
+template <class S>
 void OcadImporter::ImportSymbol(const S& base)
 {
     auto symbol = new Orienteering::Symbol();
-    SetupSymbol(symbol,base);
+    SetupSymbol(symbol, base);
 }
 
 
 template <class OcadBaseSymbol>
 void OcadImporter::SetupSymbol(Orienteering::Symbol* symbol, const OcadBaseSymbol& base)
 {
-
 }
 
-void OcadImporter::FillPathCoords(PathObject *object, bool is_area, uint32_t num_points, const Generic::OcadCoord* ocd_points)
+void OcadImporter::FillPathCoords(PathObject* object, bool is_area, uint32_t num_points,
+                                  const Generic::OcadCoord* ocd_points)
 {
     std::vector<OcadCoordinate> path;
     path.reserve(num_points);
@@ -129,7 +128,7 @@ void OcadImporter::FillPathCoords(PathObject *object, bool is_area, uint32_t num
     }
 
     // For path objects, create closed parts where the position of the last point is equal to that of the first point
-    if (object->type() == ObjectType::Path)
+    if (object->type() == Path)
     {
         size_t start = 0;
         for (size_t i = 0; i < object->coordinates().size(); ++i)
@@ -161,9 +160,9 @@ void OcadImporter::FillPathCoords(PathObject *object, bool is_area, uint32_t num
             switch (i - start)
             {
             default:
-                path[i-2].SetCurveStart(false);
+                path[i - 2].SetCurveStart(false);
             case 1:
-                path[i-1].SetCurveStart(false);
+                path[i - 1].SetCurveStart(false);
             case 0:
                 ; // nothing
             }
@@ -173,11 +172,12 @@ void OcadImporter::FillPathCoords(PathObject *object, bool is_area, uint32_t num
     }
 }
 
-void OcadImporter::SetPointFlags(std::vector<OcadCoordinate>& object, uint32_t pos, bool is_area, Generic::OcadCoord ocd_point)
+void OcadImporter::SetPointFlags(std::vector<OcadCoordinate>& object, uint32_t pos, bool is_area,
+                                 Generic::OcadCoord ocd_point)
 {
     if (ocd_point.IsFirstCurvePoint() && pos > 0)
     {
-        object[pos-1].SetCurveStart(true);
+        object[pos - 1].SetCurveStart(true);
     }
     if (ocd_point.IsDashPoint() || ocd_point.IsCornerPoint())
     {
@@ -185,9 +185,8 @@ void OcadImporter::SetPointFlags(std::vector<OcadCoordinate>& object, uint32_t p
     }
     if (ocd_point.IsFirstHolePoint() && pos > 1 && is_area)
     {
-        object[pos-1].SetHolePoint(true);
+        object[pos - 1].SetHolePoint(true);
     }
-
 }
 
 OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_point)
@@ -200,7 +199,7 @@ OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_poi
     uint8_t flags = 0;
     if (ocad_point.IsFirstCurvePoint())
     {
-        flags|= OcadCoordinate::CurveStart;
+        flags |= OcadCoordinate::CurveStart;
     }
     if (ocad_point.IsFirstHolePoint())
     {
@@ -215,5 +214,3 @@ OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_poi
     result.flags() = flags;
     return result;
 }
-
-

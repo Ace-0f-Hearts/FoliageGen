@@ -15,7 +15,6 @@ namespace Orienteering
         PathObject() = delete;
         PathObject(Symbol* symbol);
 
-
         [[nodiscard]] bool IsClosed() const;
         [[nodiscard]] bool Contains(const Spatial2D& point) const;
 
@@ -23,13 +22,6 @@ namespace Orienteering
         void AppendPoint(const Spatial2D& point);
         void RemovePoint(const Spatial2D& point);
         void Clear();
-
-
-    protected:
-
-    private:
-
-
     };
 }
 

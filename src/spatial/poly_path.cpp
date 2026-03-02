@@ -8,16 +8,17 @@
 
 bool Spatial::PolyPath::IsClosed() const
 {
-    return this->front() == this->back();
+    return points_.front() == points_.back();
 }
 
-bool Spatial::PolyPath::IsPointInsideArea(Spatial2D point)
+
+bool Spatial::PolyPath::IsPointInsideArea(Spatial2D point) const
 {
     auto inside = false;
-    if (size() > 2)
+    if (points_.size() > 2)
     {
-        auto prev = back();
-        for (auto curr : *this)
+        auto prev = points_.back();
+        for (auto curr : points_)
         {
             if ( ((curr[1] > point[1]) != (prev[1] > point[1])) &&
                  (point[0] < (prev[0] - curr[0]) *
@@ -41,7 +42,7 @@ int Spatial::PolyPath::FromBezier(OrienteeringPath& curve, int path_start)
 {
     int path_end = curve.size() - 1;
 
-    emplace_back(curve[path_start].coordinate());
+    points_.emplace_back(curve[path_start].coordinate());
     for (int i = path_start + 1; i < path_end; i++)
     {
         if (curve[i-1].IsCurveStart());
@@ -49,7 +50,7 @@ int Spatial::PolyPath::FromBezier(OrienteeringPath& curve, int path_start)
             CurveToPath(curve[i-1].coordinate(),curve[i].coordinate(),curve[i+1].coordinate(),curve[i+2].coordinate());
             i += 2;
         }
-        emplace_back(curve[i].coordinate());
+        points_.emplace_back(curve[i].coordinate());
 
         if (i < path_end && curve[i].IsHolePoint())
         {
@@ -72,18 +73,48 @@ void Spatial::PolyPath::CurveToPath(const Spatial2D& c0, const Spatial2D& c1,con
 
     if (start_to_end_len < kBezier_max_segment_length && poly_line_len - start_to_end_len < kBezier_error)
     {
-        this->emplace_back(c12);
+        points_.emplace_back(c12);
     }
     else
     {
-        Spatial2D c01 = (c0 + c1) * 0.5f;
-        Spatial2D c23 = (c2 + c3) * 0.5f;
-        Spatial2D c012 = (c01 + c12) * 0.5f;
-        Spatial2D c123 = (c12 + c23) * 0.5f;
-        Spatial2D c0123 = (c012 + c123) * 0.5f;
+        const Spatial2D c01 = (c0 + c1) * 0.5f;
+        const Spatial2D c23 = (c2 + c3) * 0.5f;
+        const Spatial2D c012 = (c01 + c12) * 0.5f;
+        const Spatial2D c123 = (c12 + c23) * 0.5f;
+        const Spatial2D c0123 = (c012 + c123) * 0.5f;
         
         CurveToPath(c0,c01,c012,c0123);
         CurveToPath(c0123,c123,c23,c3);
     }
 
+}
+
+const std::vector<Spatial2D>& Spatial::PolyPath::points() const
+{
+    return points_;
+}
+
+int Spatial::PolyPath::size() const
+{
+    return points_.size();
+}
+
+void Spatial::PolyPath::SetPoints(const std::vector<Spatial2D>& points)
+{
+    points_ = points;
+}
+
+void Spatial::PolyPath::AppendPoint(const Spatial2D& point)
+{
+    points_.emplace_back(point);
+}
+
+void Spatial::PolyPath::RemovePoint(const Spatial2D& point)
+{
+    points_.erase(std::ranges::find(points_.begin(), points_.end(), point));
+}
+
+std::vector<Spatial2D>& Spatial::PolyPath::points()
+{
+    return points_;
 }

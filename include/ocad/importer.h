@@ -18,7 +18,7 @@ public:
     Importer(Importer&&) = delete;
 
     virtual ~Importer();
-
+    virtual void ReadFile() = 0;
     bool DoImport();
 protected:
     virtual bool ImportImplementation();

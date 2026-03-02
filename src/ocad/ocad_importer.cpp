@@ -31,9 +31,19 @@ OcadImporter::OcadImporter(const std::filesystem::path& path, Map& map) : Import
     }
 }
 
+void OcadImporter::ReadFile()
+{
+    auto file_size = std::filesystem::file_size(path_);
+
+    buffer_.resize(file_size);
+    input_stream_.readsome(reinterpret_cast<char*>(buffer_.data()),file_size);
+}
+
+
 bool OcadImporter::ImportImplementation()
 {
-    input_stream_.readsome(reinterpret_cast<char*>(buffer_.data()), kBuffer_size);
+    ReadFile();
+
 
     if (buffer_.empty())
     {

@@ -322,7 +322,7 @@ template <class F, class T>
 Ocad::OcadEntityIndex<F, T>::EntryType& Ocad::OcadEntityIndex<F, T>::insert(const std::vector<char>& entity_data,
     const EntryType& entry)
 {
-    auto& byte_array = addPadding(file.byte_array_());
+    auto& byte_array = AddPadding(file.byte_array_());
     IndexBlock* block;
     auto next_block_pos = firstBlock<typename T::IndexEntryType>();
     auto block_pos = decltype(next_block_pos)(0);
@@ -407,7 +407,8 @@ string_index_(*this),
 symbol_index_(*this),
 object_index_(*this)
 {
-    assert(data.data() == byte_array_.data());
+    std::cout<< byte_array_.size() << ":" << data.size() << std::endl;
+    assert(data == byte_array_);
 }
 
 template <class F>

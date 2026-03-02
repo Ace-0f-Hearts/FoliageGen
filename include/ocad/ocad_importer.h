@@ -29,6 +29,8 @@ namespace Ocad
     protected:
         bool ImportImplementation() override;
 
+        void ReadFile() override;
+
         template <class F>
         void ImportImplementation();
 

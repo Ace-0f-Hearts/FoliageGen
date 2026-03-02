@@ -23,9 +23,9 @@ namespace Ocad
 
         struct FileHeaderGeneric
         {
-            u16 ocadMark = 0x0cad;
-            u8 fileType{};
-            u8 fileStatus{}; /// Since V9
+            u16 vendor_mark = 0x0cad;
+            u8 file_type{};
+            u8 file_status{}; /// Since V9
             uint16_t version{};
             u8 subversion{};
             u8 subsubversion{}; /// Since V10

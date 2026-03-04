@@ -14,15 +14,6 @@ BOOST_AUTO_TEST_SUITE(OcadHelperTestSuite)
 
 using Format = Ocad::OcadTypesV12::Format;
 
-BOOST_AUTO_TEST_CASE(Test_OcadFile_ConstructionBehavingAsExpectedOnEmptyBuffer)
-{
-    // Ocad::OcadFile<F> file;
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-
-BOOST_AUTO_TEST_SUITE(OcadImporterTestSuite)
 
 class F
 {
@@ -30,14 +21,20 @@ class F
     F() = default;
     ~F() = default;
     std::filesystem::path test_map_path_{"./assets/ForestOrienteeringMapBürenflue.ocd"};
-    Map map_;
+    std::shared_ptr<Map> map_ = std::make_shared<Map>();
+
 };
 using Format = Ocad::OcadTypesV12::Format;
 
 BOOST_FIXTURE_TEST_CASE(Test_OcadImporter_ConstructionBehavingAsExpected,F)
 {
-
     Ocad::OcadImporter imp(test_map_path_,map_);
+
+    imp.DoImport();
+
+    std::cout << map_->GetObjectAmount() << std::endl;
+    std::cout << map_->GetSymbolAmount() << std::endl;
+    // BOOST_CHECK_EQUAL();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

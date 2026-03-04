@@ -15,14 +15,13 @@
 #include "orienteering/point_object.h"
 
 
-class Object;
 
 namespace Ocad
 {
     class OcadImporter : public Importer
     {
     public:
-        OcadImporter(const std::filesystem::path& path, Map& map);
+        OcadImporter(const std::filesystem::path& path, std::shared_ptr<Map> map);
 
         constexpr static size_t kBuffer_size = 4096 * 8;
 
@@ -42,10 +41,10 @@ namespace Ocad
         template <class F>
         void ImportObjects(OcadFile<F>& file);
         template <class O>
-        void ImportObject(const O& object);
+        void ImportObject(const O& ocad_object);
 
         template<class OcadBaseSymbol>
-        void SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base);
+        bool SetupSymbol(Symbol* ocad_symbol, const OcadBaseSymbol& base);
 
         static void FillPathCoords(PathObject* object, bool is_area, uint32_t num_points,
                     const Generic::OcadCoord* ocd_points);
@@ -58,6 +57,7 @@ namespace Ocad
         std::vector<std::byte> buffer_;
 
         uint8_t ocad_version_;
+        // TODO: Take care of pointer at delete
         std::map<unsigned int, Symbol*> symbol_index_;
     };
 }

@@ -15,7 +15,7 @@ FileFormatRegistry::FileFormatRegistry() : file_formats_()
 {
 }
 
-std::unique_ptr<Importer> FileFormatRegistry::CreateImporter(const std::filesystem::path& path, Orienteering::Map& map) const
+std::unique_ptr<Importer> FileFormatRegistry::CreateImporter(const std::filesystem::path& path, std::shared_ptr<Orienteering::Map> map) const
 {
     auto extension = path.extension().string();
     auto predicate = [extension](const FileFormat* format){return format->extensions().cend() != std::find(format->extensions().cbegin(), format->extensions().cend(),extension);};

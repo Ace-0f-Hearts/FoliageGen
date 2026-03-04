@@ -10,22 +10,33 @@
 
 using namespace Orienteering;
 
-class PolyPath;
 
 namespace Orienteering
 {
 
     enum ObjectType
     {
-        Point = 0,
-        Path = 1
+        PointO = 0,
+        PathO = 1
     };
 
     class Object
     {
     public:
+        Object();
         Object(Symbol* symbol);
+        Object(const Object& other);
+        Object(const Object&& other) noexcept;
+
+        Object& operator=(const Object& other);
+        Object& operator=(Object&& other) noexcept;
         virtual ~Object() = default;
+
+        void SetSymbol(Symbol* symbol);
+        void SetType(ObjectType type);
+        void AppendCoordinate(Spatial2D coordinate);
+
+        bool HasSymbolOf(const Symbol* symbol) const;
 
         virtual bool IsIntersecting(const Spatial2D& point) = 0;
 
@@ -35,10 +46,10 @@ namespace Orienteering
         [[nodiscard]] const Symbol* symbol() const;
 
     protected:
+        float angle_;
         ObjectType type_;
         Symbol* symbol_;
         Spatial::PolyPath coordinates_;
-    private:
     };
 
 }

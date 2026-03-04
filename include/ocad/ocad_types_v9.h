@@ -111,7 +111,7 @@ namespace Ocad
             u16 group;
             u16 numOfColors;
             u16 colors[14];
-            Ocad::Generic::PascalString<31> name;
+            Generic::PascalString<31> name;
             Icon icon;
         };
 

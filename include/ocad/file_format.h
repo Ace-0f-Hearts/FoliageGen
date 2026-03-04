@@ -16,7 +16,7 @@ public:
     FileFormat();
     virtual ~FileFormat() = default;
 
-    [[nodiscard]] virtual std::unique_ptr<Importer> CreateImporter(std::filesystem::path path, Orienteering::Map map) const;
+    [[nodiscard]] virtual std::unique_ptr<Importer> CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::Map> map) const;
     virtual bool UnderstandsHeader(const char *buffer, int total_read) const;
 
     [[nodiscard]] std::vector<string> extensions() const;

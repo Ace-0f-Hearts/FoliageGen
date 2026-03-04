@@ -12,3 +12,12 @@ void PointObject::SetPoint(const Spatial2D& point)
     this->coordinates().clear();
     this->coordinates().push_back(point);
 }
+
+PointObject::~PointObject()
+{
+}
+
+bool PointObject::IsIntersecting(const Spatial2D& point)
+{
+    return false;
+}

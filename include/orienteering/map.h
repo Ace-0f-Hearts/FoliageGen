@@ -5,6 +5,7 @@
 #ifndef GENERATOR_MAP_H
 #define GENERATOR_MAP_H
 #include <array>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -29,15 +30,28 @@ namespace Orienteering
         Map() = default;
         ~Map() = default;
 
-        Map(const Map&) = default;
+        Map(const Map&) = delete;
 
-        void AddSymbol(Symbol* symbol);
+        void AppendSymbol(std::unique_ptr<Symbol> symbol);
+        void AppendObject(std::unique_ptr<Object> obj);
 
-        void AddObject(Object* obj);
+        int GetSymbolOfTypeAmount();
+        int GetSymbolAmount();
+        int GetObjectAmount();
+        int GetObjectOfSymbolAmount();
 
+        Symbol& GetSymbolById(int id);
+        Symbol& GetObjectById(int id);
+
+        void ClearSymbols();
+        void ClearObjects();
+        void Clear();
+
+        void RemoveObjectsOfSymbol(Symbol& symbol);
+        void RemoveSymbol(Symbol& symbol);
     private:
-        std::vector<Symbol*> symbols_;
-        std::vector<Object*> objects_;
+        std::vector<std::unique_ptr<Symbol>> symbols_;
+        std::vector<std::unique_ptr<Object>> objects_;
 
     };
 }

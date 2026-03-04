@@ -45,14 +45,14 @@ namespace Orienteering
         uint32_t id();
         void id(uint32_t value);
 
-        uint8_t flags() const;
+        [[nodiscard]] uint8_t flags() const;
 
-        bool IsArea() const;
-        bool IsPath() const;
-        bool IsPoint() const;
-        bool IsCultivated() const;
-        bool IsObstructing() const;
-        bool IsDirectional() const;
+        [[nodiscard]] bool IsArea() const;
+        [[nodiscard]] bool IsPath() const;
+        [[nodiscard]] bool IsPoint() const;
+        [[nodiscard]] bool IsCultivated() const;
+        [[nodiscard]] bool IsObstructing() const;
+        [[nodiscard]] bool IsDirectional() const;
 
 
     private:

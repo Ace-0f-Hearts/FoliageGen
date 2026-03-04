@@ -9,7 +9,7 @@ FileFormat::FileFormat()
 {
 }
 
-std::unique_ptr<Importer> FileFormat::CreateImporter(std::filesystem::path path, Orienteering::Map map) const
+std::unique_ptr<Importer> FileFormat::CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::Map> map) const
 {
     LOG_F(WARNING,"Format does not support import");
     return nullptr;

@@ -17,10 +17,14 @@ namespace Orienteering
 
 
     enum SymbolType{
+        PointS = 0x1,
+        PathS = 0x2,
+        AreaS = 0x4,
         Obstructing, /// prevents the growth of plants around it and inside of it
         Cultivated, /// reduces the amount of randomization in the seed positions
         Directional, /// introduces some bias to the direction of randomization
       };
+
 
 
     class Symbol{
@@ -28,7 +32,7 @@ namespace Orienteering
         Symbol() = default;
         virtual ~Symbol() = default;
 
-        void name(string& name);
+        void name(const string& name);
         void number(uint32_t value);
 
         string& name();
@@ -36,6 +40,21 @@ namespace Orienteering
 
         uint32_t& number();
         [[nodiscard]] uint32_t number() const;
+        bool operator==(const Symbol& other) const;
+
+        uint32_t id();
+        void id(uint32_t value);
+
+        uint8_t flags() const;
+
+        bool IsArea() const;
+        bool IsPath() const;
+        bool IsPoint() const;
+        bool IsCultivated() const;
+        bool IsObstructing() const;
+        bool IsDirectional() const;
+
+
     private:
         string name_;
         /**

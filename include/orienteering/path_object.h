@@ -15,8 +15,11 @@ namespace Orienteering
         PathObject() = delete;
         PathObject(Symbol* symbol);
 
+        ~PathObject() override = default;
+
         [[nodiscard]] bool IsClosed() const;
         [[nodiscard]] bool Contains(const Spatial2D& point) const;
+        bool IsIntersecting(const Spatial2D& point) override;
 
         void SetPoints(const std::vector<Spatial2D>& points);
         void AppendPoint(const Spatial2D& point);

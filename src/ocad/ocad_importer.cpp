@@ -19,7 +19,7 @@
 
 using namespace Ocad;
 
-OcadImporter::OcadImporter(const std::filesystem::path& path, Map& map) : Importer(path, map),
+OcadImporter::OcadImporter(const std::filesystem::path& path, std::shared_ptr<Map> map) : Importer(path, map),
     buffer_(kBuffer_size), ocad_version_(0)
 {
     input_stream_.open(path_.string(), std::ios::in | std::ios::binary);
@@ -108,13 +108,42 @@ void OcadImporter::ImportObjects(OcadFile<F>& file)
     for (auto object : file.objects())
     {
         if (object.entry->symbol)
+        {
+            std::unique_ptr<Object> obj;
             ImportObject(*object.entity);
+
+
+        }
     }
 }
 
 template <class O>
-void OcadImporter::ImportObject(const O& object)
+void OcadImporter::ImportObject(const O& ocad_object)
 {
+    Symbol* symbol = symbol_index_[ocad_object.symbol];
+    std::unique_ptr<Object> object;
+
+    std::cout << "Object ID:" << ocad_object.symbol << std::endl;
+    if (!symbol)
+        return;
+
+    if (symbol->IsArea())
+    {
+        std::cout << "Area" << std::endl;
+    }
+    if (symbol->IsPath())
+    {
+        std::cout << "Path" << std::endl;
+        auto path_object = std::make_unique<PathObject>(symbol);
+        FillPathCoords(path_object.get(),false,ocad_object.num_items,reinterpret_cast<const Generic::OcadCoord *>(ocad_object.coords));
+        object = std::move(path_object);
+    }
+    if (symbol->IsPoint())
+    {
+        std::cout << "Point" << std::endl;
+        object = std::make_unique<PointObject>(symbol);
+    }
+    map_->AppendObject(std::move(object));
 }
 
 template <class F>
@@ -129,14 +158,27 @@ void OcadImporter::ImportSymbols(OcadFile<F>& file)
 template <class S>
 void OcadImporter::ImportSymbol(const S& base)
 {
-    auto symbol = new Orienteering::Symbol();
-    SetupSymbol(symbol, base);
+
+
+    auto symbol = std::make_unique<Symbol>();
+    std::cout << "Symbol ID:" << base.sym_num << std::endl;
+    if (SetupSymbol(symbol.get(), base))
+    {
+        symbol_index_.emplace(symbol->id(),symbol.get());
+        map_->AppendSymbol(std::move(symbol));
+    }
+
 }
 
 
 template <class OcadBaseSymbol>
-void OcadImporter::SetupSymbol(Orienteering::Symbol* symbol, const OcadBaseSymbol& base)
+bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
 {
+    if (base.status & SymbolHidden)
+        return false;
+    symbol->id(base.sym_num);
+
+    return true;
 }
 
 void OcadImporter::FillPathCoords(PathObject* object, bool is_area, uint32_t num_points,
@@ -153,7 +195,7 @@ void OcadImporter::FillPathCoords(PathObject* object, bool is_area, uint32_t num
     }
 
     // For path objects, create closed parts where the position of the last point is equal to that of the first point
-    if (object->type() == Path)
+    if (object->type() == PathO)
     {
         size_t start = 0;
         for (size_t i = 0; i < object->coordinates().size(); ++i)

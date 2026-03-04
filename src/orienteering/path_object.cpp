@@ -20,7 +20,10 @@ bool PathObject::Contains(const Spatial2D& point) const
 }
 
 
-
+bool PathObject::IsIntersecting(const Spatial2D& point)
+{
+    return false;
+}
 
 void PathObject::SetPoints(const std::vector<Spatial2D>& points)
 {

@@ -22,7 +22,7 @@ public:
     FileFormatRegistry& operator=(FileFormatRegistry) = delete;
     FileFormatRegistry& operator=(FileFormatRegistry const&) = delete;
 
-    [[nodiscard]] std::unique_ptr<Importer>  CreateImporter(const std::filesystem::path& path, Orienteering::Map& map) const;
+    [[nodiscard]] std::unique_ptr<Importer>  CreateImporter(const std::filesystem::path& path, std::shared_ptr<Orienteering::Map> map) const;
 
     std::vector<FileFormat*>& file_formats();
 private:

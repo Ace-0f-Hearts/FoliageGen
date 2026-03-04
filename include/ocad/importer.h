@@ -13,7 +13,7 @@ class Importer
 {
 public:
     Importer() = delete;
-    Importer(const std::filesystem::path& path, Orienteering::Map& map);
+    Importer(const std::filesystem::path& path, std::shared_ptr<Orienteering::Map> map);
     Importer(const Importer&) = delete;
     Importer(Importer&&) = delete;
 
@@ -24,7 +24,7 @@ protected:
     virtual bool ImportImplementation();
 
     std::filesystem::path path_;
-    Orienteering::Map map_;
+    std::shared_ptr<Orienteering::Map> map_;
     std::ifstream input_stream_;
 };
 

@@ -11,7 +11,7 @@ class OcadFileFormat : FileFormat
 public:
     OcadFileFormat();
     ~OcadFileFormat() override;
-    std::unique_ptr<Importer>  CreateImporter(std::filesystem::path path, Orienteering::Map map) const override;
+    std::unique_ptr<Importer>  CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::Map> map) const override;
     bool UnderstandsHeader(const char *buffer, int total_read) const override;
 
 };

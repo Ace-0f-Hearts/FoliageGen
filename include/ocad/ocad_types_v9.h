@@ -26,6 +26,7 @@ namespace Ocad
         using i16 = int16_t;
         using i8 = int8_t;
 
+#pragma pack(push,1)
         struct BasicTextAttributes
         {
             u16 color;
@@ -336,6 +337,7 @@ namespace Ocad
             Ocad::Generic::OcadCoord coords[1];
         };
 
+#pragma pack (pop)
         struct Format
         {
             constexpr static u16 version = 9;

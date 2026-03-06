@@ -28,7 +28,7 @@ namespace Spatial
         [[nodiscard]] int size() const;
 
     private:
-        void CurveToPath(const Spatial2D& c0, const Spatial2D& c1, const Spatial2D& c2, const Spatial2D& c4);
+        void CurveToPath(const Spatial2D& c0, const Spatial2D& c1, const Spatial2D& c2, const Spatial2D& c3);
         std::vector<Spatial2D> points_;
     };
 }

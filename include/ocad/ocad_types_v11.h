@@ -33,6 +33,7 @@ namespace Ocad
         using AreaSymbolGeneric = OcadTypesV9::AreaSymbolGeneric;
         using LineSymbolGeneric = OcadTypesV9::LineSymbolGeneric;
 
+#pragma pack(push,1)
 
         struct BaseSymbol
         {
@@ -40,8 +41,8 @@ namespace Ocad
             using IndexEntryType = SymbolIndexEntry;
 
 
-            u32 size;
-            u32 sym_num;
+            i32 size;
+            i32 sym_num;
             u8 object_type;
             u8 flags;
             u8 selected;
@@ -131,6 +132,8 @@ namespace Ocad
             u16 font_size; /// \since V10
             u16 RESERVED_MEMBER4[4];
         };
+
+#pragma pack(pop)
 
         struct Format
         {

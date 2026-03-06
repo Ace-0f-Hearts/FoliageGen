@@ -124,17 +124,18 @@ void OcadImporter::ImportObject(const O& ocad_object)
 
     if (symbol->IsArea())
     {
-        // auto path_object = std::make_unique<PathObject>(symbol);
+        auto path_object = std::make_unique<PathObject>(symbol);
         //
         LOG_F(INFO,"Area object with symbol %d imported",ocad_object.symbol);
-        // FillPathCoords(path_object.get(),true,ocad_object.num_items,reinterpret_cast<const Generic::OcadCoord *>(ocad_object.coords));
+        FillPathCoords(path_object.get(),true,ocad_object.num_items,reinterpret_cast<const Generic::OcadCoord *>(ocad_object.coords));
 
     }
 
     if (symbol->IsPath())
     {
+        // std::cout << ocad_object.num_items << std::endl;
         auto path_object = std::make_unique<PathObject>(symbol);
-        // FillPathCoords(path_object.get(),false,ocad_object.num_items,reinterpret_cast<const Generic::OcadCoord *>(ocad_object.coords));
+        FillPathCoords(path_object.get(),false,ocad_object.num_items,reinterpret_cast<const Generic::OcadCoord *>(ocad_object.coords));
         object = std::move(path_object);
         LOG_F(INFO,"Path object with symbol %d imported",ocad_object.symbol);
     }
@@ -194,18 +195,17 @@ bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
 }
 
 void OcadImporter::FillPathCoords(PathObject* object, bool is_area, uint32_t num_points,
-                                  const Generic::OcadCoord* ocd_points)
+                                  const Generic::OcadCoord* ocad_points)
 {
     std::vector<OcadCoordinate> path;
-    path.reserve(num_points);
+    path.resize(num_points);
     object->coordinates().reserve(num_points);
 
     for (auto i = 0u; i < num_points; i++)
     {
-        path[i] = ConvertOcadPoint(ocd_points[i]);
-        SetPointFlags(path, i, is_area, ocd_points[i]);
+        path[i] = ConvertOcadPoint(ocad_points[i]);
+        SetPointFlags(path, i, is_area, ocad_points[i]);
     }
-    std::cout << num_points << std::endl;
 
     // For path objects, create closed parts where the position of the last point is equal to that of the first point
     if (object->type() == PathO)
@@ -250,6 +250,7 @@ void OcadImporter::FillPathCoords(PathObject* object, bool is_area, uint32_t num
             start = i + 1;
         }
     }
+
     object->BuildCurve(path);
 }
 

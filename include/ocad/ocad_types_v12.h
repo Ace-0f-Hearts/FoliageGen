@@ -21,6 +21,7 @@ namespace Ocad
         using i16 = int16_t;
         using i8 = int8_t;
 
+#pragma pack(push, 1)
         struct FileHeader : OcadTypesV11::Format::FileHeader
         {
             u32 RESERVED_MEMBER[2]{};
@@ -55,11 +56,11 @@ namespace Ocad
             u8 type;
             u8 customer;
             i16 angle;
-            i32 color;
-            u16 line_width;
-            u16 diam_flags;
-            u32 server_object_id;
-            u32 height;
+            i32 color; // Graphics relevant
+            i16 line_width; // Graphics relevant
+            i16 diam_flags; // Graphics relevant
+            i32 server_object_id;
+            i32 height;
             u64 creation_date;
             u32 multi_rep_id;
             u64 modification_date;
@@ -72,7 +73,7 @@ namespace Ocad
 
             Generic::OcadCoord coords[1];
         };
-
+#pragma pack(pop)
         struct Format
         {
             using FileHeader = FileHeader;
@@ -109,8 +110,7 @@ inline std::ostream& operator<<(std::ostream& os, Ocad::OcadTypesV12::Object obj
     << ";" << object.object_string_length
     << ";" << object.db_link_length
     << ";" << object.object_string_type
-    << ";" << object.db_link_length
-    << ";" << object.object_string_type
+
     << ")"
     ;
     return os;

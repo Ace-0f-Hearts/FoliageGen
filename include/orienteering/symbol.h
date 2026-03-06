@@ -29,8 +29,8 @@ namespace Orienteering
 
     class Symbol{
     public:
-        Symbol() = default;
-        virtual ~Symbol() = default;
+        Symbol();
+        ~Symbol() = default;
 
         void name(const string& name);
         void number(uint32_t value);
@@ -42,7 +42,7 @@ namespace Orienteering
         [[nodiscard]] uint32_t number() const;
         bool operator==(const Symbol& other) const;
 
-        uint32_t id();
+        [[nodiscard]] uint32_t id() const;
         void id(uint32_t value);
 
         [[nodiscard]] uint8_t flags() const;
@@ -54,6 +54,13 @@ namespace Orienteering
         [[nodiscard]] bool IsObstructing() const;
         [[nodiscard]] bool IsDirectional() const;
 
+        void SetArea(bool area);
+        void SetPath(bool path);
+        void SetPoint(bool point);
+        void SetCultivated(bool cultivated);
+        void SetObstructing(bool obstructing);
+        void SetDirectional(bool directional);
+
 
     private:
         string name_;
@@ -61,11 +68,7 @@ namespace Orienteering
          * Unique ID to symbol
          */
         uint32_t id_;
-        float radius_;
         uint8_t flags_;
-
-
-
     };
 }
 

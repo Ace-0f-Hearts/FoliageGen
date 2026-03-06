@@ -22,7 +22,7 @@ namespace Spatial
         bool IsPointOnPath(Spatial2D point);
 
 
-        int FromBezier(OrienteeringPath& curve, int path_start);
+        size_t FromBezier(std::vector<OcadCoordinate>& curve, size_t path_start);
         [[nodiscard]] const std::vector<Spatial2D>& points() const;
         [[nodiscard]] std::vector<Spatial2D>& points();
         [[nodiscard]] int size() const;

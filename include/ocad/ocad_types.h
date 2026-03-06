@@ -92,5 +92,16 @@ namespace Ocad
 
 }
 
+inline std::ostream& operator<<(std::ostream& os, Ocad::Generic::OcadCoord coord)
+{
+    os << "(" << coord.x << "," << coord.y << ")";
+    return os;
+}
+
+inline std::ostream& operator<<(std::ostream& os, const Ocad::Generic::FileHeaderGeneric header)
+{
+    os << "( " << header.vendor_mark << ";" << header.file_type << ";" << header.file_status << ";" << header.version << ";" << header.subversion << ";" << header.subsubversion << ")";
+    return os;
+}
 
 #endif //OCAD_OCDTYPES_H

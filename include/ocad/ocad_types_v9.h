@@ -73,15 +73,15 @@ namespace Ocad
 
         struct FileHeader : public Ocad::Generic::FileHeaderGeneric
         {
-            u32 firstSymbolBlock;
-            u32 firstObjectBlock;
-            u32 offlineSyncSerial; // Since V11
-            u32 currentFileVersion; // Since V12
+            u32 first_symbol_block;
+            u32 first_object_block;
+            u32 offline_sync_serial; // Since V11
+            u32 current_file_version; // Since V12
             u32 RESERVED_MEMBER1;
             u32 RESERVED_MEMBER2;
-            u32 firstStringBlock;
-            u32 fileNamePosition;
-            u32 fileNameSize;
+            u32 first_string_block;
+            u32 file_name_position;
+            u32 file_name_size;
             u32 RESERVED_MEMBER3;
         };
 
@@ -98,18 +98,18 @@ namespace Ocad
 
             u32 size;
             u32 sym_num;
-            u8 objectType;
+            u8 object_type;
             u8 flags;
             u8 selected;
             u8 status;
             u8 drawingTool;
-            u8 csMod;
-            u8 csObjType;
-            u8 csCdFlags;
+            u8 cs_mode;
+            u8 cs_type;
+            u8 cd_flags;
             u32 extent;
-            u32 filePos;
+            u32 file_pos;
             u16 group;
-            u16 numOfColors;
+            u16 num_colors;
             u16 colors[14];
             Generic::PascalString<31> name;
             Icon icon;
@@ -310,12 +310,6 @@ namespace Ocad
             u8 RESERVED_MEMBER;
         };
 
-        struct ObjectIndexBlock
-        {
-            u32 nextBlock;
-            ObjectIndex* table;
-        };
-
         struct Object
         {
             using IndexEntryType = ObjectIndex;
@@ -358,6 +352,46 @@ namespace Ocad
         };
     };
 }
+
+inline std::ostream& operator<<(std::ostream& os, Ocad::OcadTypesV9::Object object)
+{
+    os
+    << "(" << object.symbol
+    << ";" << object.type
+    << ";" << object.customer_V11
+    << ";" << object.angle
+    << ";" << object.num_items
+    << ";" << object.num_text
+    << ";" << object.mark_V11
+    << ";" << object.snapping_mark_V11
+    << ";" << object.color
+    << ";" << object.line_width
+    << ";" << object.diam_flags
+    << ";" << object.height_V11
+    << ")";
+    return os;
+}
+
+inline std::ostream& operator<<(std::ostream& os, Ocad::OcadTypesV9::BaseSymbol base)
+{
+    os
+    << "(" << base.size
+    << ";" << base.sym_num
+    << ";" << base.object_type
+    << ";" << base.flags
+    << ";" << base.selected
+    << ";" << base.status
+    << ";" << base.cs_mode
+    << ";" << base.cs_type
+    << ";" << base.cd_flags
+    << ";" << base.extent
+    << ";" << base.file_pos
+    << ";" << base.group
+    << ";" << base.num_colors
+    << ")";
+    return os;
+}
+
 
 
 #endif //OCAD_OCDTYPESV9_H

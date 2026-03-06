@@ -5,6 +5,7 @@
 
 PointObject::PointObject(Symbol* symbol) : Object(symbol)
 {
+    type_ = PointO;
 }
 
 void PointObject::SetPoint(const Spatial2D& point)

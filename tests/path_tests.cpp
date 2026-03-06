@@ -4,6 +4,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
+#include "ocad/ocad_importer.h"
 #include "spatial/orienteering_path.h"
 #include "spatial/poly_path.h"
 
@@ -14,7 +15,7 @@ using namespace Spatial;
 
     BOOST_AUTO_TEST_CASE(Test_PolyPath_ConstructionFromBezier)
     {
-        OrienteeringPath bezier {{{{0,0},OcadCoordinate::CurveStart},{{1,1}},{{0,2},},{{1,3},}}};
+        std::vector<OcadCoordinate> bezier {{{{0,0},OcadCoordinate::CurveStart},{{1,1}},{{0,2},},{{1,3},}}};
         PolyPath p_path;
         p_path.FromBezier(bezier,0);
 

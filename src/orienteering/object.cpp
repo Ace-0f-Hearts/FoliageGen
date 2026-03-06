@@ -10,7 +10,7 @@ Object::Object(const Object& other) : type_(other.type_), symbol_(other.symbol_)
 {
 }
 
-Object::Object(Symbol* symbol) : type_(), symbol_(symbol)
+Object::Object(Symbol* symbol) : symbol_(symbol)
 {
 }
 

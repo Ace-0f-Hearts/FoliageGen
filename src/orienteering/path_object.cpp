@@ -7,6 +7,7 @@
 
 PathObject::PathObject(Symbol* symbol) : Object(symbol)
 {
+    type_ = PathO;
 }
 
 bool PathObject::IsClosed() const
@@ -25,7 +26,12 @@ bool PathObject::IsIntersecting(const Spatial2D& point)
     return false;
 }
 
-void PathObject::SetPoints(const std::vector<Spatial2D>& points)
+void PathObject::BuildCurve(std::vector<OcadCoordinate>& curve)
+{
+    coordinates_.FromBezier(curve,0);
+}
+
+void PathObject::SetCurve(const std::vector<Spatial2D>& points)
 {
     coordinates_.SetPoints(points);
 }

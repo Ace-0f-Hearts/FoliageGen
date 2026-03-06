@@ -20,7 +20,7 @@ class F
     public:
     F() = default;
     ~F() = default;
-    std::filesystem::path test_map_path_{"./assets/ForestOrienteeringMapBürenflue.ocd"};
+    std::filesystem::path test_map_path_{"./assets/SinglePathExample.ocd"};
     std::shared_ptr<Map> map_ = std::make_shared<Map>();
 
 };

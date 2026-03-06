@@ -40,22 +40,22 @@ bool Spatial::PolyPath::IsPointOnPath(Spatial2D point)
     throw NotImplementedError();
 }
 
-size_t Spatial::PolyPath::FromBezier(std::vector<OcadCoordinate>& curve, size_t path_start)
+size_t Spatial::PolyPath::FromBezier(std::vector<OcadCoordinate>& curve, size_t path_start = 0)
 {
     assert(curve.size() > 1);
 
     auto path_end = curve.size();
 
-
-    std::cout << path_end << std::endl;
     points_.emplace_back(curve[path_start].coordinate());
     for (size_t i = path_start + 1; i < path_end; i++)
     {
         if (curve[i-1].IsCurveStart())
         {
+
             assert(i+2  <= path_end);
             CurveToPath(curve[i-1].coordinate(),curve[i].coordinate(),curve[i+1].coordinate(),curve[i+2].coordinate());
             i += 2;
+
         }
         points_.emplace_back(curve[i].coordinate());
 
@@ -65,6 +65,7 @@ size_t Spatial::PolyPath::FromBezier(std::vector<OcadCoordinate>& curve, size_t 
 
         }
     }
+    std::cout << points_.size() << std::endl;
 
     return path_end; // We return the index indicating the end of this distinct path
 }
@@ -77,7 +78,7 @@ void Spatial::PolyPath::CurveToPath(const Spatial2D& c0, const Spatial2D& c1,con
     // Approximation of the curves length through chordal distance
     auto poly_line_len = c1.DistanceTo(c0) + c2.DistanceTo(c1) + c3.DistanceTo(c2);
 
-
+    // std::cout<< "Recursion" <<std::endl;
     if (start_to_end_len < kBezier_max_segment_length && poly_line_len - start_to_end_len < kBezier_error)
     {
         points_.emplace_back(c12);

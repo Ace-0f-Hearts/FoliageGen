@@ -47,10 +47,11 @@ namespace Ocad
         bool SetupSymbol(Symbol* ocad_symbol, const OcadBaseSymbol& base);
 
         static void FillPathCoords(PathObject* object, bool is_area, uint32_t num_points,
-                    const Generic::OcadCoord* ocd_points);
+                    const Generic::OcadCoord* ocad_points);
         static void SetPointFlags(std::vector<OcadCoordinate>& object, uint32_t pos, bool is_area, Generic::OcadCoord ocd_point);
 
         static OcadCoordinate ConvertOcadPoint(const Generic::OcadCoord& ocad_point);
+        static float ConvertOcadAngle(int ocad_angle);
 
     private:
 

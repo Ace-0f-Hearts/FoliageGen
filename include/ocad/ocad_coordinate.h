@@ -50,10 +50,19 @@ public:
     [[nodiscard]] bool IsCurveStart() const;
 
     uint8_t& flags();
+    uint8_t flags() const;
     Spatial2D& coordinate();
+    Spatial2D coordinate() const;
+
 private:
     Spatial2D coordinate_;
     uint8_t flags_ = 0;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const OcadCoordinate& coordinate)
+{
+    os << coordinate.coordinate();
+    return os;
+}
 
 #endif //PROCEDURALFOLIAGEGENERATOR_OCAD_COORDINATE_H

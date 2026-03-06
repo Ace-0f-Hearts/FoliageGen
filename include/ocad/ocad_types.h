@@ -56,8 +56,8 @@ namespace Ocad
 
         struct OcadCoord
         {
-            u32 x;
-            u32 y;
+            i32 x;
+            i32 y;
 
             [[nodiscard]] bool IsFirstCurvePoint() const;
             [[nodiscard]] bool IsSecondCurvePoint() const;

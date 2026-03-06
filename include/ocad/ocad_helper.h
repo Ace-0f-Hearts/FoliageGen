@@ -140,7 +140,7 @@ namespace Ocad
 
             template <class X = T::IndexEntryType, std::enable_if_t<
                           std::is_same_v<X, ParameterStringIndexEntry>, int> = 0>
-            operator std::vector<char>() const;
+            operator std::vector<std::byte>() const;
         };
 
         /** The index block type */
@@ -512,11 +512,11 @@ bool Ocad::OcadEntityIndexIterator<V>::IsValidEntry() const
 
 template <class F, class T>
 template <class X, std::enable_if_t<std::is_same_v<X, Ocad::ParameterStringIndexEntry>, int>>
-Ocad::OcadEntityIndex<F, T>::ValueType::operator std::vector<char>() const
+Ocad::OcadEntityIndex<F, T>::ValueType::operator std::vector<std::byte>() const
 {
     //TODO: This needs to be tested and refined
     auto temp = reinterpret_cast<char*>(entity);
-    std::vector<char> data(*temp,*temp + entry->size);
+    std::vector<std::byte> data(*temp,*temp + entry->size);
     return data;
 }
 

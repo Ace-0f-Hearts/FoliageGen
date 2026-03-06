@@ -76,6 +76,16 @@ Spatial2D& OcadCoordinate::coordinate()
     return coordinate_;
 }
 
+uint8_t OcadCoordinate::flags() const
+{
+    return flags_;
+}
+
+Spatial2D OcadCoordinate::coordinate() const
+{
+    return coordinate_;
+}
+
 void OcadCoordinate::SetGapPoint(bool set)
 {
     if (set)

@@ -10,8 +10,8 @@
 
 namespace Spatial
 {
-    constexpr static float kBezier_error = 0.005f;
-    constexpr static float kBezier_max_segment_length = 1.0f;
+    constexpr static float kBezier_error = 0.005f * 100000;
+    constexpr static float kBezier_max_segment_length = 1.0f * 1000000;
 
 
     /**

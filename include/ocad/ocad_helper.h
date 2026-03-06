@@ -8,11 +8,10 @@
 #include <cstdint>
 #include <iostream>
 #include <iterator>
-#include <loguru.hpp>
 #include <type_traits>
 #include <vector>
 
-
+#include <loguru.hpp>
 
 namespace Ocad
 {
@@ -145,7 +144,7 @@ namespace Ocad
         };
 
         /** The index block type */
-        using IndexBlock = Ocad::IndexBlock<EntryType>;
+        using IndexBlock = IndexBlock<EntryType>;
 
         /** The index iterator type. */
         using constIterator = OcadEntityIndexIterator<ValueType>;
@@ -203,15 +202,15 @@ namespace Ocad
     private:
         template <class X = EntryType, std::enable_if_t<
                       std::is_same_v<X, ParameterString::IndexEntryType>, int> = 0>
-        [[nodiscard]] uint32_t firstBlock() const;
+        [[nodiscard]] uint32_t first_block() const;
 
         template <class X = EntryType, std::enable_if_t<
                       std::is_same_v<X, typename F::BaseSymbol::IndexEntryType>, int> = 0>
-        [[nodiscard]] uint32_t firstBlock() const;
+        [[nodiscard]] uint32_t first_block() const;
 
         template <class X = EntryType, std::enable_if_t<
                       std::is_same_v<X, typename F::Object::IndexEntryType>, int> = 0>
-        [[nodiscard]] uint32_t firstBlock() const;
+        [[nodiscard]] uint32_t first_block() const;
 
         OcadFile<F>& file;
     };
@@ -318,13 +317,15 @@ namespace Ocad
 
 }
 
+
+
 template <class F, class T>
 Ocad::OcadEntityIndex<F, T>::EntryType& Ocad::OcadEntityIndex<F, T>::insert(const std::vector<char>& entity_data,
     const EntryType& entry)
 {
     auto& byte_array = AddPadding(file.byte_array_());
     IndexBlock* block;
-    auto next_block_pos = firstBlock<typename T::IndexEntryType>();
+    auto next_block_pos = first_block<typename T::IndexEntryType>();
     auto block_pos = decltype(next_block_pos)(0);
     do
     {
@@ -379,23 +380,23 @@ Ocad::OcadEntityIndex<F, T>::EntryType& Ocad::OcadEntityIndex<F, T>::insert(int3
 
 template <class F, class T>
 template <class X, std::enable_if_t<std::is_same_v<X, Ocad::ParameterString::IndexEntryType>, int>>
-uint32_t Ocad::OcadEntityIndex<F, T>::firstBlock() const
+uint32_t Ocad::OcadEntityIndex<F, T>::first_block() const
 {
-    return file.header()->firstStringBlock;
+    return file.header()->first_string_block;
 }
 
 template <class F, class T>
 template <class X, std::enable_if_t<std::is_same_v<X, typename F::BaseSymbol::IndexEntryType>, int>>
-uint32_t Ocad::OcadEntityIndex<F, T>::firstBlock() const
+uint32_t Ocad::OcadEntityIndex<F, T>::first_block() const
 {
-    return file.header()->firstSymbolBlock;
+    return file.header()->first_symbol_block;
 }
 
 template <class F, class T>
 template <class X, std::enable_if_t<std::is_same_v<X, typename F::Object::IndexEntryType>, int>>
-uint32_t Ocad::OcadEntityIndex<F, T>::firstBlock() const
+uint32_t Ocad::OcadEntityIndex<F, T>::first_block() const
 {
-    return file.header()->firstObjectBlock;
+    return file.header()->first_object_block;
 }
 
 
@@ -426,7 +427,7 @@ std::vector<std::byte>& Ocad::OcadFile<F>::byte_array()
 template <class F>
 const Ocad::OcadFile<F>::FileHeader* Ocad::OcadFile<F>::header() const
 {
-    return byte_array_.size() < sizeof(FileHeader) ? nullptr : reinterpret_cast<const FileHeader*>(byte_array_.data());
+    return byte_array_.size() < static_cast<int>(sizeof(FileHeader)) ? nullptr : reinterpret_cast<const FileHeader*>(byte_array_.data());
 }
 
 template <class F>
@@ -449,7 +450,13 @@ const Ocad::OcadFile<F>::ObjectIndex& Ocad::OcadFile<F>::objects() const
 
 template <class V>
 Ocad::OcadEntityIndexIterator<V>::OcadEntityIndexIterator(const std::vector<std::byte>& byte_array, IndexBlock* first_block)
-    : byte_array_(&byte_array), block_(first_block), index_(0) {}
+    : byte_array_(&byte_array), block_(first_block), index_(0)
+{
+    if (block_ && !IsValidEntry())
+    {
+        operator++();
+    }
+}
 
 template <class V>
 Ocad::OcadEntityIndexIterator<V>& Ocad::OcadEntityIndexIterator<V>::operator++()
@@ -473,9 +480,9 @@ Ocad::OcadEntityIndexIterator<V>& Ocad::OcadEntityIndexIterator<V>::operator++()
 template <class V>
 Ocad::OcadEntityIndexIterator<V> Ocad::OcadEntityIndexIterator<V>::operator++(int)
 {
-    auto oldVal = *this;
+    auto old_value(*this);
     this->operator++();
-    return oldVal;
+    return old_value;
 }
 
 template <class V>
@@ -487,7 +494,7 @@ template <class V>
 template <class V>
 bool Ocad::OcadEntityIndexIterator<V>::operator==(const OcadEntityIndexIterator<V>& rhs) const
 {
-    return block_ == rhs.block_ && index_ == rhs.index_;
+    return (block_ == rhs.block_ && index_ == rhs.index_);
 }
 
 template <class V>
@@ -521,7 +528,7 @@ Ocad::OcadEntityIndex<F, T>::OcadEntityIndex(OcadFile<F>& file) noexcept : file(
 template <class F, class T>
  Ocad::OcadEntityIndex<F, T>::constIterator Ocad::OcadEntityIndex<F, T>::begin() const
 {
-    auto pos = firstBlock<typename T::IndexEntryType>();
+    auto pos = first_block<typename T::IndexEntryType>();
     const auto& byteArray = file.byte_array();
     auto firstBlock = Ocad::GetBlockChecked<typename constIterator::IndexBlock>(file.byte_array(), pos);
     return {byteArray,firstBlock};

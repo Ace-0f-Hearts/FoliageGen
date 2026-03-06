@@ -89,4 +89,33 @@ namespace Ocad
     };
 }
 
+inline std::ostream& operator<<(std::ostream& os, Ocad::OcadTypesV12::Object object)
+{
+    os
+    << "(" << object.symbol
+    << ";" << object.type
+    << ";" << object.customer
+    << ";" << object.angle
+    << ";" << object.color
+    << ";" << object.line_width
+    << ";" << object.diam_flags
+    << ";" << object.server_object_id
+    << ";" << object.height
+    << ";" << object.creation_date
+    << ";" << object.multi_rep_id
+    << ";" << object.modification_date
+    << ";" << object.num_items
+    << ";" << object.num_text
+    << ";" << object.object_string_length
+    << ";" << object.db_link_length
+    << ";" << object.object_string_type
+    << ";" << object.db_link_length
+    << ";" << object.object_string_type
+    << ")"
+    ;
+    return os;
+}
+
+
+
 #endif //OCAD_OCDTYPESV12_H

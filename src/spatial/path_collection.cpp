@@ -3,6 +3,7 @@
 //
 #include <spatial/path_collection.h>
 
+
 bool Spatial::PathCollection::IsPointInsideArea(const Spatial2D& point) const
 {
     // Assumption is that: all areas/holes are fully inside the other areas that are to the left
@@ -15,7 +16,7 @@ bool Spatial::PathCollection::IsPointInsideArea(const Spatial2D& point) const
     return inside;
 }
 
-void Spatial::PathCollection::FromBezier(OrienteeringPath& curve)
+void Spatial::PathCollection::FromBezier(std::vector<OcadCoordinate>& curve)
 {
     int path_start = 0;
     int size = curve.size();

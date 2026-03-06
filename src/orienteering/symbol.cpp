@@ -77,7 +77,7 @@ bool Orienteering::Symbol::IsDirectional() const
     return flags_ & Directional;
 }
 
-uint32_t Orienteering::Symbol::id()
+uint32_t Orienteering::Symbol::id() const
 {
     return id_;
 }
@@ -85,4 +85,44 @@ uint32_t Orienteering::Symbol::id()
 void Orienteering::Symbol::id(uint32_t value)
 {
     id_ = value;
+}
+
+void Orienteering::Symbol::SetArea(bool area)
+{
+    if (area)
+        flags_ |= AreaS;
+}
+
+void Orienteering::Symbol::SetPath(bool path)
+{
+    if (path)
+        flags_ |= PathS;
+}
+
+void Orienteering::Symbol::SetPoint(bool point)
+{
+    if (point)
+        flags_ |= PointS;
+}
+
+void Orienteering::Symbol::SetCultivated(bool cultivated)
+{
+    if (cultivated)
+        flags_ |= Cultivated;
+}
+
+void Orienteering::Symbol::SetObstructing(bool obstructing)
+{
+    if (obstructing)
+        flags_ |= Obstructing;
+}
+
+void Orienteering::Symbol::SetDirectional(bool directional)
+{
+    if (directional)
+        flags_ |= Directional;
+}
+
+Orienteering::Symbol::Symbol() : id_(0), flags_(0)
+{
 }

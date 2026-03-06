@@ -21,7 +21,8 @@ namespace Orienteering
         [[nodiscard]] bool Contains(const Spatial2D& point) const;
         bool IsIntersecting(const Spatial2D& point) override;
 
-        void SetPoints(const std::vector<Spatial2D>& points);
+        void BuildCurve(std::vector<OcadCoordinate>& curve);
+        void SetCurve(const std::vector<Spatial2D>& points);
         void AppendPoint(const Spatial2D& point);
         void RemovePoint(const Spatial2D& point);
         void Clear();

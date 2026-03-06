@@ -107,13 +107,9 @@ void OcadImporter::ImportObjects(OcadFile<F>& file)
 {
     for (auto object : file.objects())
     {
-        if (object.entry->symbol)
-        {
-            std::unique_ptr<Object> obj;
-            ImportObject(*object.entity);
+        std::cout << *object.entity << std::endl;
+        ImportObject(*object.entity);
 
-
-        }
     }
 }
 
@@ -123,25 +119,29 @@ void OcadImporter::ImportObject(const O& ocad_object)
     Symbol* symbol = symbol_index_[ocad_object.symbol];
     std::unique_ptr<Object> object;
 
-    std::cout << "Object ID:" << ocad_object.symbol << std::endl;
     if (!symbol)
         return;
 
     if (symbol->IsArea())
     {
-        std::cout << "Area" << std::endl;
+        // auto path_object = std::make_unique<PathObject>(symbol);
+        //
+        LOG_F(INFO,"Area object with symbol %d imported",ocad_object.symbol);
+        // FillPathCoords(path_object.get(),true,ocad_object.num_items,reinterpret_cast<const Generic::OcadCoord *>(ocad_object.coords));
+
     }
+
     if (symbol->IsPath())
     {
-        std::cout << "Path" << std::endl;
         auto path_object = std::make_unique<PathObject>(symbol);
-        FillPathCoords(path_object.get(),false,ocad_object.num_items,reinterpret_cast<const Generic::OcadCoord *>(ocad_object.coords));
+        // FillPathCoords(path_object.get(),false,ocad_object.num_items,reinterpret_cast<const Generic::OcadCoord *>(ocad_object.coords));
         object = std::move(path_object);
+        LOG_F(INFO,"Path object with symbol %d imported",ocad_object.symbol);
     }
     if (symbol->IsPoint())
     {
-        std::cout << "Point" << std::endl;
         object = std::make_unique<PointObject>(symbol);
+        LOG_F(INFO,"Point object with symbol %d imported",ocad_object.symbol);
     }
     map_->AppendObject(std::move(object));
 }
@@ -161,7 +161,6 @@ void OcadImporter::ImportSymbol(const S& base)
 
 
     auto symbol = std::make_unique<Symbol>();
-    std::cout << "Symbol ID:" << base.sym_num << std::endl;
     if (SetupSymbol(symbol.get(), base))
     {
         symbol_index_.emplace(symbol->id(),symbol.get());
@@ -178,6 +177,19 @@ bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
         return false;
     symbol->id(base.sym_num);
 
+    if (base.object_type & SymbolTypePoint)
+    {
+        symbol->SetPoint(true);
+    }
+    else if (base.object_type & SymbolTypeLine)
+    {
+        symbol->SetPath(true);
+    }
+    else if (base.object_type & SymbolTypeArea)
+    {
+        symbol->SetArea(true);
+    }
+
     return true;
 }
 
@@ -193,6 +205,7 @@ void OcadImporter::FillPathCoords(PathObject* object, bool is_area, uint32_t num
         path[i] = ConvertOcadPoint(ocd_points[i]);
         SetPointFlags(path, i, is_area, ocd_points[i]);
     }
+    std::cout << num_points << std::endl;
 
     // For path objects, create closed parts where the position of the last point is equal to that of the first point
     if (object->type() == PathO)
@@ -237,6 +250,7 @@ void OcadImporter::FillPathCoords(PathObject* object, bool is_area, uint32_t num
             start = i + 1;
         }
     }
+    object->BuildCurve(path);
 }
 
 void OcadImporter::SetPointFlags(std::vector<OcadCoordinate>& object, uint32_t pos, bool is_area,

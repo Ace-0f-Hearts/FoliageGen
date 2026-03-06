@@ -42,7 +42,7 @@ namespace Ocad
 
             u32 size;
             u32 sym_num;
-            u8 type;
+            u8 object_type;
             u8 flags;
             u8 selected;
             u8 status;
@@ -149,4 +149,23 @@ namespace Ocad
     };
 }
 
+inline std::ostream& operator<<(std::ostream& os,Ocad::OcadTypesV11::BaseSymbol base)
+{
+    os
+    << "(" << base.size
+    << ";" << base.sym_num
+    << ";" << base.object_type
+    << ";" << base.flags
+    << ";" << base.selected
+    << ";" << base.status
+    << ";" << base.cs_mode
+    << ";" << base.cs_type
+    << ";" << base.cd_flags
+    << ";" << base.extent
+    << ";" << base.file_pos
+    << ";" << base.group
+    << ";" << base.num_colors
+    << ")";
+    return os;
+}
 #endif //OCAD_OCDTYPESV11_H

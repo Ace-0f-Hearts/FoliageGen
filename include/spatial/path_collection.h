@@ -17,7 +17,7 @@ namespace Spatial
     {
     public:
         [[nodiscard]] bool IsPointInsideArea(const Spatial2D& point) const;
-        void FromBezier(OrienteeringPath& curve);
+        void FromBezier(std::vector<OcadCoordinate>& curve);
     };
 }
 

@@ -2,6 +2,8 @@
 // Created by ace on 2026-02-20.
 //
 
+#include <cassert>
+#include <iostream>
 #include <spatial/poly_path.h>
 
 #include "utility/not_implemented_error.h"
@@ -38,15 +40,20 @@ bool Spatial::PolyPath::IsPointOnPath(Spatial2D point)
     throw NotImplementedError();
 }
 
-int Spatial::PolyPath::FromBezier(OrienteeringPath& curve, int path_start)
+size_t Spatial::PolyPath::FromBezier(std::vector<OcadCoordinate>& curve, size_t path_start)
 {
-    int path_end = curve.size() - 1;
+    assert(curve.size() > 1);
 
+    auto path_end = curve.size();
+
+
+    std::cout << path_end << std::endl;
     points_.emplace_back(curve[path_start].coordinate());
-    for (int i = path_start + 1; i < path_end; i++)
+    for (size_t i = path_start + 1; i < path_end; i++)
     {
-        if (curve[i-1].IsCurveStart());
+        if (curve[i-1].IsCurveStart())
         {
+            assert(i+2  <= path_end);
             CurveToPath(curve[i-1].coordinate(),curve[i].coordinate(),curve[i+1].coordinate(),curve[i+2].coordinate());
             i += 2;
         }

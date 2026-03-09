@@ -19,15 +19,6 @@ ObjectType Object::type() const
     return this->type_;
 }
 
-const std::vector<Spatial2D>& Object::coordinates() const
-{
-    return this->coordinates_.points();
-}
-
-std::vector<Spatial2D>& Object::coordinates()
-{
-    return this->coordinates_.points();
-}
 
 const Symbol* Object::symbol() const
 {

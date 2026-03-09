@@ -102,7 +102,7 @@ const std::vector<Spatial2D>& Spatial::PolyPath::points() const
     return points_;
 }
 
-int Spatial::PolyPath::size() const
+size_t Spatial::PolyPath::size() const
 {
     return points_.size();
 }
@@ -117,12 +117,40 @@ void Spatial::PolyPath::AppendPoint(const Spatial2D& point)
     points_.emplace_back(point);
 }
 
-void Spatial::PolyPath::RemovePoint(const Spatial2D& point)
+bool Spatial::PolyPath::RemovePoint(const Spatial2D& point)
 {
-    points_.erase(std::ranges::find(points_.begin(), points_.end(), point));
+    auto it = std::ranges::find(points_.begin(), points_.end(),point);
+    auto found = it != points_.end();
+    if (found)
+        points_.erase(it);
+    return found;
 }
 
 std::vector<Spatial2D>& Spatial::PolyPath::points()
 {
     return points_;
+}
+
+Spatial::PolyPath::PolyPath(const std::vector<Spatial2D>& points) : points_(points)
+{
+}
+
+float Spatial::PolyPath::Length() const
+{
+    float length = 0;
+    for (size_t i = 0; i < points_.size() - 1; i++)
+        length += points_[i].DistanceTo(points_[i+1]);
+
+    return length;
+}
+
+Spatial::PolyPath::PolyPath(const Spatial2D& point)
+{
+    Clear();
+    points_.push_back(point);
+}
+
+void Spatial::PolyPath::Clear()
+{
+    points_.clear();
 }

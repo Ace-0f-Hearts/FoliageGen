@@ -199,7 +199,7 @@ void OcadImporter::FillPathCoords(PathObject* object, bool is_area, uint32_t num
 {
     std::vector<OcadCoordinate> path;
     path.resize(num_points);
-    object->coordinates().reserve(num_points);
+    // object->coordinates().reserve(num_points);
 
     for (auto i = 0u; i < num_points; i++)
     {
@@ -211,7 +211,7 @@ void OcadImporter::FillPathCoords(PathObject* object, bool is_area, uint32_t num
     if (object->type() == PathO)
     {
         size_t start = 0;
-        for (size_t i = 0; i < object->coordinates().size(); ++i)
+        for (size_t i = 0; i < path.size(); ++i)
         {
             if (!path[i].IsHolePoint() && i < path.size() - 1)
                 continue;

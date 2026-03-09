@@ -10,9 +10,11 @@ PointObject::PointObject(Symbol* symbol) : Object(symbol)
 
 void PointObject::SetPoint(const Spatial2D& point)
 {
-    this->coordinates().clear();
-    this->coordinates().push_back(point);
+    coordinates_.Clear();
+    coordinates_.SetPoint(point);
 }
+
+
 
 PointObject::~PointObject()
 {

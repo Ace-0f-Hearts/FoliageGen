@@ -17,7 +17,7 @@ bool PathObject::IsClosed() const
 
 bool PathObject::Contains(const Spatial2D& point) const
 {
-    return std::ranges::find(coordinates_.points().begin(), coordinates_.points().end(), point) != coordinates_.points().end();
+    return Contains(point);
 }
 
 
@@ -28,7 +28,7 @@ bool PathObject::IsIntersecting(const Spatial2D& point)
 
 void PathObject::BuildCurve(std::vector<OcadCoordinate>& curve)
 {
-    coordinates_.FromBezier(curve,0);
+    coordinates_.FromBezier(curve);
 }
 
 void PathObject::SetCurve(const std::vector<Spatial2D>& points)
@@ -48,5 +48,6 @@ void PathObject::RemovePoint(const Spatial2D& point)
 
 void PathObject::Clear()
 {
-    coordinates_.points().clear();
+    coordinates_.Clear();
 }
+

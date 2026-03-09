@@ -7,6 +7,8 @@
 
 #include "symbol.h"
 #include <spatial/poly_path.h>
+#include "spatial/path_collection.h"
+
 
 using namespace Orienteering;
 
@@ -41,15 +43,14 @@ namespace Orienteering
         virtual bool IsIntersecting(const Spatial2D& point) = 0;
 
         [[nodiscard]] ObjectType type() const;
-        [[nodiscard]] const std::vector<Spatial2D>& coordinates() const;
-        [[nodiscard]] std::vector<Spatial2D>& coordinates();
+
         [[nodiscard]] const Symbol* symbol() const;
 
     protected:
         float angle_;
         ObjectType type_;
         Symbol* symbol_;
-        Spatial::PolyPath coordinates_;
+        Spatial::PathCollection coordinates_;
     };
 
 }

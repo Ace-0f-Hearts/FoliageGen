@@ -13,19 +13,35 @@ namespace Spatial
     class PolyPath
     {
     public:
+        PolyPath() = default;
+
+        /** Used for initializing objects with multiple points, like paths and areas
+         *
+         * @param points
+         */
+        PolyPath(const std::vector<Spatial2D>& points);
+
+
+        /** Used for initializing objects consisting of a single point.
+         *
+         * @param point
+         */
+        PolyPath(const Spatial2D& point);
 
         void SetPoints(const std::vector<Spatial2D>& points);
         void AppendPoint(const Spatial2D& point);
-        void RemovePoint(const Spatial2D& point);
+        bool RemovePoint(const Spatial2D& point);
         [[nodiscard]] bool IsClosed() const;
         [[nodiscard]] bool IsPointInsideArea(Spatial2D point) const;
         bool IsPointOnPath(Spatial2D point);
+        [[nodiscard]] float Length() const;
 
+        void Clear();
 
         size_t FromBezier(std::vector<OcadCoordinate>& curve, size_t path_start);
         [[nodiscard]] const std::vector<Spatial2D>& points() const;
         [[nodiscard]] std::vector<Spatial2D>& points();
-        [[nodiscard]] int size() const;
+        [[nodiscard]] size_t size() const;
 
     private:
         void CurveToPath(const Spatial2D& c0, const Spatial2D& c1, const Spatial2D& c2, const Spatial2D& c3);

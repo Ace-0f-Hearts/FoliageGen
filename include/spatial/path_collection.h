@@ -13,11 +13,31 @@ namespace Spatial
     /**
     * Holds a collection of paths that are used to handle areas which might have holes in them
     */
-    class PathCollection : public std::pmr::vector<Spatial::PolyPath>
+    class PathCollection
     {
     public:
         [[nodiscard]] bool IsPointInsideArea(const Spatial2D& point) const;
+        [[nodiscard]] bool IsPointOnPath(const Spatial2D& point) const;
+        [[nodiscard]] bool Contains(const Spatial2D& point) const;
+
+        void SetPoints(const std::vector<Spatial2D>& points);
+        void SetPoint(const Spatial2D& points);
+        void AppendPoint(const Spatial2D& point);
+        void RemovePoint(const Spatial2D& point);
+        void Clear();
+
         void FromBezier(std::vector<OcadCoordinate>& curve);
+
+        [[nodiscard]] const std::vector<PolyPath>& paths() const;
+        std::vector<PolyPath>& paths();
+    private:
+        float kMax_segment_length = 10000000.0f;
+
+        void Subdivide();
+        void SubdividePart(PolyPath& path);
+
+
+        std::vector<PolyPath> paths_;
     };
 }
 

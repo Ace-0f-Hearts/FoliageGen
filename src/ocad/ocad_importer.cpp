@@ -107,9 +107,8 @@ void OcadImporter::ImportObjects(OcadFile<F>& file)
 {
     for (auto object : file.objects())
     {
-        std::cout << *object.entity << std::endl;
-        ImportObject(*object.entity);
 
+        ImportObject(*object.entity);
     }
 }
 

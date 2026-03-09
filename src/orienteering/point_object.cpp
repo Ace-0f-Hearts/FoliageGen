@@ -16,20 +16,12 @@ void PointObject::SetPoint(const Spatial2D& point)
 
 
 
-PointObject::~PointObject()
-{
-}
+PointObject::~PointObject() = default;
 
 bool PointObject::IsIntersecting(const Spatial2D& point)
 {
     return false;
 }
 
-PointObject::~PointObject()
-{
-}
 
-bool PointObject::IsIntersecting(const Spatial2D& point)
-{
-    return false;
-}
+

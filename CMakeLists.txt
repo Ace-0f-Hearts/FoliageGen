@@ -32,11 +32,23 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
 endif ()
 
-find_package(loguru CONFIG REQUIRED)
-message(STATUS "loguru included")
+include(FetchContent)
 
-find_package(jsoncpp REQUIRED)
-message(STATUS "JSONCpp included")
+FetchContent_Declare(
+        loguru
+        GIT_REPOSITORY https://github.com/emilk/loguru
+        GIT_TAG v2.1.0
+        FIND_PACKAGE_ARGS NAMES loguru
+)
+
+FetchContent_Declare(
+        jsoncpp
+        GIT_REPOSITORY https://github.com/open-source-parsers/jsoncpp
+        GIT_TAG 1.9.6
+        FIND_PACKAGE_ARGS NAMES jsoncpp
+)
+FetchContent_MakeAvailable(loguru)
+FetchContent_MakeAvailable(jsoncpp)
 
 add_subdirectory(src)
 add_subdirectory(apps)

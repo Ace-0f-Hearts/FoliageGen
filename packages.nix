@@ -12,8 +12,6 @@
 , loguru
 , doxygen
 , boost
-, libx11
-, imagemagick
 , libz
 , libpng
 , libjpeg
@@ -44,7 +42,6 @@ stdenv.mkDerivation {
     libpkgconf
     pkg-config
     cimg
-    libx11
     loguru
     doxygen
     boost

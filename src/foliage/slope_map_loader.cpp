@@ -15,5 +15,5 @@ SlopeMap SlopeMapLoader::LoadHeightMap(const HeightMap& map)
         }
     }
 
-    return SlopeMap(img);
+    return {img};
 }

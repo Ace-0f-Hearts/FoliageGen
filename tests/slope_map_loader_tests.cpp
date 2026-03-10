@@ -20,12 +20,17 @@ BOOST_AUTO_TEST_CASE(Test_SlopeMapLoader_LoadingFromHeightMap)
 {
     CImg<> img = CImg<>(11,11,1,1,0);
 
+    float i_offset = 2;
+    float j_offset = 2;
+
     for (int i = 2; i < 9; ++i)
     {
         for (int j = 2; j < 9; ++j)
         {
-            img(i,j) = i * 0.025f + j * 0.025f;
+            img(i,j) = i_offset * 0.025f + j_offset * 0.025f;
+            j_offset += 1.f;
         }
+        i_offset += 1.f;
     }
     HeightMap hm(img,1,2.5);
 

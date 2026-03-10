@@ -38,13 +38,14 @@ namespace Spatial
 
         void Clear();
 
-        size_t FromBezier(std::vector<OcadCoordinate>& curve, size_t path_start);
+        size_t FromBezier(std::vector<OcadCoordinate>& curve, size_t path_start, float bezier_error = kBezier_error, float max_segment_length = kBezier_max_segment_length);
         [[nodiscard]] const std::vector<Spatial2D>& points() const;
         [[nodiscard]] std::vector<Spatial2D>& points();
         [[nodiscard]] size_t size() const;
 
     private:
-        void CurveToPath(const Spatial2D& c0, const Spatial2D& c1, const Spatial2D& c2, const Spatial2D& c3);
+        void CurveToPath(const Spatial2D& c0, const Spatial2D& c1, const Spatial2D& c2, const Spatial2D& c3, float bezier_error = kBezier_error , float
+                                    max_segment_length = kBezier_max_segment_length);
         std::vector<Spatial2D> points_;
     };
 }

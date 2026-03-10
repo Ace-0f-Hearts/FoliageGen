@@ -40,7 +40,7 @@ bool Spatial::PolyPath::IsPointOnPath(Spatial2D point)
     throw NotImplementedError();
 }
 
-size_t Spatial::PolyPath::FromBezier(std::vector<OcadCoordinate>& curve, size_t path_start = 0)
+size_t Spatial::PolyPath::FromBezier(std::vector<OcadCoordinate>& curve, size_t path_start = 0, float bezier_error, float max_segment_length)
 {
     assert(curve.size() > 1);
 
@@ -53,7 +53,7 @@ size_t Spatial::PolyPath::FromBezier(std::vector<OcadCoordinate>& curve, size_t 
         {
 
             assert(i+2  <= path_end);
-            CurveToPath(curve[i-1].coordinate(),curve[i].coordinate(),curve[i+1].coordinate(),curve[i+2].coordinate());
+            CurveToPath(curve[i-1].coordinate(),curve[i].coordinate(),curve[i+1].coordinate(),curve[i+2].coordinate(),bezier_error,max_segment_length);
             i += 2;
 
         }
@@ -70,7 +70,7 @@ size_t Spatial::PolyPath::FromBezier(std::vector<OcadCoordinate>& curve, size_t 
     return path_end; // We return the index indicating the end of this distinct path
 }
 
-void Spatial::PolyPath::CurveToPath(const Spatial2D& c0, const Spatial2D& c1,const Spatial2D& c2, const Spatial2D& c3)
+void Spatial::PolyPath::CurveToPath(const Spatial2D& c0, const Spatial2D& c1, const Spatial2D& c2, const Spatial2D& c3, float bezier_error, float max_segment_length)
 {
     auto c12 = (c1 + c2) / 2.f;
 
@@ -79,7 +79,7 @@ void Spatial::PolyPath::CurveToPath(const Spatial2D& c0, const Spatial2D& c1,con
     auto poly_line_len = c1.DistanceTo(c0) + c2.DistanceTo(c1) + c3.DistanceTo(c2);
 
     // std::cout<< "Recursion" <<std::endl;
-    if (start_to_end_len < kBezier_max_segment_length && poly_line_len - start_to_end_len < kBezier_error)
+    if (start_to_end_len < max_segment_length && poly_line_len - start_to_end_len < bezier_error)
     {
         points_.emplace_back(c12);
     }
@@ -91,8 +91,8 @@ void Spatial::PolyPath::CurveToPath(const Spatial2D& c0, const Spatial2D& c1,con
         const Spatial2D c123 = (c12 + c23) * 0.5f;
         const Spatial2D c0123 = (c012 + c123) * 0.5f;
         
-        CurveToPath(c0,c01,c012,c0123);
-        CurveToPath(c0123,c123,c23,c3);
+        CurveToPath(c0,c01,c012,c0123, bezier_error, max_segment_length);
+        CurveToPath(c0123,c123,c23,c3, bezier_error, max_segment_length);
     }
 
 }

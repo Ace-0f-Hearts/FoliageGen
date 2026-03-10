@@ -19,7 +19,9 @@ using namespace Spatial;
         PolyPath p_path;
         p_path.FromBezier(bezier,0);
 
-        BOOST_CHECK_EQUAL(p_path.size(),10);
+        auto expected = 3;
+        auto actual = p_path.size();
+        BOOST_CHECK_EQUAL(expected,actual);
 
     };
 

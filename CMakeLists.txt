@@ -77,7 +77,7 @@ FETCHCONTENT_DECLARE(
         GIT_REPOSITORY https://github.com/boostorg/boost
 #        GIT_SUBMODULES libs/test libs/heap
         GIT_SHALLOW TRUE
-#        FIND_PACKAGE_ARGS
+        FIND_PACKAGE_ARGS COMPONENTS unit_test_framework REQUIRED
 )
 
 FetchContent_MakeAvailable(loguru jsoncpp libjpeg-turbo libpng CImg Boost)

@@ -1,7 +1,6 @@
-set(Boost_USE_STATIC_LIBS OFF)
-ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
+
+#find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+#include_directories(${Boost_INCLUDE_DIRS})
 
 
 file(GLOB TEST_FILES
@@ -20,7 +19,8 @@ add_custom_command(TARGET tests POST_BUILD
 target_compile_features(tests PRIVATE cxx_std_17)
 target_link_libraries(tests PRIVATE
     foliage_generator_lib
-    ${Boost_LIBRARIES}
+#    ${Boost_LIBRARIES}
+    Boost::unit_test_framework
     loguru::loguru
 )
 

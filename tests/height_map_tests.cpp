@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(Test_HeightMap_NormalQueryReturnsVectorPointingUp,*utf::tol
     auto hm = HeightMap(img,1,2);
 
     auto expected = Vec3(0.f,-1.f,0.f);
-    auto actual = hm.NormalAt({5,5});
+    auto actual = hm.NormalVecAt({5,5});
 
     BOOST_TEST(actual == expected);
 }
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(Test_HeightMap_NormalQueryReturnsCorrectVector,*utf::tolera
 
 
     auto expected = Normalize(Vec3(-M_PI / 4,-M_PI / 4,0.f));
-    auto actual = hm.NormalAt({6,5});
+    auto actual = hm.NormalVecAt({6,5});
 
     BOOST_TEST(actual.x == expected.x);
     BOOST_TEST(actual.y == expected.y);

@@ -14,7 +14,7 @@ Dim2 TextureMap::Dim() const
 
 float TextureMap::At(Coord2 const& coord) const
 {
-    return map()(coord.x, coord.y);
+    return map_(coord.x, coord.y);
 }
 
 CImg<> TextureMap::map() const

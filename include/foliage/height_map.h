@@ -25,7 +25,7 @@ public:
     HeightMap(const CImg<>& height_map, float horizontal_scale = 1, float vertical_scale = 1);
     [[nodiscard]] float HeightAt(Coord2 coord) const;
     [[nodiscard]] float SlopeAt(Coord2 coord) const;
-    [[nodiscard]] Vec3 NormalAt(Coord2 coord) const;
+    [[nodiscard]] Vec3 NormalVecAt(Coord2 coord) const;
 
     [[nodiscard]] float vertical_scale() const;
     [[nodiscard]] float horizontal_scale() const;

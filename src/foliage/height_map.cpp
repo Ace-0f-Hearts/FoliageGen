@@ -19,7 +19,7 @@ float HeightMap::HeightAt(const Coord2 coord) const
     return At(coord) * vertical_scale();
 }
 
-Vec3 HeightMap::NormalAt(const Coord2 coord) const
+Vec3 HeightMap::NormalVecAt(const Coord2 coord) const
 {
     const auto h11 = HeightAt(coord);
     const auto h01 = HeightAtOrValue(coord - Coord2{1,0},h11);
@@ -34,9 +34,10 @@ Vec3 HeightMap::NormalAt(const Coord2 coord) const
 
 float HeightMap::SlopeAt(const Coord2 coord) const
 {
-    const Vec3 normal = NormalAt(coord);
+    const Vec3 normal = NormalVecAt(coord);
     const float dot = Dot(normal,kUp) / (Normal(normal) * Normal(kUp));
-    return std::fabsf(std::acosf(dot) - static_cast<float>(M_PI / 2.0f));
+    const float result = std::fabs(std::acosf(dot) - static_cast<float>(M_PI / 2.0f));
+    return result;
 }
 
 float HeightMap::HeightAtOrValue(const Coord2 coord, const float value) const

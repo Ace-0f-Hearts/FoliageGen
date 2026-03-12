@@ -13,5 +13,5 @@ class SlopeMapLoader
 {
 public:
     SlopeMapLoader() = default;
-    static SlopeMap LoadHeightMap(const HeightMap& map);
+    static SlopeMap Load(const HeightMap& map);
 };

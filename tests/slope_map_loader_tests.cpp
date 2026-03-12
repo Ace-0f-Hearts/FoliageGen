@@ -34,15 +34,19 @@ BOOST_AUTO_TEST_CASE(Test_SlopeMapLoader_LoadingFromHeightMap)
     }
     HeightMap hm(img,1,2.5);
 
-    auto sm = SlopeMapLoader::LoadHeightMap(hm);
+    auto sm = SlopeMapLoader::Load(hm);
 
-    for (int i = 0; i < hm.Dim().x; ++i)
+    auto expected_equal = true;
+    auto actually_equal = true;
+
+    for (int i = 0; i < hm.Dim().x && actually_equal; ++i)
     {
-        for (int j = 0; j < hm.Dim().y; ++j)
+        for (int j = 0; j < hm.Dim().y && actually_equal; ++j)
         {
-            BOOST_TEST(hm.SlopeAt({i,j}) == sm.SlopeAt({i,j}));
+            actually_equal = hm.SlopeAt({i,j}) == sm.SlopeAt({i,j});
         }
     }
+    BOOST_TEST(expected_equal == actually_equal);
 
 }
 

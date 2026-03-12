@@ -3,11 +3,13 @@
 //
 
 #include <loguru.hpp>
+#include <utility>
 #include <ocad/file_format.h>
 
-FileFormat::FileFormat()
+FileFormat::FileFormat(std::string name,std::vector<string> extensions) : name_(name),extensions_(std::move(extensions))
 {
 }
+
 
 std::unique_ptr<Importer> FileFormat::CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::Map> map) const
 {
@@ -29,4 +31,9 @@ std::vector<FileFormat::string> FileFormat::extensions() const
 std::vector<FileFormat::string> FileFormat::extensions()
 {
     return extensions_;
+}
+
+bool FileFormat::operator==(const FileFormat& format) const
+{
+    return format.name_== this->name_;
 }

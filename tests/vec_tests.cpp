@@ -14,7 +14,7 @@ namespace tt = boost::test_tools;
 
 BOOST_AUTO_TEST_SUITE(VecTestsSuite,*utf::tolerance(std::numeric_limits<float>::epsilon()))
 
-    BOOST_AUTO_TEST_CASE(Test_Vec3_AdditionBehavesAsExpected)
+BOOST_AUTO_TEST_CASE(Test_Vec3_AdditionBehavesAsExpected)
 {
     auto x = Vec3(0,1,2);
     auto y = Vec3(2,1,0);

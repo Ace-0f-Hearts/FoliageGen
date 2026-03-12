@@ -6,13 +6,12 @@
 
 #include "ocad/ocad_importer.h"
 
-OcadFileFormat::OcadFileFormat()
+OcadFileFormat::OcadFileFormat() : FileFormat("OCD",{".ocd"})
 {
 }
 
 OcadFileFormat::~OcadFileFormat()
-{
-}
+= default;
 
 std::unique_ptr<Importer> OcadFileFormat::CreateImporter(std::filesystem::path path, std::shared_ptr<Map> map) const
 {
@@ -25,3 +24,5 @@ bool OcadFileFormat::UnderstandsHeader(const char* buffer, int total_read) const
         return true;
     return false;
 }
+
+

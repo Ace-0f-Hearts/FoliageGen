@@ -13,7 +13,8 @@ class FileFormat
 {
     using string = std::string;
 public:
-    FileFormat();
+    FileFormat() = delete;
+    FileFormat(std::string name,std::vector<string> extensions);
     virtual ~FileFormat() = default;
 
     [[nodiscard]] virtual std::unique_ptr<Importer> CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::Map> map) const;
@@ -21,9 +22,12 @@ public:
 
     [[nodiscard]] std::vector<string> extensions() const;
     std::vector<string> extensions();
-private:
+    bool operator==(const FileFormat& format) const;
+
+protected:
 
     std::vector<string> extensions_;
+    std::string name_;
 };
 
 #endif //PROCEDURALFOLIAGEGENERATOR_FILE_FORMAT_H

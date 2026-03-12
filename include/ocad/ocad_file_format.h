@@ -6,14 +6,13 @@
 #define PROCEDURALFOLIAGEGENERATOR_OCAD_FILE_FORMAT_H
 #include "file_format.h"
 
-class OcadFileFormat : FileFormat
+class OcadFileFormat : public FileFormat
 {
 public:
     OcadFileFormat();
     ~OcadFileFormat() override;
-    std::unique_ptr<Importer>  CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::Map> map) const override;
+    [[nodiscard]] std::unique_ptr<Importer>  CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::Map> map) const override;
     bool UnderstandsHeader(const char *buffer, int total_read) const override;
-
 };
 
 #endif //PROCEDURALFOLIAGEGENERATOR_OCAD_FILE_FORMAT_H

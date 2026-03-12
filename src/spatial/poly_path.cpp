@@ -154,3 +154,20 @@ void Spatial::PolyPath::Clear()
 {
     points_.clear();
 }
+
+
+std::vector<Spatial2D> Spatial::PolyPath::TrimToLength(float length)
+{
+    float current_length = 0;
+    auto idx = 0u;
+    for (; idx < points_.size() - 1 && current_length <= length; idx++)
+    {
+        current_length += points_[idx].DistanceTo(points_[idx+1]);
+
+    }
+
+    points_ = {points_.begin(), points_.begin() + idx};
+    std::vector<Spatial2D> rest = {points().begin() + idx, points().end()};
+
+    return rest;
+}

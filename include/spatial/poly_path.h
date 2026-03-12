@@ -35,6 +35,7 @@ namespace Spatial
         [[nodiscard]] bool IsPointInsideArea(Spatial2D point) const;
         bool IsPointOnPath(Spatial2D point);
         [[nodiscard]] float Length() const;
+        [[nodiscard]] std::vector<Spatial2D> TrimToLength(float length);
 
         void Clear();
 

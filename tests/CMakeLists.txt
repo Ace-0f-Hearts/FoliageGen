@@ -1,7 +1,4 @@
-
-#find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
-
 
 file(GLOB TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/*.c

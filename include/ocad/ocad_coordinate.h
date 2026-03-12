@@ -29,8 +29,8 @@ public:
 
 
     OcadCoordinate() = default;
-    OcadCoordinate(Spatial2D& coordinate, uint8_t flags = 0);
-    OcadCoordinate(Spatial2D coordinate, uint8_t flags = 0);
+    OcadCoordinate(Spatial::Spatial2D& coordinate, uint8_t flags = 0);
+    OcadCoordinate(Spatial::Spatial2D coordinate, uint8_t flags = 0);
     OcadCoordinate(const OcadCoordinate& coordinate);
 
     void SetClosePoint(bool set);
@@ -39,7 +39,7 @@ public:
     void SetGapPoint(bool set);
     void SetDashPoint(bool set);
 
-    [[nodiscard]] bool PositionEqualTo(const Spatial2D& coordinate ) const;
+    [[nodiscard]] bool PositionEqualTo(const Spatial::Spatial2D& coordinate ) const;
     [[nodiscard]] bool PositionEqualTo(const OcadCoordinate& rhs) const;
 
     void SetFlags(uint8_t flags);
@@ -51,11 +51,11 @@ public:
 
     uint8_t& flags();
     uint8_t flags() const;
-    Spatial2D& coordinate();
-    Spatial2D coordinate() const;
+    Spatial::Spatial2D& coordinate();
+    Spatial::Spatial2D coordinate() const;
 
 private:
-    Spatial2D coordinate_;
+    Spatial::Spatial2D coordinate_;
     uint8_t flags_ = 0;
 };
 

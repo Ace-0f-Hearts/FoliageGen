@@ -12,18 +12,32 @@ PathObject::PathObject(Symbol* symbol) : Object(symbol)
 
 bool PathObject::IsClosed() const
 {
-    return false;
+    return coordinates_.IsClosed();
+
 }
 
-bool PathObject::Contains(const Spatial2D& point) const
+bool PathObject::Contains(const Spatial::Spatial2D& point) const
 {
-    return Contains(point);
+    return coordinates_.Contains(point);
 }
 
 
-bool PathObject::IsIntersecting(const Spatial2D& point)
+bool PathObject::IsIntersecting(const Spatial::Spatial2D& point)
 {
-    return false;
+    auto intersecting = false;
+    switch (type())
+    {
+    case AreaO:
+        intersecting = coordinates_.IsPointInsideArea(point);
+        break;
+    case PathO:
+        intersecting = coordinates_.IsPointOnPath(point,distance_threshold_);
+        break;
+    default:
+        throw std::logic_error("Type of path object is corrupted.");
+    }
+
+    return intersecting;
 }
 
 void PathObject::BuildCurve(std::vector<OcadCoordinate>& curve)
@@ -31,17 +45,17 @@ void PathObject::BuildCurve(std::vector<OcadCoordinate>& curve)
     coordinates_.FromBezier(curve);
 }
 
-void PathObject::SetCurve(const std::vector<Spatial2D>& points)
+void PathObject::SetCurve(const std::vector<Spatial::Spatial2D>& points)
 {
     coordinates_.SetPoints(points);
 }
 
-void PathObject::AppendPoint(const Spatial2D& point)
+void PathObject::AppendPoint(const Spatial::Spatial2D& point)
 {
     coordinates_.AppendPoint(point);
 }
 
-void PathObject::RemovePoint(const Spatial2D& point)
+void PathObject::RemovePoint(const Spatial::Spatial2D& point)
 {
     coordinates_.RemovePoint(point);
 }

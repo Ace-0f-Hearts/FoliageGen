@@ -291,7 +291,7 @@ OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_poi
         flags |= OcadCoordinate::DashPoint;
     }
 
-    result.coordinate() = Spatial2D({x, y});
+    result.coordinate() = Spatial::Spatial2D({x, y});
     result.flags() = flags;
     return result;
 }

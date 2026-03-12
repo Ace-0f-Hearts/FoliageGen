@@ -5,9 +5,9 @@
 #include <random>
 #include <foliage/generation.h>
 
-std::vector<Spatial2D> Generation::InitializeSeeds(const BoundingBox2D& bounding_box, float density, Object& object)
+std::vector<Spatial::Spatial2D> Generation::InitializeSeeds(const BoundingBox2D& bounding_box, float density, Object& object)
 {
-    std::vector<Spatial2D> seeds;
+    std::vector<Spatial::Spatial2D> seeds;
     auto offset = density / 2;
 
     int seeds_per_row = bounding_box.width() / density;
@@ -26,7 +26,7 @@ std::vector<Spatial2D> Generation::InitializeSeeds(const BoundingBox2D& bounding
     return seeds;
 }
 
-void Generation::Randomize(std::vector<Spatial2D>& seeds, float density, float factor,float angle)
+void Generation::Randomize(std::vector<Spatial::Spatial2D>& seeds, float density, float factor,float angle)
 {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -37,15 +37,15 @@ void Generation::Randomize(std::vector<Spatial2D>& seeds, float density, float f
     for (auto& seed: seeds)
     {
 
-        auto offset = Spatial2D({dist(gen),dist(gen)});
+        auto offset = Spatial::Spatial2D({dist(gen),dist(gen)});
         seed += offset;
     }
 
 }
 
-std::vector<Spatial2D> Generation::Cull(std::vector<Spatial2D>& seeds, Spatial::PathCollection area)
+std::vector<Spatial::Spatial2D> Generation::Cull(std::vector<Spatial::Spatial2D>& seeds, Spatial::SegmentedPath area)
 {
-    std::vector<Spatial2D> candidates;
+    std::vector<Spatial::Spatial2D> candidates;
 
     for (auto& seed: seeds)
     {

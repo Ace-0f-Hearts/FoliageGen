@@ -4,11 +4,11 @@
 
 #include <ocad/ocad_coordinate.h>
 
-OcadCoordinate::OcadCoordinate(Spatial2D coordinate, uint8_t flags) : coordinate_(coordinate), flags_(flags)
+OcadCoordinate::OcadCoordinate(Spatial::Spatial2D coordinate, uint8_t flags) : coordinate_(coordinate), flags_(flags)
 {
 }
 
-OcadCoordinate::OcadCoordinate(Spatial2D& coordinate, uint8_t flags) : coordinate_(coordinate), flags_(flags)
+OcadCoordinate::OcadCoordinate(Spatial::Spatial2D& coordinate, uint8_t flags) : coordinate_(coordinate), flags_(flags)
 {
 }
 
@@ -46,7 +46,7 @@ void OcadCoordinate::SetCurveStart(const bool set)
         flags_ &= ~CurveStart;
 }
 
-bool OcadCoordinate::PositionEqualTo(const Spatial2D& coordinate) const
+bool OcadCoordinate::PositionEqualTo(const Spatial::Spatial2D& coordinate) const
 {
     return coordinate_ == coordinate;
 }
@@ -71,7 +71,7 @@ uint8_t& OcadCoordinate::flags()
     return flags_;
 }
 
-Spatial2D& OcadCoordinate::coordinate()
+Spatial::Spatial2D& OcadCoordinate::coordinate()
 {
     return coordinate_;
 }
@@ -81,7 +81,7 @@ uint8_t OcadCoordinate::flags() const
     return flags_;
 }
 
-Spatial2D OcadCoordinate::coordinate() const
+Spatial::Spatial2D OcadCoordinate::coordinate() const
 {
     return coordinate_;
 }

@@ -8,7 +8,7 @@ PointObject::PointObject(Symbol* symbol) : Object(symbol)
     type_ = PointO;
 }
 
-void PointObject::SetPoint(const Spatial2D& point)
+void PointObject::SetPoint(const Spatial::Spatial2D& point)
 {
     coordinates_.Clear();
     coordinates_.SetPoint(point);
@@ -18,7 +18,7 @@ void PointObject::SetPoint(const Spatial2D& point)
 
 PointObject::~PointObject() = default;
 
-bool PointObject::IsIntersecting(const Spatial2D& point)
+bool PointObject::IsIntersecting(const Spatial::Spatial2D& point)
 {
     return false;
 }

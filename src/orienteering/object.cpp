@@ -33,11 +33,11 @@ void Object::SetType(ObjectType type)
 {
 }
 
-void Object::AppendCoordinate(Spatial2D coordinate)
+void Object::AppendCoordinate(Spatial::Spatial2D coordinate)
 {
 }
 
-Object::Object() : type_(), symbol_(nullptr)
+Object::Object() : type_(), symbol_(nullptr), bounding_box_()
 {
 }
 
@@ -46,7 +46,7 @@ bool Object::HasSymbolOf(const Symbol* symbol) const
     return this->symbol_ == symbol;
 }
 
-Object::Object(const Object&& other)  noexcept : type_(other.type_), symbol_(other.symbol_)
+Object::Object(const Object&& other)  noexcept : type_(other.type_), symbol_(other.symbol_), bounding_box_()
 {
 }
 
@@ -68,4 +68,8 @@ Object& Object::operator=(Object&& other) noexcept
         this->symbol_ = other.symbol_;
     }
     return *this;
+}
+
+void Object::UpdateBoundingBox()
+{
 }

@@ -31,7 +31,7 @@ bool Quadtree::Distance::operator>(const Distance& rhs) const
 }
 
 
-Quadtree::Quadtree(std::vector<Spatial2D> const& data, BoundingBox2D const& bounding_box) :  node_count_(1), item_count_(data.size()), data_(data), index_tree_(kMax_tree_size,kDefault_value)
+Quadtree::Quadtree(std::vector<Spatial::Spatial2D> const& data, BoundingBox2D const& bounding_box) :  node_count_(1), item_count_(data.size()), data_(data), index_tree_(kMax_tree_size,kDefault_value)
 {
     data_.push_back(bounding_box.min());
     data_.push_back(bounding_box.max());
@@ -55,7 +55,7 @@ int Quadtree::root_idx() const
     return item_count();
 }
 
-int Quadtree::FindNearestNeighbour(const Spatial2D& query_point) const
+int Quadtree::FindNearestNeighbour(const Spatial::Spatial2D& query_point) const
 {
     int closest_neighbour_idx = root_idx();
 
@@ -171,8 +171,8 @@ bool Quadtree::operator==(const Quadtree& rhs) const
 
     BoundingBox2D  lhs_node = {data_[item_count()],data_[item_count()+1]};
     BoundingBox2D  rhs_node = {rhs.data_[item_count()],rhs.data_[item_count()+1]};
-    Spatial2D const* lhs_item;
-    Spatial2D const* rhs_item;
+    Spatial::Spatial2D const* lhs_item;
+    Spatial::Spatial2D const* rhs_item;
 
 
     matching_counter += lhs_node == rhs_node ? 1 : 0;
@@ -211,13 +211,13 @@ bool Quadtree::operator==(const Quadtree& rhs) const
     return equal;
 }
 
-void Quadtree::BulkLoad(const std::vector<Spatial2D>& data)
+void Quadtree::BulkLoad(const std::vector<Spatial::Spatial2D>& data)
 {
     auto bounding_box = BoundingBox2D({data_[item_count()],data_[item_count() + 1]});
     BulkLoad(data,bounding_box);
 }
 
-void Quadtree::BulkLoad(const std::vector<Spatial2D>& data, const BoundingBox2D& bounding_box)
+void Quadtree::BulkLoad(const std::vector<Spatial::Spatial2D>& data, const BoundingBox2D& bounding_box)
 {
     Clean();
     data_.push_back(bounding_box.min());
@@ -248,7 +248,7 @@ int Quadtree::depth()
     return std::ceil((d >> 2) / 4.0f) + 1;
 }
 
-std::vector<int> Quadtree::FindNearestNeighbours(const Spatial2D& point, const unsigned int amount) const
+std::vector<int> Quadtree::FindNearestNeighbours(const Spatial::Spatial2D& point, const unsigned int amount) const
 {
 
     int node_idx = root_idx();
@@ -347,7 +347,7 @@ std::vector<int> Quadtree::FindNearestNeighbours(const Spatial2D& point, const u
     return k_nodes_indices;
 }
 
-Spatial2D Quadtree::operator[](int idx) const
+Spatial::Spatial2D Quadtree::operator[](int idx) const
 {
     if (idx >= item_count_)
     {
@@ -363,7 +363,7 @@ void Quadtree::AllocateItemIndex(const int index_to_allocate, const BoundingBox2
 
     auto bbox = bounding_box;
 
-    Spatial2D centroid = bbox.GetCentroid();
+    Spatial::Spatial2D centroid = bbox.GetCentroid();
 
 
     int parent_idx = kRoot;
@@ -423,7 +423,7 @@ void Quadtree::AllocateNode(int tree_idx, BoundingBox2D& bbox)
     data_.push_back(bbox.max());
 }
 
-void Quadtree::Load(const std::vector<Spatial2D> data,const BoundingBox2D& bounding_box)
+void Quadtree::Load(const std::vector<Spatial::Spatial2D> data,const BoundingBox2D& bounding_box)
 {
     for (size_t i = 0; i < data.size(); i++)
     {

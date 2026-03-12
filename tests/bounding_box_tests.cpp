@@ -13,16 +13,16 @@ BOOST_AUTO_TEST_SUITE(BoundingBoxTestingSuite)
 
 BOOST_AUTO_TEST_CASE(Test_BoundingBox_InvalidConstruction)
 {
-    BOOST_CHECK_THROW(BoundingBox(Spatial2D({2,2}),Spatial2D({1,2})), std::invalid_argument);
+    BOOST_CHECK_THROW(BoundingBox(Spatial::Spatial2D({2,2}),Spatial::Spatial2D({1,2})), std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE(Test_BoundingBox2D_DistanceFromPointProducesExpectedDistance,*utf::tolerance(std::numeric_limits<float>::epsilon()))
 {
-    const Spatial2D p1 = {1,-5};
-    const Spatial2D p2 = {-3,-5};
-    const Spatial2D p3 = {-1,-2.4};
-    const Spatial2D p4 = {0,0.1};
-    BoundingBox2D bounding_box(Spatial2D{-1,-2.4},Spatial2D({2,2.9}));
+    const Spatial::Spatial2D p1 = {1,-5};
+    const Spatial::Spatial2D p2 = {-3,-5};
+    const Spatial::Spatial2D p3 = {-1,-2.4};
+    const Spatial::Spatial2D p4 = {0,0.1};
+    BoundingBox2D bounding_box(Spatial::Spatial2D{-1,-2.4},Spatial::Spatial2D({2,2.9}));
 
     const float exp1 = std::sqrt(2.6f * 2.6f);
     const float exp2 = std::sqrt(2.f*2.f + 2.6f * 2.6f);

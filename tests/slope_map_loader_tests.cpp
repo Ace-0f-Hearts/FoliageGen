@@ -13,12 +13,17 @@
 #include "foliage/height_map.h"
 #include "foliage/slope_map_loader.h"
 
+namespace utf = boost::unit_test;
+namespace tt = boost::test_tools;
+
+
+
 using namespace cimg_library;
 BOOST_AUTO_TEST_SUITE(SlopeMapLoaderTestSuite)
 
-BOOST_AUTO_TEST_CASE(Test_SlopeMapLoader_LoadingFromHeightMap)
+BOOST_AUTO_TEST_CASE(Test_SlopeMapLoader_LoadingFromHeightMap,*utf::tolerance(std::numeric_limits<float>::epsilon()))
 {
-    CImg<> img = CImg<>(11,11,1,1,0);
+    CImg<> img = CImg<>(11,11,1,1,0.f);
 
     float i_offset = 2;
     float j_offset = 2;
@@ -43,11 +48,9 @@ BOOST_AUTO_TEST_CASE(Test_SlopeMapLoader_LoadingFromHeightMap)
     {
         for (int j = 0; j < hm.Dim().y && actually_equal; ++j)
         {
-            actually_equal = hm.SlopeAt({i,j}) == sm.SlopeAt({i,j});
+            BOOST_TEST(actually_equal = hm.SlopeAt({i,j}) == sm.SlopeAt({i,j}));
         }
     }
-    BOOST_TEST(expected_equal == actually_equal);
-
 }
 
 BOOST_AUTO_TEST_SUITE_END()

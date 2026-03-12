@@ -4,24 +4,44 @@
 #include <algorithm>
 #include <filesystem>
 #include <boost/beast/http/field.hpp>
-#include <spatial/path_collection.h>
+#include <spatial/segmented_path.h>
 
 #include "utility/not_implemented_error.h"
 
 
-bool Spatial::PathCollection::IsPointInsideArea(const Spatial2D& point) const
+bool Spatial::SegmentedPath::IsPointInsideArea(const Spatial2D& point) const
 {
     // Assumption is that: all areas/holes are fully inside the other areas that are to the left
     bool inside = false;
-    for (auto path : paths())
+
+    if (IsClosed())
     {
-        if (path.IsPointInsideArea(point))
-            inside = !inside;
+        for (auto path : paths())
+        {
+            if (path.IsPointInsideArea(point))
+                inside = !inside;
+        }
     }
+    else
+        throw std::logic_error("Path does not define area, but queried about area intersection!");
+
     return inside;
 }
 
-void Spatial::PathCollection::FromBezier(std::vector<OcadCoordinate>& curve)
+bool Spatial::SegmentedPath::IsPointOnPath(const Spatial2D& point, float distance_threshold) const
+{
+    for (auto path : paths())
+    {
+        if (path.IsPointOnPath(point,distance_threshold))
+        {
+            return true;
+        }
+    }
+    return false;
+
+}
+
+void Spatial::SegmentedPath::FromBezier(std::vector<OcadCoordinate>& curve)
 {
     size_t path_start = 0u;
     size_t size = curve.size();
@@ -37,22 +57,18 @@ void Spatial::PathCollection::FromBezier(std::vector<OcadCoordinate>& curve)
     Subdivide();
 }
 
-bool Spatial::PathCollection::IsPointOnPath(const Spatial2D& point) const
-{
-    throw NotImplementedError();
-}
 
-const std::vector<Spatial::PolyPath>& Spatial::PathCollection::paths() const
+const std::vector<Spatial::PolyPath>& Spatial::SegmentedPath::paths() const
 {
     return paths_;
 }
 
-std::vector<Spatial::PolyPath>& Spatial::PathCollection::paths()
+std::vector<Spatial::PolyPath>& Spatial::SegmentedPath::paths()
 {
     return paths_;
 }
 
-void Spatial::PathCollection::Subdivide(float max_segment_length)
+void Spatial::SegmentedPath::Subdivide(float max_segment_length)
 {
     auto new_paths = std::vector<Spatial::PolyPath>();
     for (auto & path : paths())
@@ -65,7 +81,7 @@ void Spatial::PathCollection::Subdivide(float max_segment_length)
     }
 }
 
-bool Spatial::PathCollection::Contains(const Spatial2D& point) const
+bool Spatial::SegmentedPath::Contains(const Spatial2D& point) const
 {
     return std::ranges::any_of(paths().begin(), paths().end(), [&point](const auto& path)
     {
@@ -73,7 +89,7 @@ bool Spatial::PathCollection::Contains(const Spatial2D& point) const
     });
 }
 
-void Spatial::PathCollection::SetPoints(const std::vector<Spatial2D>& points)
+void Spatial::SegmentedPath::SetPoints(const std::vector<Spatial2D>& points)
 {
 
     Clear();
@@ -81,13 +97,13 @@ void Spatial::PathCollection::SetPoints(const std::vector<Spatial2D>& points)
     Subdivide();
 }
 
-void Spatial::PathCollection::AppendPoint(const Spatial2D& point)
+void Spatial::SegmentedPath::AppendPoint(const Spatial2D& point)
 {
     paths().back().AppendPoint(point);
     SubdividePart(paths().back());
 }
 
-void Spatial::PathCollection::RemovePoint(const Spatial2D& point)
+void Spatial::SegmentedPath::RemovePoint(const Spatial2D& point)
 {
     for (auto& path : paths())
     {
@@ -96,20 +112,25 @@ void Spatial::PathCollection::RemovePoint(const Spatial2D& point)
     }
 }
 
-void Spatial::PathCollection::Clear()
+void Spatial::SegmentedPath::Clear()
 {
     paths().clear();
 }
 
-Spatial::PolyPath Spatial::PathCollection::SubdividePart(PolyPath& path, const float max_segment_length)
+Spatial::PolyPath Spatial::SegmentedPath::SubdividePart(PolyPath& path, const float max_segment_length)
 {
 
     auto rest = path.TrimToLength(max_segment_length);
     return {rest};
 }
 
-void Spatial::PathCollection::SetPoint(const Spatial2D& point)
+void Spatial::SegmentedPath::SetPoint(const Spatial2D& point)
 {
     Clear();
     paths().emplace_back(point);
+}
+
+bool Spatial::SegmentedPath::IsClosed() const
+{
+    return paths_.front().points().front() == paths_.back().points().back();
 }

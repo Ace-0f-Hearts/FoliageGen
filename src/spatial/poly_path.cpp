@@ -2,10 +2,12 @@
 // Created by ace on 2026-02-20.
 //
 
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <spatial/poly_path.h>
 
+#include "botanics_math/vec.h"
 #include "utility/not_implemented_error.h"
 
 bool Spatial::PolyPath::IsClosed() const
@@ -35,9 +37,22 @@ bool Spatial::PolyPath::IsPointInsideArea(Spatial2D point) const
     return inside;
 }
 
-bool Spatial::PolyPath::IsPointOnPath(Spatial2D point)
+bool Spatial::PolyPath::IsPointOnPath(Spatial2D point, float threshold_radius) const
 {
-    throw NotImplementedError();
+    auto prev = points_.front();
+    for (size_t point_idx = 1; point_idx < points_.size(); point_idx++)
+    {
+        auto next = points_[point_idx];
+
+        Spatial2D pa = point - prev;
+        Spatial2D ba = next - prev;
+
+        float h = std::clamp(Dot(pa,ba)/Dot(ba,ba),0.0f,1.0f);
+        if (Spatial::Length(pa - ba * h) < threshold_radius)
+            return true;
+    }
+    return false;
+
 }
 
 size_t Spatial::PolyPath::FromBezier(std::vector<OcadCoordinate>& curve, size_t path_start = 0, float bezier_error, float max_segment_length)
@@ -97,7 +112,7 @@ void Spatial::PolyPath::CurveToPath(const Spatial2D& c0, const Spatial2D& c1, co
 
 }
 
-const std::vector<Spatial2D>& Spatial::PolyPath::points() const
+const std::vector<Spatial::Spatial2D>& Spatial::PolyPath::points() const
 {
     return points_;
 }
@@ -126,7 +141,7 @@ bool Spatial::PolyPath::RemovePoint(const Spatial2D& point)
     return found;
 }
 
-std::vector<Spatial2D>& Spatial::PolyPath::points()
+std::vector<Spatial::Spatial2D>& Spatial::PolyPath::points()
 {
     return points_;
 }
@@ -156,7 +171,7 @@ void Spatial::PolyPath::Clear()
 }
 
 
-std::vector<Spatial2D> Spatial::PolyPath::TrimToLength(float length)
+std::vector<Spatial::Spatial2D> Spatial::PolyPath::TrimToLength(float length)
 {
     float current_length = 0;
     auto idx = 0u;

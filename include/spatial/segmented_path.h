@@ -13,12 +13,14 @@ namespace Spatial
     /**
     * Holds a collection of paths that are used to handle areas which might have holes in them
     */
-    class PathCollection
+    class SegmentedPath
     {
     public:
         [[nodiscard]] bool IsPointInsideArea(const Spatial2D& point) const;
-        [[nodiscard]] bool IsPointOnPath(const Spatial2D& point) const;
+        [[nodiscard]] bool IsPointOnPath(const Spatial2D& point, float distance_threshold = 0.f) const;
+
         [[nodiscard]] bool Contains(const Spatial2D& point) const;
+        [[nodiscard]] bool IsClosed() const;
 
         void SetPoints(const std::vector<Spatial2D>& points);
         void SetPoint(const Spatial2D& points);

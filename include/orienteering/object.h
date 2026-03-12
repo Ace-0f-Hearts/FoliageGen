@@ -7,7 +7,9 @@
 
 #include "symbol.h"
 #include <spatial/poly_path.h>
-#include "spatial/path_collection.h"
+
+#include "spatial/bounding_box.h"
+#include "spatial/segmented_path.h"
 
 
 using namespace Orienteering;
@@ -18,8 +20,9 @@ namespace Orienteering
 
     enum ObjectType
     {
-        PointO = 0,
-        PathO = 1
+        PointO = 0x1,
+        PathO = 0x2,
+        AreaO = 0x4,
     };
 
     class Object
@@ -36,21 +39,27 @@ namespace Orienteering
 
         void SetSymbol(Symbol* symbol);
         void SetType(ObjectType type);
-        void AppendCoordinate(Spatial2D coordinate);
+        void AppendCoordinate(Spatial::Spatial2D coordinate);
 
         bool HasSymbolOf(const Symbol* symbol) const;
 
-        virtual bool IsIntersecting(const Spatial2D& point) = 0;
+        virtual bool IsIntersecting(const Spatial::Spatial2D& point) = 0;
 
         [[nodiscard]] ObjectType type() const;
 
         [[nodiscard]] const Symbol* symbol() const;
 
     protected:
+        void UpdateBoundingBox();
+
         float angle_;
         ObjectType type_;
         Symbol* symbol_;
-        Spatial::PathCollection coordinates_;
+
+        float distance_threshold_ = 0.f;
+        Spatial::SegmentedPath coordinates_;
+        BoundingBox2D bounding_box_;
+
     };
 
 }

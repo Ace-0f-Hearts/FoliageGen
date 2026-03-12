@@ -22,7 +22,7 @@ class HeightMap : public TextureMap
 {
 public:
     HeightMap() = delete;
-    HeightMap(const CImg<>& height_map, float horizontal_scale = 1, float vertical_scale = 1);
+    HeightMap(const CImg<>& height_map, float horizontal_scale = 1.f, float vertical_scale = 1.f);
     [[nodiscard]] float HeightAt(Coord2 coord) const;
     [[nodiscard]] float SlopeAt(Coord2 coord) const;
     [[nodiscard]] Vec3 NormalVecAt(Coord2 coord) const;
@@ -33,8 +33,8 @@ public:
 private:
     [[nodiscard]] float HeightAtOrValue(Coord2 coord, float value) const;
 
-    float horizontal_scale_;
-    float vertical_scale_;
+    float horizontal_scale_ = 1.f;
+    float vertical_scale_ = 1.f;
 };
 
 #endif //PROCEDURALFOLIAGEGENERATOR_HEIGHT_MAP_H

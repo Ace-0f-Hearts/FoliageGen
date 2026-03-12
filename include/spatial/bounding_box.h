@@ -17,23 +17,23 @@ class BoundingBox
 {
 public:
 
-    BoundingBox() = delete;
-    BoundingBox(SpatialCoordinate<D> min, SpatialCoordinate<D> max);
+    BoundingBox();
+    BoundingBox(Spatial::SpatialCoordinate<D> min, Spatial::SpatialCoordinate<D> max);
 
     BoundingBox(const BoundingBox& other);
 
     float GetRadiusOfSmallestBoundingCircle();
 
-    [[nodiscard]] BoundingBox GetSubspaceOf(SpatialCoordinate<D> point) const;
+    [[nodiscard]] BoundingBox GetSubspaceOf(Spatial::SpatialCoordinate<D> point) const;
 
-    [[nodiscard]] SpatialCoordinate<D> GetCentroid() const;
+    [[nodiscard]] Spatial::SpatialCoordinate<D> GetCentroid() const;
 
     /**
      * Calculated shortest distance to point using Euclidean distance
      * @param point
      * @return
      */
-    [[nodiscard]] float DistanceTo(SpatialCoordinate<D> point) const;
+    [[nodiscard]] float DistanceTo(Spatial::SpatialCoordinate<D> point) const;
 
     [[nodiscard]] BoundingBox GetSubspaceByIndex(int index) const;
 
@@ -41,14 +41,14 @@ public:
     [[nodiscard]] float diagonal() const;
     [[nodiscard]] float width() const;
     [[nodiscard]] float height() const;
-    [[nodiscard]] SpatialCoordinate<D> max() const;
-    [[nodiscard]] SpatialCoordinate<D> min() const;
+    [[nodiscard]] Spatial::SpatialCoordinate<D> max() const;
+    [[nodiscard]] Spatial::SpatialCoordinate<D> min() const;
 
     bool operator==(const BoundingBox& rhs) const;
 
 private:
-    SpatialCoordinate<D> max_;
-    SpatialCoordinate<D> min_;
+    Spatial::SpatialCoordinate<D> max_;
+    Spatial::SpatialCoordinate<D> min_;
 
 };
 
@@ -70,8 +70,14 @@ float BoundingBox<D>::height() const
     return max_[1] - min_[1];
 }
 
+
 template <unsigned int D>
-BoundingBox<D>::BoundingBox(SpatialCoordinate<D> min, SpatialCoordinate<D> max): max_{max}, min_{min}
+BoundingBox<D>::BoundingBox() : max_(), min_()
+{
+}
+
+template <unsigned int D>
+BoundingBox<D>::BoundingBox(Spatial::SpatialCoordinate<D> min, Spatial::SpatialCoordinate<D> max): max_{max}, min_{min}
 {
     for (int i = 0; i < D; i++)
     {
@@ -97,7 +103,7 @@ float BoundingBox<D>::GetRadiusOfSmallestBoundingCircle()
 }
 
 template <unsigned int D>
-BoundingBox<D> BoundingBox<D>::GetSubspaceOf(SpatialCoordinate<D> point) const
+BoundingBox<D> BoundingBox<D>::GetSubspaceOf(Spatial::SpatialCoordinate<D> point) const
 {
     auto origin = GetCentroid();
 
@@ -125,13 +131,13 @@ BoundingBox<D> BoundingBox<D>::GetSubspaceOf(SpatialCoordinate<D> point) const
 }
 
 template <unsigned int D>
-SpatialCoordinate<D> BoundingBox<D>::GetCentroid() const
+Spatial::SpatialCoordinate<D> BoundingBox<D>::GetCentroid() const
 {
     return (max_ + min_) / 2;
 }
 
 template <unsigned int D>
-float BoundingBox<D>::DistanceTo(SpatialCoordinate<D> point) const
+float BoundingBox<D>::DistanceTo(Spatial::SpatialCoordinate<D> point) const
 {
     float result = 0;
     for (int i = 0; i < D; i++)
@@ -174,11 +180,11 @@ unsigned int BoundingBox<D>::dim()
 { return D;}
 
 template <unsigned int D>
-SpatialCoordinate<D> BoundingBox<D>::max() const
+Spatial::SpatialCoordinate<D> BoundingBox<D>::max() const
 {return max_;}
 
 template <unsigned int D>
-SpatialCoordinate<D> BoundingBox<D>::min() const
+Spatial::SpatialCoordinate<D> BoundingBox<D>::min() const
 {return min_;}
 
 template <unsigned int D>

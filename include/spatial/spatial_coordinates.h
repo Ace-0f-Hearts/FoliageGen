@@ -11,7 +11,9 @@
 #include <ostream>
 #include <vector>
 
-template <unsigned int N>
+namespace Spatial
+{
+    template <unsigned int N>
 class SpatialCoordinate
 {
 public:
@@ -55,7 +57,6 @@ public:
 private:
     float coordinates_[N];
 };
-
 
 template <unsigned int N>
 SpatialCoordinate<N>::SpatialCoordinate() : coordinates_{}
@@ -233,11 +234,20 @@ float SpatialCoordinate<N>::DistanceTo(SpatialCoordinate other) const
 using Spatial2D = SpatialCoordinate<2>;
 using Spatial3D = SpatialCoordinate<3>;
 
+float Dot(Spatial2D const& a, Spatial2D const& b);
+float Dot(Spatial3D const& a, Spatial3D const& b);
+// Spatial2D Cross(Spatial2D const& a, Spatial2D const& b);
+Spatial3D Cross(Spatial3D const& a, Spatial3D const& b);
+float Length(Spatial2D const& a);
+float Length(Spatial3D const& a);
+
 inline std::ostream& operator<<(std::ostream& os,const Spatial2D& spatial)
 {
     os << spatial[0] << ":" << spatial[1];
     return os;
 }
+}
+
 
 
 #endif //PROCEDURALFOLIAGEGENERATOR_SPATIAL_COORDINATES_H

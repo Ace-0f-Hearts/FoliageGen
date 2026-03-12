@@ -8,7 +8,7 @@
 
 struct Seed
 {
-    Spatial2D coordinate;
+    Spatial::Spatial2D coordinate;
     float scale;
 };
 

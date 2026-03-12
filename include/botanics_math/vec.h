@@ -7,6 +7,7 @@
 #include <iosfwd>
 #include <ostream>
 
+
 struct Vec2
 {
     float x;

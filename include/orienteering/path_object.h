@@ -18,13 +18,13 @@ namespace Orienteering
         ~PathObject() override = default;
 
         [[nodiscard]] bool IsClosed() const;
-        [[nodiscard]] bool Contains(const Spatial2D& point) const;
-        bool IsIntersecting(const Spatial2D& point) override;
+        [[nodiscard]] bool Contains(const Spatial::Spatial2D& point) const;
+        bool IsIntersecting(const Spatial::Spatial2D& point) override;
 
         void BuildCurve(std::vector<OcadCoordinate>& curve);
-        void SetCurve(const std::vector<Spatial2D>& points);
-        void AppendPoint(const Spatial2D& point);
-        void RemovePoint(const Spatial2D& point);
+        void SetCurve(const std::vector<Spatial::Spatial2D>& points);
+        void AppendPoint(const Spatial::Spatial2D& point);
+        void RemovePoint(const Spatial::Spatial2D& point);
         void Clear();
     };
 }

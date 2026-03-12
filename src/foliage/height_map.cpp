@@ -3,6 +3,7 @@
 //
 #include <cassert>
 #include <iostream>
+#include <loguru.hpp>
 #include <foliage/height_map.h>
 
 HeightMap::HeightMap(const CImg<>& height_map, const float horizontal_scale, const float vertical_scale): TextureMap(height_map), horizontal_scale_(horizontal_scale), vertical_scale_(vertical_scale)
@@ -29,21 +30,27 @@ Vec3 HeightMap::NormalVecAt(const Coord2 coord) const
 
     const auto du = Normalize(Vec3(2.f,h21 - h01,0.f));
     const auto dv = Normalize(Vec3(0.f,h12 - h10,2.f));
-    return Normalize(Cross(du,dv));
+    const auto cross = Cross(du,dv);
+
+    return Normalize(cross);
 }
 
 float HeightMap::SlopeAt(const Coord2 coord) const
 {
     const Vec3 normal = NormalVecAt(coord);
-    const float dot = Dot(normal,kUp) / (Normal(normal) * Normal(kUp));
+    const float dot = Dot(normal,kUp);
+    assert(!std::isnan(dot));
     const float result = std::fabs(std::acosf(dot) - static_cast<float>(M_PI / 2.0f));
     return result;
 }
 
 float HeightMap::HeightAtOrValue(const Coord2 coord, const float value) const
 {
-    if (coord.x < 0 || coord.y < 0 || coord.x > map().width() || coord.y > map().height())
+    if (coord.x < 0 || coord.y < 0 || coord.x >= map().width() || coord.y >= map().height())
+    {
         return value;
+    }
+
 
     return At(coord) * vertical_scale();
 }

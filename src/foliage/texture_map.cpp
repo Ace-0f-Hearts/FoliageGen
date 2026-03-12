@@ -1,8 +1,8 @@
 //
 // Created by ace on 2026-02-26.
 //
+#include <cassert>
 #include <foliage/texture_map.h>
-
 TextureMap::TextureMap(const CImg<>& map) : map_(map)
 {
 }
@@ -14,7 +14,12 @@ Dim2 TextureMap::Dim() const
 
 float TextureMap::At(Coord2 const& coord) const
 {
-    return map_(coord.x, coord.y);
+    float value = map_(coord.x, coord.y);
+
+    assert(!std::isinf(value));
+    assert(!std::isnan(value));
+
+    return value;
 }
 
 CImg<> TextureMap::map() const

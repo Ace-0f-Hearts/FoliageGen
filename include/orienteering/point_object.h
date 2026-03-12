@@ -15,9 +15,9 @@ namespace Orienteering
     public:
         PointObject() = delete;
         PointObject(Symbol*);
-        void SetPoint(const Spatial2D& point);
+        void SetPoint(const Spatial::Spatial2D& point);
         ~PointObject() override;
-        bool IsIntersecting(const Spatial2D& point) override;
+        bool IsIntersecting(const Spatial::Spatial2D& point) override;
     protected:
     private:
     };

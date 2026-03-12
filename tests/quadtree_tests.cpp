@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_SUITE(QuadtreeCheckSuite)
 
 BOOST_AUTO_TEST_CASE(Test_Quadtree_InitialiazionWithZeroPoints)
 {
-    std::vector<Spatial2D> points = {};
+    std::vector<Spatial::Spatial2D> points = {};
     BoundingBox2D bounding_box = {{-2.2,-2.2},{2.1,2.1}};
     Quadtree quadtree(points, bounding_box);
 
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(Test_Quadtree_InitialiazionWithZeroPoints)
 
 BOOST_AUTO_TEST_CASE(Test_Quadtree_InitialiazionWithOnlyTwoLayers)
 {
-    std::vector<Spatial2D> points = {{1, 1}, {-1, -1},  {-2, 1}, };
+    std::vector<Spatial::Spatial2D> points = {{1, 1}, {-1, -1},  {-2, 1}, };
     BoundingBox2D bounding_box = {{-2.2,-2.2},{2.1,2.1}};
     Quadtree quadtree(points, bounding_box);
 
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(Test_Quadtree_InitialiazionWithOnlyTwoLayers)
 
 BOOST_AUTO_TEST_CASE(Test_Quadtree_InitializationWithOnlyThreeLayers)
 {
-    std::vector<Spatial2D> points = {{1, 1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
+    std::vector<Spatial::Spatial2D> points = {{1, 1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
     BoundingBox2D bounding_box = {{-2.2,-2.2},{2.1,2.1}};
     Quadtree quadtree(points, bounding_box);
 
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(Test_Quadtree_InitializationWithOnlyThreeLayers)
 
 BOOST_AUTO_TEST_CASE(Test_Quadtree_InitialiazionComplex)
 {
-    std::vector<Spatial2D> points = {{1.2, 1},{0.8,1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
+    std::vector<Spatial::Spatial2D> points = {{1.2, 1},{0.8,1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
     BoundingBox2D bounding_box = {{-2.2,-2.2},{2.1,2.1}};
     Quadtree quadtree(points, bounding_box);
     auto expected_number_of_nodes = 5;
@@ -82,8 +82,8 @@ BOOST_AUTO_TEST_CASE(Test_Quadtree_InitialiazionComplex)
 
 BOOST_AUTO_TEST_CASE(Test_Quadtree_Equality)
 {
-    const std::vector<Spatial2D> lhs_points = {{1.2, 1},{0.8,1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
-    const std::vector<Spatial2D> rhs_points = { {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7},{1.2, 1},{0.8,1}};
+    const std::vector<Spatial::Spatial2D> lhs_points = {{1.2, 1},{0.8,1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
+    const std::vector<Spatial::Spatial2D> rhs_points = { {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7},{1.2, 1},{0.8,1}};
     const BoundingBox2D lhs_bounding_box = {{-2.2,-2.2},{2.1,2.1}};
     const BoundingBox2D rhs_bounding_box = {{-2.2,-2.2},{2.1,2.1}};
     Quadtree lhs_quadtree(lhs_points, lhs_bounding_box);
@@ -95,12 +95,12 @@ BOOST_AUTO_TEST_CASE(Test_Quadtree_Equality)
 
 BOOST_AUTO_TEST_CASE(Test_Quadtree_FindClosestNeighbour)
 {
-    const std::vector<Spatial2D> points = {{1.2, 1},{0.8,1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
+    const std::vector<Spatial::Spatial2D> points = {{1.2, 1},{0.8,1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
     const BoundingBox2D bounding_box = {{-2.2,-2.2},{2.1,2.1}};
 
     Quadtree quadtree(points, bounding_box);
 
-    const Spatial2D query = {-2,1};
+    const Spatial::Spatial2D query = {-2,1};
 
     auto expected_neighbour_idx = 10;
     auto actual_neighbour_idx = quadtree.FindNearestNeighbour(query);
@@ -112,12 +112,12 @@ BOOST_AUTO_TEST_CASE(Test_Quadtree_FindClosestNeighbour)
 
 BOOST_AUTO_TEST_CASE(Test_Quadtree_FindClosestNeighbourDeeper)
 {
-    const std::vector<Spatial2D> points = {{1.2, 1},{0.8,1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
+    const std::vector<Spatial::Spatial2D> points = {{1.2, 1},{0.8,1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
     const BoundingBox2D bounding_box = {{-2.2,-2.2},{2.1,2.1}};
 
     Quadtree quadtree(points, bounding_box);
 
-    const Spatial2D query = {2,1};
+    const Spatial::Spatial2D query = {2,1};
 
     auto expected_neighbour_idx = 0;
     auto actual_neighbour_idx = quadtree.FindNearestNeighbour(query);
@@ -129,12 +129,12 @@ BOOST_AUTO_TEST_CASE(Test_Quadtree_FindClosestNeighbourDeeper)
 
 BOOST_AUTO_TEST_CASE(Test_Quadtree_FindClosestNeighbours)
 {
-    const std::vector<Spatial2D> points = {{1.2, 1},{0.8,1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
+    const std::vector<Spatial::Spatial2D> points = {{1.2, 1},{0.8,1}, {2, 1}, {1, 2}, {2, 2}, {-1, -1}, {-1, -2}, {-2, -1}, {-2, -2}, {-2, 1}, {-1, 1.7}};
     const BoundingBox2D bounding_box = {{-2.2,-2.2},{2.1,2.1}};
 
     Quadtree quadtree(points, bounding_box);
 
-    const Spatial2D query = {2,2};
+    const Spatial::Spatial2D query = {2,2};
 
     std::unordered_set<int> expected_neighbour_idx = {0,1,2,3};
     auto temp = quadtree.FindNearestNeighbours(query,4);

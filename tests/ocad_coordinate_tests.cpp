@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(Test_OcadCoordinate_FlagUnsetsCorrectly)
 
 BOOST_AUTO_TEST_CASE(Test_OcadCoordinate_FlagsSetsAtConstruction)
 {
-    OcadCoordinate point {Spatial2D({0,0}),OcadCoordinate::GapPoint | OcadCoordinate::ClosePoint | OcadCoordinate::HolePoint | OcadCoordinate::DashPoint | OcadCoordinate::CurveStart};
+    OcadCoordinate point {Spatial::Spatial2D({0,0}),OcadCoordinate::GapPoint | OcadCoordinate::ClosePoint | OcadCoordinate::HolePoint | OcadCoordinate::DashPoint | OcadCoordinate::CurveStart};
 
     BOOST_CHECK(point.IsClosePoint());
     BOOST_CHECK(point.IsCurveStart());

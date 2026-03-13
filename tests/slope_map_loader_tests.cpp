@@ -41,14 +41,13 @@ BOOST_AUTO_TEST_CASE(Test_SlopeMapLoader_LoadingFromHeightMap,*utf::tolerance(st
 
     auto sm = SlopeMapLoader::Load(hm);
 
-    auto expected_equal = true;
-    auto actually_equal = true;
+    auto slopes_are_equal = true;
 
-    for (int i = 0; i < hm.Dim().x && actually_equal; ++i)
+    for (int i = 0; i < hm.Dim().x && slopes_are_equal; ++i)
     {
-        for (int j = 0; j < hm.Dim().y && actually_equal; ++j)
+        for (int j = 0; j < hm.Dim().y && slopes_are_equal; ++j)
         {
-            BOOST_TEST(actually_equal = hm.SlopeAt({i,j}) == sm.SlopeAt({i,j}));
+            BOOST_TEST(slopes_are_equal = hm.SlopeAt({i,j}) == sm.SlopeAt({i,j}));
         }
     }
 }

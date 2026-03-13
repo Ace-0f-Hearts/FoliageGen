@@ -6,6 +6,10 @@
 #include <loguru.hpp>
 #include <foliage/height_map.h>
 
+#include "spatial/spatial_coordinates.h"
+
+using namespace Spatial;
+
 HeightMap::HeightMap(const CImg<>& height_map, const float horizontal_scale, const float vertical_scale): TextureMap(height_map), horizontal_scale_(horizontal_scale), vertical_scale_(vertical_scale)
 {
     if (height_map.width() < 1 || height_map.height() < 1)
@@ -20,7 +24,7 @@ float HeightMap::HeightAt(const Coord2 coord) const
     return At(coord) * vertical_scale();
 }
 
-Vec3 HeightMap::NormalVecAt(const Coord2 coord) const
+Spatial::Spatial3D HeightMap::NormalVecAt(const Coord2 coord) const
 {
     const auto h11 = HeightAt(coord);
     const auto h01 = HeightAtOrValue(coord - Coord2{1,0},h11);
@@ -28,8 +32,8 @@ Vec3 HeightMap::NormalVecAt(const Coord2 coord) const
     const auto h10 = HeightAtOrValue(coord - Coord2{0,1},h11);
     const auto h12 = HeightAtOrValue(coord + Coord2{0,1},h11);
 
-    const auto du = Normalize(Vec3(2.f,h21 - h01,0.f));
-    const auto dv = Normalize(Vec3(0.f,h12 - h10,2.f));
+    const auto du = Normalize(Spatial3D{2.f,h21 - h01,0.f});
+    const auto dv = Normalize(Spatial3D{0.f,h12 - h10,2.f});
     const auto cross = Cross(du,dv);
 
     return Normalize(cross);
@@ -37,7 +41,7 @@ Vec3 HeightMap::NormalVecAt(const Coord2 coord) const
 
 float HeightMap::SlopeAt(const Coord2 coord) const
 {
-    const Vec3 normal = NormalVecAt(coord);
+    const auto normal = NormalVecAt(coord);
     const float dot = Dot(normal,kUp);
     assert(!std::isnan(dot));
     const float result = std::fabs(std::acosf(dot) - static_cast<float>(M_PI / 2.0f));

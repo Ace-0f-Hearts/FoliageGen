@@ -35,9 +35,10 @@ void Object::SetType(ObjectType type)
 
 void Object::AppendCoordinate(Spatial::Spatial2D coordinate)
 {
+    UpdateBoundingBox();
 }
 
-Object::Object() : type_(), symbol_(nullptr), bounding_box_()
+Object::Object() : angle_(0), type_(), symbol_(nullptr), bounding_box_()
 {
 }
 
@@ -46,7 +47,7 @@ bool Object::HasSymbolOf(const Symbol* symbol) const
     return this->symbol_ == symbol;
 }
 
-Object::Object(const Object&& other)  noexcept : type_(other.type_), symbol_(other.symbol_), bounding_box_()
+Object::Object(const Object&& other)  noexcept : angle_(0), type_(other.type_), symbol_(other.symbol_), bounding_box_()
 {
 }
 
@@ -72,4 +73,5 @@ Object& Object::operator=(Object&& other) noexcept
 
 void Object::UpdateBoundingBox()
 {
+    bounding_box_ = coordinates_.ComputeBoundingBox();
 }

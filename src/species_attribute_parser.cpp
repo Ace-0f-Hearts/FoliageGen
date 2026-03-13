@@ -59,7 +59,6 @@ void SpeciesAttrParser::Open(const char* filename)
 
 void SpeciesAttrParser::Read()
 {
-
     sstream_ << data_file_.rdbuf();
     content_ = sstream_.str();
 }

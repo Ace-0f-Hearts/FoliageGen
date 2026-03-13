@@ -1,0 +1,9 @@
+[
+    {
+        "name": "oak",
+        "growth_radius": [1,5],
+        "elevation": [200,10,30],
+        "slope": [13,6,5],
+    }
+]
+

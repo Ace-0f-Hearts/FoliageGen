@@ -18,9 +18,9 @@ public:
     Importer(Importer&&) = delete;
 
     virtual ~Importer();
-    virtual void ReadFile() = 0;
     bool DoImport();
 protected:
+    virtual void ReadFile() = 0;
     virtual bool ImportImplementation();
 
     std::filesystem::path path_;

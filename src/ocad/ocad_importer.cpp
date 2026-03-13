@@ -119,30 +119,38 @@ void OcadImporter::ImportObject(const O& ocad_object)
     std::unique_ptr<Object> object;
 
     if (!symbol)
+    {
+        LOG_F(INFO,"Object's symbol not found in index");
         return;
+    }
 
     if (symbol->IsArea())
     {
         auto path_object = std::make_unique<PathObject>(symbol);
         //
-        LOG_F(INFO,"Area object with symbol %d imported",ocad_object.symbol);
         FillPathCoords(path_object.get(),true,ocad_object.num_items,reinterpret_cast<const Generic::OcadCoord *>(ocad_object.coords));
-
+        object = std::move(path_object);
+        LOG_F(INFO,"Area object with symbol %d imported",ocad_object.symbol);
     }
-
-    if (symbol->IsPath())
+    else if (symbol->IsPath())
     {
-        // std::cout << ocad_object.num_items << std::endl;
         auto path_object = std::make_unique<PathObject>(symbol);
         FillPathCoords(path_object.get(),false,ocad_object.num_items,reinterpret_cast<const Generic::OcadCoord *>(ocad_object.coords));
         object = std::move(path_object);
         LOG_F(INFO,"Path object with symbol %d imported",ocad_object.symbol);
     }
-    if (symbol->IsPoint())
+    else if (symbol->IsPoint())
     {
         object = std::make_unique<PointObject>(symbol);
         LOG_F(INFO,"Point object with symbol %d imported",ocad_object.symbol);
     }
+    else
+    {
+        LOG_F(INFO,"Object with irrelevant type found");
+        return;
+    }
+
+
     map_->AppendObject(std::move(object));
 }
 
@@ -177,20 +185,25 @@ bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
         return false;
     symbol->id(base.sym_num);
 
+    auto symbol_is_relevant = false;
+
     if (base.object_type & SymbolTypePoint)
     {
         symbol->SetPoint(true);
+        symbol_is_relevant = true;
     }
     else if (base.object_type & SymbolTypeLine)
     {
         symbol->SetPath(true);
+        symbol_is_relevant = true;
     }
     else if (base.object_type & SymbolTypeArea)
     {
         symbol->SetArea(true);
+        symbol_is_relevant = true;
     }
 
-    return true;
+    return symbol_is_relevant;
 }
 
 void OcadImporter::FillPathCoords(PathObject* object, bool is_area, uint32_t num_points,

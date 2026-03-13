@@ -4,28 +4,21 @@
 
 #ifndef GENERATOR_MAPPARSER_H
 #define GENERATOR_MAPPARSER_H
+#include <filesystem>
 #include <fstream>
 #include <iosfwd>
 #include <sstream>
 
+
+#include "orienteering/map.h"
+
 class MapParser
 {
-    using string = std::string;
 public:
-
-    void Run(const char*  filename);
-
+    MapParser(std::shared_ptr<Orienteering::Map> map);
+    void Run(const std::filesystem::path  filename);
 private:
-    void Read();
-    void Parse();
-    void Open(const char* filename);
-
-    void MatchFileFormat(const char* filename);
-
-    std::ostringstream sstream_;
-    std::ifstream data_file_;
-    string content_;
-
+    std::shared_ptr<Orienteering::Map> map_;
 };
 
 

@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include <orienteering/symbol.h>
+#include <orienteering/object.h>
 
 
 namespace Orienteering
@@ -30,18 +32,18 @@ namespace Orienteering
         Map() = default;
         ~Map() = default;
 
-        Map(const Map&) = delete;
+        Map(const Map&) = default;
 
         void AppendSymbol(std::unique_ptr<Symbol> symbol);
         void AppendObject(std::unique_ptr<Object> obj);
 
-        int GetSymbolOfTypeAmount();
-        int GetSymbolAmount();
-        int GetObjectAmount();
-        int GetObjectOfSymbolAmount();
+        [[nodiscard]] size_t GetSymbolOfTypeAmount(SymbolType type) const;
+        [[nodiscard]] size_t GetObjectOfTypeAmount(ObjectType type) const;
+        [[nodiscard]] size_t GetSymbolAmount() const;
+        [[nodiscard]] size_t GetObjectAmount() const;
+        [[nodiscard]] size_t GetObjectOfSymbolAmount(Symbol* symbol) const;
 
-        Symbol& GetSymbolById(int id);
-        Symbol& GetObjectById(int id);
+        Symbol* GetSymbolById(size_t id);
 
         void ClearSymbols();
         void ClearObjects();

@@ -23,6 +23,7 @@ namespace Orienteering
         PointO = 0x1,
         PathO = 0x2,
         AreaO = 0x4,
+        UnknownO = 0x8,
     };
 
     class Object

@@ -1,36 +1,38 @@
 //
 // Created by ace on 2026-01-08.
 //
-
-#include "map_parser.h"
-
 #include <loguru.hpp>
 
-void MapParser::Read()
-{
+#include "map_parser.h"
+#include "ocad/file_format_registry.h"
 
-    sstream_ << data_file_.rdbuf();
-    content_ = sstream_.str();
+MapParser::MapParser(std::shared_ptr<Orienteering::Map> map) : map_(map)
+{
 }
 
-void MapParser::Parse()
+void MapParser::Run(const std::filesystem::path filename)
 {
+    FileFormatRegistry registry;
 
-}
-
-void MapParser::Open(const char* filename)
-{
-    data_file_.open(filename);
-    if (!data_file_.is_open())
+    auto importer = registry.CreateImporter(filename,map_);
+    if (!importer->DoImport())
     {
-        LOG_F(ERROR,"%s could not be opened.",filename);
-        throw std::runtime_error("Could not open file " + string(filename));
+        LOG_F(ERROR, "Error occurred during import!");
+        throw std::runtime_error("Error at import of " + filename.string());
     }
-}
-
-void MapParser::Run(const char* filename)
-{
-    Open(filename);
-    Read();
+    else
+    {
+        LOG_F(INFO,"Import successful:\n\tNumber of symbols: %lu\n"
+                   "\tNumber of objects: %lu\n"
+                   "\t\tNumber of point objects: %lu\n"
+                   "\t\tNumber of path objects: %lu\n"
+                   "\t\tNumber of area objects: %lu",
+                   map_->GetSymbolAmount(),
+                   map_->GetObjectAmount(),
+                   map_->GetObjectOfTypeAmount(PointO),
+                   map_->GetObjectOfTypeAmount(PathO),
+                   map_->GetObjectOfTypeAmount(AreaO)
+                   );
+    }
 
 }

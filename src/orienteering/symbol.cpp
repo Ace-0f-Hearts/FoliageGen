@@ -3,7 +3,6 @@
 //
 #include "../../include/orienteering/symbol.h"
 
-#include <assert.h>
 #include <iostream>
 
 

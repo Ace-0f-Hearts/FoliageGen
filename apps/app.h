@@ -18,22 +18,26 @@
  */
 class App
 {
-    using string = std::string;
+
 public:
     App() = delete;
-    App(string , string );
+    App(std::filesystem::path path_to_description_file, std::filesystem::path path_to_map_file);
     App(const App &);
     ~App();
     void Run();
 private:
-    const string descriptor_file_path_ = string();
-    const string map_file_path_ = string();
-    string output_file_path_ = string();
+    const std::filesystem::path descriptor_file_path_;
+    const std::filesystem::path map_file_path_;
+    const std::filesystem::path height_map_file_path_;
+
+    std::filesystem::path output_file_path_;
 
     GeneratedDataWriter writer_;
     JsonBuilder json_builder_;
     SpeciesAttrParser species_attr_parser_;
+    std::shared_ptr<Orienteering::Map> map_;
     MapParser map_parser_;
+
 
     void Init();
     void Generate();

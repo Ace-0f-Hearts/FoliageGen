@@ -2,6 +2,7 @@
 // Created by ace on 2026-01-28.
 //
 #include <algorithm>
+#include <cassert>
 #include <ranges>
 #include <orienteering/map.h>
 #include <orienteering/object.h>
@@ -12,41 +13,64 @@
 
 void Map::AppendSymbol(std::unique_ptr<Symbol> symbol)
 {
+    assert(symbol.get());
     symbols_.push_back(std::move(symbol));
 }
 
 void Map::AppendObject(std::unique_ptr<Object> obj)
 {
+    assert(obj.get());
     objects_.push_back(std::move(obj));
 }
 
-int Orienteering::Map::GetSymbolOfTypeAmount()
+size_t Orienteering::Map::GetSymbolOfTypeAmount(SymbolType type) const
 {
-    return -1; //TODO: Implement
+    auto predicate = [type](const std::unique_ptr<Symbol>& symbol) -> bool {return symbol->flags() & type;};
+
+    return std::ranges::count_if(symbols_,predicate);
 }
 
-int Orienteering::Map::GetSymbolAmount()
+size_t Map::GetObjectOfTypeAmount(ObjectType type) const
+{
+    auto predicate = [type](const std::unique_ptr<Object>& object) -> bool
+    {
+        assert(object.get());
+        return object->type() == type;
+    };
+
+    return std::ranges::count_if(objects_,predicate);
+}
+
+size_t Orienteering::Map::GetSymbolAmount() const
 {
     return symbols_.size();
 }
 
-int Orienteering::Map::GetObjectAmount()
+size_t Orienteering::Map::GetObjectAmount() const
 {
     return objects_.size();
 }
 
-int Orienteering::Map::GetObjectOfSymbolAmount()
+size_t Orienteering::Map::GetObjectOfSymbolAmount(Symbol* symbol) const
 {
-    return -1; //TODO: Implement
+    auto predicate = [symbol](const std::unique_ptr<Object>& object) -> bool {return object->symbol() == symbol;};
+
+    return std::ranges::count_if(objects_,predicate);
 }
 
-Orienteering::Symbol& Orienteering::Map::GetSymbolById(int id)
+Symbol* Orienteering::Map::GetSymbolById(size_t id)
 {
+    auto predicate = [id](const std::unique_ptr<Symbol>& symbol) -> bool {return symbol->id() == id;};
+    auto symbol = std::ranges::find_if(symbols_,predicate);
+
+    if (symbol != symbols_.end())
+    {
+        return symbol->get();
+    }
+    return nullptr;
 }
 
-Orienteering::Symbol& Orienteering::Map::GetObjectById(int id)
-{
-}
+
 
 void Orienteering::Map::ClearSymbols()
 {

@@ -43,21 +43,25 @@ bool PathObject::IsIntersecting(const Spatial::Spatial2D& point)
 void PathObject::BuildCurve(std::vector<OcadCoordinate>& curve)
 {
     coordinates_.FromBezier(curve);
+    UpdateBoundingBox();
 }
 
 void PathObject::SetCurve(const std::vector<Spatial::Spatial2D>& points)
 {
     coordinates_.SetPoints(points);
+    UpdateBoundingBox();
 }
 
 void PathObject::AppendPoint(const Spatial::Spatial2D& point)
 {
     coordinates_.AppendPoint(point);
+    UpdateBoundingBox();
 }
 
 void PathObject::RemovePoint(const Spatial::Spatial2D& point)
 {
     coordinates_.RemovePoint(point);
+    UpdateBoundingBox();
 }
 
 void PathObject::Clear()

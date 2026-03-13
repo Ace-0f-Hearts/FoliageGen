@@ -5,6 +5,7 @@
 #define PROCEDURALFOLIAGEGENERATOR_PATH_PART_H
 #include <vector>
 
+#include "bounding_box.h"
 #include "poly_path.h"
 
 
@@ -22,6 +23,8 @@ namespace Spatial
         [[nodiscard]] bool Contains(const Spatial2D& point) const;
         [[nodiscard]] bool IsClosed() const;
 
+
+        BoundingBox<2> ComputeBoundingBox() const;
         void SetPoints(const std::vector<Spatial2D>& points);
         void SetPoint(const Spatial2D& points);
         void AppendPoint(const Spatial2D& point);

@@ -7,7 +7,6 @@
 #include <iostream>
 #include <spatial/poly_path.h>
 
-#include "botanics_math/vec.h"
 #include "utility/not_implemented_error.h"
 
 bool Spatial::PolyPath::IsClosed() const

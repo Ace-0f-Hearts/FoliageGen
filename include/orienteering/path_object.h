@@ -19,8 +19,18 @@ namespace Orienteering
 
         [[nodiscard]] bool IsClosed() const;
         [[nodiscard]] bool Contains(const Spatial::Spatial2D& point) const;
+        /**
+         * Used for querying intersections with points. Depending on whether the path object designates an area or not, the intersection will account to the actual area of the path, or the area that's surrounded by it.
+         * @param point
+         * @return
+         */
         bool IsIntersecting(const Spatial::Spatial2D& point) override;
 
+
+        /**
+         * Computes a path consisting of poly lines from a series of coordinates representing a Bezier spline.
+         * @param curve
+         */
         void BuildCurve(std::vector<OcadCoordinate>& curve);
         void SetCurve(const std::vector<Spatial::Spatial2D>& points);
         void AppendPoint(const Spatial::Spatial2D& point);

@@ -130,6 +130,39 @@ void Spatial::SegmentedPath::SetPoint(const Spatial2D& point)
     paths().emplace_back(point);
 }
 
+BoundingBox<2> Spatial::SegmentedPath::ComputeBoundingBox() const
+{
+    Spatial2D max, min = paths().front().points().front();
+
+    for (auto path : paths())
+    {
+        for (auto point : path.points())
+        {
+            if (max[0] < point[0])
+            {
+                max[0] = point[0];
+            }
+            else if (min[0] > point[0])
+            {
+                min[0] = point[0];
+            }
+
+            if (max[1] < point[1])
+            {
+                max[1] = point[1];
+            }
+            else if (min[1] > point[1])
+            {
+                min[1] = point[1];
+            }
+        }
+    }
+
+    BoundingBox bounding_box {min, max};
+
+    return bounding_box;
+}
+
 bool Spatial::SegmentedPath::IsClosed() const
 {
     return paths_.front().points().front() == paths_.back().points().back();

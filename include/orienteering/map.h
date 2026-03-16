@@ -25,14 +25,14 @@ namespace Orienteering
     struct PathObject;
 
 
-    class Map
+    class OrienteeringMap
     {
     public:
 
-        Map() = default;
-        ~Map() = default;
+        OrienteeringMap() = default;
+        ~OrienteeringMap() = default;
 
-        Map(const Map&) = default;
+        OrienteeringMap(const OrienteeringMap&) = default;
 
         void AppendSymbol(std::unique_ptr<Symbol> symbol);
         void AppendObject(std::unique_ptr<Object> obj);
@@ -44,6 +44,9 @@ namespace Orienteering
         [[nodiscard]] size_t GetObjectOfSymbolAmount(Symbol* symbol) const;
 
         Symbol* GetSymbolById(size_t id);
+        [[nodiscard]] BoundingBox2D GetBoundingBox() const;
+        [[nodiscard]] std::vector<std::unique_ptr<Symbol>>& GetSymbols();
+        [[nodiscard]] std::vector<std::unique_ptr<Object>>& GetObjects();
 
         void ClearSymbols();
         void ClearObjects();
@@ -54,6 +57,7 @@ namespace Orienteering
     private:
         std::vector<std::unique_ptr<Symbol>> symbols_;
         std::vector<std::unique_ptr<Object>> objects_;
+        BoundingBox2D bounding_box_;
 
     };
 }

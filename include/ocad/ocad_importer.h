@@ -21,7 +21,7 @@ namespace Ocad
     class OcadImporter : public Importer
     {
     public:
-        OcadImporter(const std::filesystem::path& path, std::shared_ptr<Map> map);
+        OcadImporter(const std::filesystem::path& path, std::shared_ptr<OrienteeringMap> map);
 
         constexpr static size_t kBuffer_size = 4096 * 8;
 

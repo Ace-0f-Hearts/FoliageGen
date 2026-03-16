@@ -24,7 +24,7 @@ namespace Orienteering
          * @param point
          * @return
          */
-        bool IsIntersecting(const Spatial::Spatial2D& point) override;
+        bool IsIntersecting(const Spatial::Spatial2D& point) const override ;
 
 
         /**

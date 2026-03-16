@@ -18,7 +18,7 @@ void PointObject::SetPoint(const Spatial::Spatial2D& point)
 
 PointObject::~PointObject() = default;
 
-bool PointObject::IsIntersecting(const Spatial::Spatial2D& point)
+bool PointObject::IsIntersecting(const Spatial::Spatial2D& point) const
 {
     return false;
 }

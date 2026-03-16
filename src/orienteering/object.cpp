@@ -49,6 +49,7 @@ Object& Object::operator=(Object&& other) noexcept
 void Object::SetSymbol(Symbol* symbol)
 {
     symbol_ = symbol;
+
 }
 
 void Object::SetType(ObjectType type)
@@ -66,6 +67,11 @@ bool Object::HasSymbolOf(const Symbol* symbol) const
     return this->symbol_ == symbol;
 }
 
+void Object::UpdateBoundingBox()
+{
+    bounding_box_ = coordinates_.ComputeBoundingBox();
+}
+
 ObjectType Object::type() const
 {
     return type_;
@@ -76,7 +82,8 @@ const Symbol* Object::symbol() const
     return symbol_;
 }
 
-void Object::UpdateBoundingBox()
+Spatial::SegmentedPath Object::coordinates() const
 {
-    bounding_box_ = coordinates_.ComputeBoundingBox();
+    return coordinates_;
 }
+

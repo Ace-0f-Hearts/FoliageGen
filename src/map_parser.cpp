@@ -6,7 +6,7 @@
 #include "map_parser.h"
 #include "ocad/file_format_registry.h"
 
-MapParser::MapParser(std::shared_ptr<Orienteering::Map> map) : map_(map)
+MapParser::MapParser(std::shared_ptr<Orienteering::OrienteeringMap> map) : map_(map)
 {
 }
 

@@ -44,11 +44,11 @@ namespace Orienteering
 
         bool HasSymbolOf(const Symbol* symbol) const;
 
-        virtual bool IsIntersecting(const Spatial::Spatial2D& point) = 0;
+        virtual bool IsIntersecting(const Spatial::Spatial2D& point) const = 0;
 
         [[nodiscard]] ObjectType type() const;
-
         [[nodiscard]] const Symbol* symbol() const;
+        [[nodiscard]] Spatial::SegmentedPath coordinates() const;
 
     protected:
         void UpdateBoundingBox();

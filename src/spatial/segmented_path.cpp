@@ -3,6 +3,7 @@
 //
 #include <algorithm>
 #include <filesystem>
+#include <iostream>
 #include <boost/beast/http/field.hpp>
 #include <spatial/segmented_path.h>
 
@@ -30,15 +31,7 @@ bool Spatial::SegmentedPath::IsPointInsideArea(const Spatial2D& point) const
 
 bool Spatial::SegmentedPath::IsPointOnPath(const Spatial2D& point, float distance_threshold) const
 {
-    for (auto path : paths())
-    {
-        if (path.IsPointOnPath(point,distance_threshold))
-        {
-            return true;
-        }
-    }
-    return false;
-
+    return std::ranges::any_of(paths().begin(), paths().end(), [&point, distance_threshold](const auto& path) {return path.IsPointOnPath(point,distance_threshold);});
 }
 
 void Spatial::SegmentedPath::FromBezier(std::vector<OcadCoordinate>& curve)
@@ -46,11 +39,17 @@ void Spatial::SegmentedPath::FromBezier(std::vector<OcadCoordinate>& curve)
     size_t path_start = 0u;
     size_t size = curve.size();
 
+    assert(size > 0);
+    assert(size > path_start);
+
     while (path_start < size)
     {
         PolyPath path {};
         size_t path_end = path.FromBezier(curve, path_start);
         paths().push_back(path);
+
+        assert(path.size() > 0);
+
         path_start = path_end + 1;
     }
 
@@ -77,8 +76,13 @@ void Spatial::SegmentedPath::Subdivide(float max_segment_length)
 
         new_paths.emplace_back(path);
         if (!trimmed.points().empty())
+        {
             new_paths.emplace_back(trimmed);
+        }
+
     }
+    paths().swap(new_paths);
+
 }
 
 bool Spatial::SegmentedPath::Contains(const Spatial2D& point) const
@@ -130,10 +134,9 @@ void Spatial::SegmentedPath::SetPoint(const Spatial2D& point)
     paths().emplace_back(point);
 }
 
-BoundingBox<2> Spatial::SegmentedPath::ComputeBoundingBox() const
+BoundingBox2D Spatial::SegmentedPath::ComputeBoundingBox() const
 {
     Spatial2D max, min = paths().front().points().front();
-
     for (auto path : paths())
     {
         for (auto point : path.points())

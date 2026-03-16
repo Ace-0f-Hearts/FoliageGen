@@ -25,7 +25,7 @@ public:
     std::filesystem::path test_empty_{"./assets/empty.ocd"};
     std::filesystem::path test_wrong_format_wrong_content_{"./assets/empty.txt"};
     std::filesystem::path test_wrong_format_correct_content_{"./assets/incorrectFormat.ocad"};
-    std::shared_ptr<Map> map_ = std::make_shared<Map>();
+    std::shared_ptr<OrienteeringMap> map_ = std::make_shared<OrienteeringMap>();
 };
 BOOST_FIXTURE_TEST_CASE(Test_FileFormatRegistry_FileFormatCorrectlyDeduced,F)
 {
@@ -58,7 +58,7 @@ public:
     std::filesystem::path test_empty_{"./assets/empty.ocd"};
     std::filesystem::path test_wrong_format_wrong_content_{"./assets/empty.txt"};
     std::filesystem::path test_wrong_format_correct_content_{"./assets/incorrectFormat.ocad"};
-    std::shared_ptr<Map> map_ = std::make_shared<Map>();
+    std::shared_ptr<OrienteeringMap> map_ = std::make_shared<OrienteeringMap>();
 };
 
 BOOST_FIXTURE_TEST_CASE(Test_OcadImporter_ConstructionBehavingAsExpected,F)

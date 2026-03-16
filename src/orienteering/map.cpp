@@ -11,26 +11,26 @@
 #include "../../apps/app.h"
 #include "orienteering/path_object.h"
 
-void Map::AppendSymbol(std::unique_ptr<Symbol> symbol)
+void OrienteeringMap::AppendSymbol(std::unique_ptr<Symbol> symbol)
 {
     assert(symbol.get());
     symbols_.push_back(std::move(symbol));
 }
 
-void Map::AppendObject(std::unique_ptr<Object> obj)
+void OrienteeringMap::AppendObject(std::unique_ptr<Object> obj)
 {
     assert(obj.get());
     objects_.push_back(std::move(obj));
 }
 
-size_t Orienteering::Map::GetSymbolOfTypeAmount(SymbolType type) const
+size_t Orienteering::OrienteeringMap::GetSymbolOfTypeAmount(SymbolType type) const
 {
     auto predicate = [type](const std::unique_ptr<Symbol>& symbol) -> bool {return symbol->flags() & type;};
 
     return std::ranges::count_if(symbols_,predicate);
 }
 
-size_t Map::GetObjectOfTypeAmount(ObjectType type) const
+size_t OrienteeringMap::GetObjectOfTypeAmount(ObjectType type) const
 {
     auto predicate = [type](const std::unique_ptr<Object>& object) -> bool
     {
@@ -41,24 +41,24 @@ size_t Map::GetObjectOfTypeAmount(ObjectType type) const
     return std::ranges::count_if(objects_,predicate);
 }
 
-size_t Orienteering::Map::GetSymbolAmount() const
+size_t Orienteering::OrienteeringMap::GetSymbolAmount() const
 {
     return symbols_.size();
 }
 
-size_t Orienteering::Map::GetObjectAmount() const
+size_t Orienteering::OrienteeringMap::GetObjectAmount() const
 {
     return objects_.size();
 }
 
-size_t Orienteering::Map::GetObjectOfSymbolAmount(Symbol* symbol) const
+size_t Orienteering::OrienteeringMap::GetObjectOfSymbolAmount(Symbol* symbol) const
 {
     auto predicate = [symbol](const std::unique_ptr<Object>& object) -> bool {return object->symbol() == symbol;};
 
     return std::ranges::count_if(objects_,predicate);
 }
 
-Symbol* Orienteering::Map::GetSymbolById(size_t id)
+Symbol* Orienteering::OrienteeringMap::GetSymbolById(size_t id)
 {
     auto predicate = [id](const std::unique_ptr<Symbol>& symbol) -> bool {return symbol->id() == id;};
     auto symbol = std::ranges::find_if(symbols_,predicate);
@@ -70,32 +70,45 @@ Symbol* Orienteering::Map::GetSymbolById(size_t id)
     return nullptr;
 }
 
+BoundingBox2D OrienteeringMap::GetBoundingBox() const
+{
+    return bounding_box_;
+}
 
+std::vector<std::unique_ptr<Symbol>>& OrienteeringMap::GetSymbols()
+{
+    return symbols_;
+}
 
-void Orienteering::Map::ClearSymbols()
+std::vector<std::unique_ptr<Object>>& OrienteeringMap::GetObjects()
+{
+    return objects_;
+}
+
+void Orienteering::OrienteeringMap::ClearSymbols()
 {
     symbols_.clear();
 }
 
-void Orienteering::Map::ClearObjects()
+void Orienteering::OrienteeringMap::ClearObjects()
 {
     objects_.clear();
 }
 
-void Orienteering::Map::Clear()
+void Orienteering::OrienteeringMap::Clear()
 {
     ClearObjects();
     ClearSymbols();
 }
 
-void Orienteering::Map::RemoveObjectsOfSymbol(Symbol& symbol)
+void Orienteering::OrienteeringMap::RemoveObjectsOfSymbol(Symbol& symbol)
 {
     objects_.erase(std::ranges::remove_if(objects_,[&symbol](const auto& o)->bool{
         return o->HasSymbolOf(&symbol);
     }).begin(),objects_.end());
 }
 
-void Orienteering::Map::RemoveSymbol(Symbol& symbol)
+void Orienteering::OrienteeringMap::RemoveSymbol(Symbol& symbol)
 {
     RemoveObjectsOfSymbol(symbol);
     symbols_.erase(std::ranges::remove_if(symbols_,[&symbol](const auto& s) -> bool {return *s == symbol;}).begin(), symbols_.end());

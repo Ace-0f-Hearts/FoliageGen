@@ -20,11 +20,14 @@ namespace Orienteering
         PointS = 0x1,
         PathS = 0x2,
         AreaS = 0x4,
-        Obstructing, /// prevents the growth of plants around it and inside of it
-        Cultivated, /// reduces the amount of randomization in the seed positions
-        Directional, /// introduces some bias to the direction of randomization
       };
 
+    enum SymbolFlag
+    {
+        Obstructing = 0x1, /// prevents the growth of plants around it and inside of it
+        Cultivated  = 0x2, /// reduces the amount of randomization in the seed positions
+        Directional = 0x4, /// introduces some bias to the direction of randomization
+    };
 
 
     class Symbol{
@@ -54,9 +57,9 @@ namespace Orienteering
         [[nodiscard]] bool IsObstructing() const;
         [[nodiscard]] bool IsDirectional() const;
 
-        void SetArea(bool area);
-        void SetPath(bool path);
-        void SetPoint(bool point);
+        void type(SymbolType type);
+        SymbolType type();
+
         void SetCultivated(bool cultivated);
         void SetObstructing(bool obstructing);
         void SetDirectional(bool directional);
@@ -69,6 +72,8 @@ namespace Orienteering
          */
         uint32_t id_;
         uint8_t flags_;
+
+        SymbolType type_;
     };
 }
 

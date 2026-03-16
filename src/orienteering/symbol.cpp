@@ -48,17 +48,17 @@ uint8_t Orienteering::Symbol::flags() const
 
 bool Orienteering::Symbol::IsArea() const
 {
-    return flags_ & AreaS;
+    return type_ == AreaS;
 }
 
 bool Orienteering::Symbol::IsPath() const
 {
-    return flags_ & PathS;
+    return type_ == PathS;
 }
 
 bool Orienteering::Symbol::IsPoint() const
 {
-    return flags_ & PointS;
+    return type_ == PointS;
 }
 
 bool Orienteering::Symbol::IsCultivated() const
@@ -86,42 +86,40 @@ void Orienteering::Symbol::id(uint32_t value)
     id_ = value;
 }
 
-void Orienteering::Symbol::SetArea(bool area)
+void Orienteering::Symbol::type(SymbolType type)
 {
-    if (area)
-        flags_ |= AreaS;
+    type_ = type;
 }
 
-void Orienteering::Symbol::SetPath(bool path)
+Orienteering::SymbolType Orienteering::Symbol::type()
 {
-    if (path)
-        flags_ |= PathS;
-}
-
-void Orienteering::Symbol::SetPoint(bool point)
-{
-    if (point)
-        flags_ |= PointS;
+    return type_;
 }
 
 void Orienteering::Symbol::SetCultivated(bool cultivated)
 {
     if (cultivated)
         flags_ |= Cultivated;
+    else
+        flags_ &= ~Cultivated;
 }
 
 void Orienteering::Symbol::SetObstructing(bool obstructing)
 {
     if (obstructing)
         flags_ |= Obstructing;
+    else
+        flags_ &= ~Obstructing;
 }
 
 void Orienteering::Symbol::SetDirectional(bool directional)
 {
     if (directional)
         flags_ |= Directional;
+    else
+        flags_ &= ~Directional;
 }
 
-Orienteering::Symbol::Symbol() : id_(0), flags_(0)
+Orienteering::Symbol::Symbol() : id_(0), flags_(0), type_()
 {
 }

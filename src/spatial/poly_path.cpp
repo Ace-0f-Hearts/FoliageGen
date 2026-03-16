@@ -56,7 +56,7 @@ bool Spatial::PolyPath::IsPointOnPath(Spatial2D point, float threshold_radius) c
 
 size_t Spatial::PolyPath::FromBezier(std::vector<OcadCoordinate>& curve, size_t path_start = 0, float bezier_error, float max_segment_length)
 {
-    assert(curve.size() > 1);
+    // assert(curve.size() > 1);
 
     auto path_end = curve.size();
 
@@ -169,18 +169,18 @@ void Spatial::PolyPath::Clear()
 }
 
 
-std::vector<Spatial::Spatial2D> Spatial::PolyPath::TrimToLength(float length)
+std::vector<Spatial::Spatial2D> Spatial::PolyPath::TrimToLength(float max_length)
 {
     float current_length = 0;
     auto idx = 0u;
-    for (; idx < points_.size() - 1 && current_length <= length; idx++)
+    for (; idx < points_.size() - 1 && current_length <= max_length; idx++)
     {
         current_length += points_[idx].DistanceTo(points_[idx+1]);
 
     }
 
-    points_ = {points_.begin(), points_.begin() + idx};
-    std::vector<Spatial2D> rest = {points().begin() + idx, points().end()};
+    std::vector<Spatial2D> rest = {points().begin() + (idx + 1), points().end()};
+    points_ = {points_.begin(), points_.begin() + (idx + 1)};
 
     return rest;
 }

@@ -17,7 +17,7 @@ FileFormatRegistry::FileFormatRegistry() : file_formats_({new OcadFileFormat()})
 {
 }
 
-std::unique_ptr<Importer> FileFormatRegistry::CreateImporter(const std::filesystem::path& path, std::shared_ptr<Orienteering::Map> map) const
+std::unique_ptr<Importer> FileFormatRegistry::CreateImporter(const std::filesystem::path& path, std::shared_ptr<Orienteering::OrienteeringMap> map) const
 {
     auto extension = path.extension().string();
     std::cout << extension << std::endl;

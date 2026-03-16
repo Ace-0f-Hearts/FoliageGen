@@ -7,7 +7,17 @@
 
 PathObject::PathObject(Symbol* symbol) : Object(symbol)
 {
-    type_ = PathO;
+    switch (symbol->type())
+    {
+        case AreaS:
+            type_ = AreaO;
+        break;
+        case PathS:
+            type_ = PathO;
+        break;
+        default:
+        throw std::logic_error("Type of path object is corrupted.");
+    }
 }
 
 bool PathObject::IsClosed() const
@@ -22,7 +32,7 @@ bool PathObject::Contains(const Spatial::Spatial2D& point) const
 }
 
 
-bool PathObject::IsIntersecting(const Spatial::Spatial2D& point)
+bool PathObject::IsIntersecting(const Spatial::Spatial2D& point) const
 {
     auto intersecting = false;
     switch (type())

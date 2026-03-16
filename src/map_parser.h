@@ -15,10 +15,10 @@
 class MapParser
 {
 public:
-    MapParser(std::shared_ptr<Orienteering::Map> map);
+    MapParser(std::shared_ptr<Orienteering::OrienteeringMap> map);
     void Run(const std::filesystem::path  filename);
 private:
-    std::shared_ptr<Orienteering::Map> map_;
+    std::shared_ptr<Orienteering::OrienteeringMap> map_;
 };
 
 

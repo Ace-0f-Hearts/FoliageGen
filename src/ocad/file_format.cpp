@@ -11,7 +11,7 @@ FileFormat::FileFormat(std::string name,std::vector<string> extensions) : name_(
 }
 
 
-std::unique_ptr<Importer> FileFormat::CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::Map> map) const
+std::unique_ptr<Importer> FileFormat::CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::OrienteeringMap> map) const
 {
     LOG_F(WARNING,"Format does not support import");
     return nullptr;

@@ -19,7 +19,7 @@
 
 using namespace Ocad;
 
-OcadImporter::OcadImporter(const std::filesystem::path& path, std::shared_ptr<Map> map) : Importer(path, map),
+OcadImporter::OcadImporter(const std::filesystem::path& path, std::shared_ptr<OrienteeringMap> map) : Importer(path, map),
     buffer_(kBuffer_size), ocad_version_(0)
 {
     input_stream_.open(path_.string(), std::ios::in | std::ios::binary);
@@ -105,10 +105,10 @@ void OcadImporter::ImportImplementation()
 template <class F>
 void OcadImporter::ImportObjects(OcadFile<F>& file)
 {
-    for (auto object : file.objects())
+    for (auto ocad_object : file.objects())
     {
-
-        ImportObject(*object.entity);
+        if (ocad_object.entry->status != Ocad::ObjectDeleted && ocad_object.entry->status != Ocad::ObjectDeletedForUndo)
+            ImportObject(*ocad_object.entity);
     }
 }
 
@@ -157,9 +157,10 @@ void OcadImporter::ImportObject(const O& ocad_object)
 template <class F>
 void OcadImporter::ImportSymbols(OcadFile<F>& file)
 {
-    for (auto object : file.symbols())
+    for (auto symbol : file.symbols())
     {
-        ImportSymbol(*object.entity);
+        if (symbol.entity->status != Ocad::SymbolHidden)
+            ImportSymbol(*symbol.entity);
     }
 }
 
@@ -181,25 +182,22 @@ void OcadImporter::ImportSymbol(const S& base)
 template <class OcadBaseSymbol>
 bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
 {
-    if (base.status & SymbolHidden)
-        return false;
     symbol->id(base.sym_num);
-
     auto symbol_is_relevant = false;
 
-    if (base.object_type & SymbolTypePoint)
+    if (base.object_type == SymbolTypePoint)
     {
-        symbol->SetPoint(true);
+        symbol->type(PointS);
         symbol_is_relevant = true;
     }
-    else if (base.object_type & SymbolTypeLine)
+    else if (base.object_type == SymbolTypeLine)
     {
-        symbol->SetPath(true);
+        symbol->type(PathS);
         symbol_is_relevant = true;
     }
-    else if (base.object_type & SymbolTypeArea)
+    else if (base.object_type == SymbolTypeArea)
     {
-        symbol->SetArea(true);
+        symbol->type(AreaS);
         symbol_is_relevant = true;
     }
 
@@ -211,7 +209,6 @@ void OcadImporter::FillPathCoords(PathObject* object, bool is_area, uint32_t num
 {
     std::vector<OcadCoordinate> path;
     path.resize(num_points);
-    // object->coordinates().reserve(num_points);
 
     for (auto i = 0u; i < num_points; i++)
     {

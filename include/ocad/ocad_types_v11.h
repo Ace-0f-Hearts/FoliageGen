@@ -147,7 +147,7 @@ namespace Ocad
             using LineTextSymbol = LineTextSymbol;
             using RectangleSymbol = RectSymbol;
             using Object = OcadTypesV10::Format::Object;
-            using Encoding = Generic::Custom8BitEncoding;
+            using Encoding = Generic::Utf8Encoding;
         };
     };
 }

@@ -87,6 +87,7 @@ namespace Ocad
         struct Custom8BitEncoding
         {
         };
+        struct Utf8Encoding{};
     };
 
 

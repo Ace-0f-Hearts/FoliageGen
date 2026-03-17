@@ -53,7 +53,9 @@ void Spatial::SegmentedPath::FromBezier(std::vector<OcadCoordinate>& curve)
         path_start = path_end + 1;
     }
 
-    Subdivide();
+
+    if (subdividing_)
+        Subdivide();
 }
 
 
@@ -98,13 +100,17 @@ void Spatial::SegmentedPath::SetPoints(const std::vector<Spatial2D>& points)
 
     Clear();
     paths().emplace_back(points);
-    Subdivide();
+
+    if (subdividing_)
+        Subdivide();
 }
 
 void Spatial::SegmentedPath::AppendPoint(const Spatial2D& point)
 {
     paths().back().AppendPoint(point);
-    SubdividePart(paths().back());
+
+    if (subdividing_)
+        SubdividePart(paths().back());
 }
 
 void Spatial::SegmentedPath::RemovePoint(const Spatial2D& point)
@@ -169,4 +175,13 @@ BoundingBox2D Spatial::SegmentedPath::ComputeBoundingBox() const
 bool Spatial::SegmentedPath::IsClosed() const
 {
     return paths_.front().points().front() == paths_.back().points().back();
+}
+
+Spatial::SegmentedPath::SegmentedPath(bool subdividing) : subdividing_(subdividing)
+{
+}
+
+void Spatial::SegmentedPath::subdividing(bool enable)
+{
+    subdividing_ = enable;
 }

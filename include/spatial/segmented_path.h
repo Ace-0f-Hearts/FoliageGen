@@ -17,6 +17,7 @@ namespace Spatial
     class SegmentedPath
     {
     public:
+        SegmentedPath(bool subdividing);
         [[nodiscard]] bool IsPointInsideArea(const Spatial2D& point) const;
         [[nodiscard]] bool IsPointOnPath(const Spatial2D& point, float distance_threshold = 0.f) const;
 
@@ -35,13 +36,15 @@ namespace Spatial
 
         [[nodiscard]] const std::vector<PolyPath>& paths() const;
         std::vector<PolyPath>& paths();
+
+        void subdividing(bool enable);
     private:
         constexpr static float kMax_segment_length = 10000000.0f;
 
         void Subdivide(float max_segment_length = kMax_segment_length);
         Spatial::PolyPath SubdividePart(PolyPath& path,float max_segment_length = kMax_segment_length);
 
-
+        bool subdividing_ = false;
         std::vector<PolyPath> paths_;
     };
 }

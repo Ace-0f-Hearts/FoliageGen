@@ -49,6 +49,7 @@ namespace Orienteering
         [[nodiscard]] ObjectType type() const;
         [[nodiscard]] const Symbol* symbol() const;
         [[nodiscard]] Spatial::SegmentedPath coordinates() const;
+        [[nodiscard]] BoundingBox2D bounding_box() const;
 
     protected:
         void UpdateBoundingBox();

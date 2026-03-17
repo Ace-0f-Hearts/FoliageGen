@@ -7,11 +7,18 @@
 
 #include <stdexcept>
 
-Object::Object() : angle_(0), type_(UnknownO), symbol_(nullptr)
+Object::Object() : angle_(0), type_(UnknownO), symbol_(nullptr), coordinates_(false)
 {
 }
 
-Object::Object(Symbol* symbol) : angle_(0), type_(symbol->IsPath() ? PathO : symbol->IsArea() ? AreaO : symbol->IsPoint() ? PointO : UnknownO), symbol_(symbol)
+Object::Object(Symbol* symbol) : angle_(0),
+                                 type_(symbol->IsPath()
+                                           ? PathO
+                                           : symbol->IsArea()
+                                           ? AreaO
+                                           : symbol->IsPoint()
+                                           ? PointO
+                                           : UnknownO), symbol_(symbol), coordinates_(symbol->IsPath())
 {
 }
 
@@ -54,6 +61,8 @@ void Object::SetSymbol(Symbol* symbol)
 
 void Object::SetType(ObjectType type)
 {
+    if (type_ == PathO)
+        coordinates().subdividing(true);
     type_ = type;
 }
 
@@ -85,5 +94,10 @@ const Symbol* Object::symbol() const
 Spatial::SegmentedPath Object::coordinates() const
 {
     return coordinates_;
+}
+
+BoundingBox2D Object::bounding_box() const
+{
+    return bounding_box_;
 }
 

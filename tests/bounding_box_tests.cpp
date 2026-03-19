@@ -7,6 +7,7 @@
 #include <boost/test/unit_test.hpp>
 #include <cmath>
 #include <spatial/bounding_box.h>
+
 namespace utf = boost::unit_test;
 
 BOOST_AUTO_TEST_SUITE(BoundingBoxTestingSuite)

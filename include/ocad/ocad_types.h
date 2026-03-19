@@ -5,7 +5,15 @@
 #ifndef OCAD_OCDTYPES_H
 #define OCAD_OCDTYPES_H
 #include <cstdint>
+#include <type_traits>
+#include <iterator>
 
+namespace string
+{
+    unsigned char assign(const std::vector<std::byte>& value, unsigned char max_length, char* first, char* last) noexcept;
+    unsigned char assignUtf8(const std::string& value, unsigned char max_length, char* first, char* last);
+    std::size_t assignUtf16(const std::string& value, std::size_t max_length, char* first, char* last);
+}
 namespace Ocad
 {
     class Generic
@@ -30,6 +38,8 @@ namespace Ocad
             u8 subversion{};
             u8 subsubversion{}; /// Since V10
         };
+
+
 
         template <unsigned int N>
         struct PascalString

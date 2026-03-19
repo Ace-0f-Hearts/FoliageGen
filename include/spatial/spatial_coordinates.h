@@ -10,6 +10,11 @@
 #include <iosfwd>
 #include <ostream>
 #include <vector>
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/point.hpp>
+#include <boost/geometry/strategies/transform/matrix_transformers.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+
 
 namespace Spatial
 {
@@ -271,6 +276,51 @@ namespace Spatial
     }
 
     const static Spatial3D kUp = Spatial3D{0.f,1.f,0.f};
+
+
+}
+namespace boost::geometry::traits
+{
+    template<> struct tag<Spatial::Spatial2D> {using type = point_tag;};
+    template<> struct dimension<Spatial::Spatial2D> : boost::mpl::int_<2> {};
+    template<> struct coordinate_type<Spatial::Spatial2D> {using type = float;};
+    template<> struct coordinate_system<Spatial::Spatial2D> {using type = cs::cartesian;};
+
+    template<int I> struct access<Spatial::Spatial2D, I>
+    {
+        static double get(const Spatial::Spatial2D& spatial)
+        {
+            if constexpr (I == 0) return spatial[0];
+            return spatial[1];
+        }
+        static void set(Spatial::Spatial2D& spatial, float value)
+        {
+            if constexpr (I == 0) spatial[0] = value;
+            else spatial[1] = value;
+        }
+    };
+
+    template<int I> struct access<Spatial::Spatial3D, I>
+    {
+        static double get(const Spatial::Spatial2D& spatial)
+        {
+            if constexpr (I == 0) return spatial[0];
+            if constexpr (I == 1) return spatial[1];
+            return spatial[2];
+        }
+        static void set(Spatial::Spatial2D& spatial, float value)
+        {
+            if constexpr (I == 0) spatial[0] = value;
+            if constexpr (I == 1) spatial[1] = value;
+            else spatial[2] = value;
+        }
+    };
+
+
+    template<> struct tag<Spatial::Spatial3D> {using type = point_tag;};
+    template<> struct dimension<Spatial::Spatial3D> : boost::mpl::int_<2> {};
+    template<> struct coordinate_type<Spatial::Spatial3D> {using type = float;};
+    template<> struct coordinate_system<Spatial::Spatial3D> {using type = cs::cartesian;};
 }
 
 

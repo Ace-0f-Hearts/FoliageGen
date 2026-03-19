@@ -44,7 +44,6 @@ namespace Ocad
     template <class F>
     class OcadFile;
 
-    struct ParameterStringIndexEntry;
 
     template <class BlockType>
     BlockType* GetBlockChecked(std::vector<std::byte>& byte_array, uint32_t pos);
@@ -75,7 +74,7 @@ namespace Ocad
     class OcadEntityIndexIterator : public std::iterator<std::input_iterator_tag, V, std::ptrdiff_t, void, V>
     {
     public:
-        using ValueType = V;
+        using value_type = V;
         using EntryType = V::EntryType;
         using IndexBlock = IndexBlock<EntryType>;
 
@@ -92,7 +91,7 @@ namespace Ocad
 
         OcadEntityIndexIterator operator++(int);
 
-        ValueType operator*() const;
+        value_type operator*() const;
 
         bool operator==(const OcadEntityIndexIterator<V>& rhs) const;
 
@@ -116,6 +115,7 @@ namespace Ocad
     {
         using IndexEntryType = ParameterStringIndexEntry;
     };
+
 
 
     template <class F, class T>
@@ -201,7 +201,7 @@ namespace Ocad
 
     private:
         template <class X = EntryType, std::enable_if_t<
-                      std::is_same_v<X, ParameterString::IndexEntryType>, int> = 0>
+                      std::is_same_v<X, typename ParameterString::IndexEntryType>, int> = 0>
         [[nodiscard]] uint32_t first_block() const;
 
         template <class X = EntryType, std::enable_if_t<
@@ -323,6 +323,7 @@ template <class F, class T>
 Ocad::OcadEntityIndex<F, T>::EntryType& Ocad::OcadEntityIndex<F, T>::insert(const std::vector<char>& entity_data,
     const EntryType& entry)
 {
+    //TODO: This is weird, there is no append function for byte array
     auto& byte_array = AddPadding(file.byte_array_());
     IndexBlock* block;
     auto next_block_pos = first_block<typename T::IndexEntryType>();
@@ -350,7 +351,7 @@ Ocad::OcadEntityIndex<F, T>::EntryType& Ocad::OcadEntityIndex<F, T>::insert(cons
         block_pos = decltype(block->next_block)(byte_array.size());
         block->next_block = block_pos;
         auto new_block = IndexBlock {};
-        byte_array.append(reinterpret_cast<const char*>(&new_block), sizeof(IndexBlock));
+        byte_array.push_back(reinterpret_cast<const char*>(&new_block), sizeof(IndexBlock));
         block = reinterpret_cast<IndexBlock*>(byte_array.data() + block_pos);
         index = 0;
     }
@@ -358,7 +359,7 @@ Ocad::OcadEntityIndex<F, T>::EntryType& Ocad::OcadEntityIndex<F, T>::insert(cons
     auto entity_pos = decltype(block->entries[index].pos)(byte_array.size());
     byte_array.append(entity_data); // May reallocate! Re-calculate block pointer:
     block = Ocad::GetBlockChecked<IndexBlock>(byte_array, block_pos);
-    Q_ASSERT(block);
+    assert(block);
     block->entries[index] = entry;
     block->entries[index].pos = entity_pos;
     return block->entries[index];
@@ -486,9 +487,9 @@ Ocad::OcadEntityIndexIterator<V> Ocad::OcadEntityIndexIterator<V>::operator++(in
 }
 
 template <class V>
- Ocad::OcadEntityIndexIterator<V>::ValueType Ocad::OcadEntityIndexIterator<V>::operator*() const
+ Ocad::OcadEntityIndexIterator<V>::value_type Ocad::OcadEntityIndexIterator<V>::operator*() const
 {
-    return  { &block_->entries[index_], reinterpret_cast<const ValueType::EntityType*>(byte_array_->data()+block_->entries[index_].pos) };
+    return  { &block_->entries[index_], reinterpret_cast<const value_type::EntityType*>(byte_array_->data()+block_->entries[index_].pos) };
 }
 
 template <class V>
@@ -507,17 +508,18 @@ bool Ocad::OcadEntityIndexIterator<V>::operator!=(const OcadEntityIndexIterator<
 template <class V>
 bool Ocad::OcadEntityIndexIterator<V>::IsValidEntry() const
 {
-    return GetBlockChecked<typename ValueType::EntityType>(*byte_array_, block_->entries[index_].pos);
+    return GetBlockChecked<typename value_type::EntityType>(*byte_array_, block_->entries[index_].pos);
 }
 
 template <class F, class T>
 template <class X, std::enable_if_t<std::is_same_v<X, Ocad::ParameterStringIndexEntry>, int>>
 Ocad::OcadEntityIndex<F, T>::ValueType::operator std::vector<std::byte>() const
 {
-    //TODO: This needs to be tested and refined
-    auto temp = reinterpret_cast<char*>(entity);
-    std::vector<std::byte> data(*temp,*temp + entry->size);
-    return data;
+    auto temp = reinterpret_cast<const char*>(entity);
+    // std::vector<std::byte> data(reinterpret_cast<const std::byte*>(temp),static_cast<int>(entry->size));
+    std::vector<std::byte> result;
+    result.reserve(entry->size);
+    return result;
 }
 
 template <class F, class T>

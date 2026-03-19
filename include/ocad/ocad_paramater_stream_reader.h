@@ -14,16 +14,16 @@ namespace Ocad
         explicit OcadParameterStreamReader(const std::string& param) noexcept;
 
         [[nodiscard]] bool ReadNext();
-        [[nodiscard]] char Key() const {return current_key;}
+        [[nodiscard]] char Key() const {return current_key_;}
         [[nodiscard]] std::string Value() const;
-        [[nodiscard]] bool AtEnd() const {return next == -1;}
+        [[nodiscard]] bool AtEnd() const {return next_ == std::string::npos;}
 
         static constexpr char KNo_key() {return 0;}
     private:
         std::string param_;
-        int pos;
-        int next;
-        char current_key;
+        size_t pos_;
+        size_t next_;
+        char current_key_;
     };
 
 }

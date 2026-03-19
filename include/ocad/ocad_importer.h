@@ -4,6 +4,7 @@
 
 #ifndef PROCEDURALFOLIAGEGENERATOR_OCAD_IMPORT_H
 #define PROCEDURALFOLIAGEGENERATOR_OCAD_IMPORT_H
+
 #include <filesystem>
 #include <map>
 #include <vector>
@@ -12,9 +13,8 @@
 #include "ocad_coordinate.h"
 #include "ocad_helper.h"
 #include "ocad_types.h"
+#include "orienteering/georeferencing.h"
 #include "orienteering/point_object.h"
-
-
 
 namespace Ocad
 {
@@ -30,7 +30,6 @@ namespace Ocad
         bool ImportImplementation() override;
 
         void ReadFile() override;
-
         template <class F>
         void ImportImplementation();
 
@@ -47,36 +46,34 @@ namespace Ocad
         template <class F>
         void ImportGeoreferencing(const OcadFile<F>& file);
 
-        void ImportGeoreferencing(std::string param);
+        void ImportGeoreferencing(const std::string& param);
 
         template<class OcadBaseSymbol>
         bool SetupSymbol(Symbol* ocad_symbol, const OcadBaseSymbol& base);
 
-        static void FillPathCoords(PathObject* object, bool is_area, uint32_t num_points,
+        void FillPathCoords(PathObject* object, bool is_area, uint32_t num_points,
                     const Generic::OcadCoord* ocad_points);
-        static void SetPointFlags(std::vector<OcadCoordinate>& object, uint32_t pos, bool is_area, Generic::OcadCoord ocd_point);
+        void SetPointFlags(std::vector<OcadCoordinate>& object, uint32_t pos, bool is_area, Generic::OcadCoord ocd_point);
 
-        static OcadCoordinate ConvertOcadPoint(const Generic::OcadCoord& ocad_point);
+        OcadCoordinate ConvertOcadPoint(const Generic::OcadCoord& ocad_point);
 
         float ConvertOcadAngle(int ocad_angle);
 
-        template <unsigned char N>
-        std::string ConvertOcadString(const Ocad::Generic::PascalString<N>& src) const;
 
-        template <unsigned char N>
-        std::string ConvertOcadString(const Ocad::Generic::Utf8PascalString<N>& src) const;
+        // template <class E>
+        // std::string ConvertOcadString(const std::vector<std::byte>* data) const;
+        // template <class E>
+        // std::string ConvertOcadString(const std::vector<std::byte> data) const;
 
-        template <size_t N>
-        std::string ConvertOcadString(const Ocad::Generic::Utf16String<N>& src) const;
+        // template <class E,class Str>
+        // std::string ConvertOcadString(Str& data) const;
 
-        template <class E>
-        std::string ConvertOcadString(const char* src, uint len) const;
 
-        template <class E>
-        std::string ConvertOcadString(const std::vector<std::byte>& data) const;
 
-        std::string ConvertOcadString(const char* src, uint max_len) const;
-
+        void TryParamConvert(int& out, const std::string param_value)
+        {
+            out = std::round(std::stof(param_value));
+        }
     protected:
         struct StringHandler
         {
@@ -88,8 +85,9 @@ namespace Ocad
         template <class F>
         void HandleStrings(const OcadFile<F>& file, std::initializer_list<StringHandler> handlers);
 
-
         std::vector<std::byte> buffer_;
+
+        Georeferencing georef_;
 
         uint8_t ocad_version_;
         // TODO: Take care of pointer at delete

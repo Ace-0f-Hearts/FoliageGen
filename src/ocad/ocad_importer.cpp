@@ -16,21 +16,23 @@
 #include <orienteering/object.h>
 #include <orienteering/path_object.h>
 
+#include "ocad/ocad_georef.h"
 #include "ocad/ocad_paramater_stream_reader.h"
 #include "ocad/ocad_types_v2018.h"
+#include "orienteering/georeferencing.h"
 #include "utility/not_implemented_error.h"
 
 using namespace Ocad;
 
-OcadImporter::OcadImporter(const std::filesystem::path& path, std::shared_ptr<OrienteeringMap> map) : Importer(path, map),
-    buffer_(kBuffer_size), ocad_version_(0)
+OcadImporter::OcadImporter(const std::filesystem::path& path, std::shared_ptr<OrienteeringMap> map) :
+    Importer(path, map),
+    buffer_(kBuffer_size), georef_(), ocad_version_(0)
 {
     input_stream_.open(path_.string(), std::ios::in | std::ios::binary);
     if (!input_stream_.good())
     {
         std::cerr << "Failed to open file: " << input_stream_.rdstate() << std::endl;
         throw std::invalid_argument("Cannot open file!");
-
     }
 }
 
@@ -101,6 +103,7 @@ void OcadImporter::ImportImplementation()
     if (!file.header())
         LOG_F(ERROR, "Incomplete or missing header!");
 
+    ImportGeoreferencing(file);
     ImportSymbols(file);
     ImportObjects(file);
 }
@@ -308,7 +311,12 @@ OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_poi
         flags |= OcadCoordinate::DashPoint;
     }
 
-    result.coordinate() = Spatial::Spatial2D({x, y});
+    auto map_coord = Spatial2D({x, y});
+    auto proj_coord = georef_.ToProjectedCoords(map_coord);
+
+    LOG_S(INFO) << "Conversion between map and projective coordinates: " << map_coord << " : " << proj_coord / 1000.f;
+
+    result.coordinate() = proj_coord;
     result.flags() = flags;
     return result;
 }
@@ -316,14 +324,60 @@ OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_poi
 template <class F>
 void OcadImporter::ImportGeoreferencing(const OcadFile<F>& file)
 {
-    HandleStrings(file, {{1039,&ImportGeoreferencing}});
+    std::initializer_list<StringHandler> string_handlers = {{1039,&OcadImporter::ImportGeoreferencing}};
+    HandleStrings(file, string_handlers);
 }
 
-void OcadImporter::ImportGeoreferencing(std::string param)
+void OcadImporter::ImportGeoreferencing(const std::string& param)
 {
     OcadParameterStreamReader parameters(param);
 
+    OcadGeoref ocad_georef;
 
+    while (parameters.ReadNext())
+    {
+        auto param_value = parameters.Value();
+
+        switch (parameters.Key())
+        {
+        case 'm':
+            TryParamConvert(ocad_georef.m,param_value);
+            break;
+        case 'x':
+            TryParamConvert(ocad_georef.x,param_value);
+            break;
+        case 'y':
+            TryParamConvert(ocad_georef.y,param_value);
+            break;
+        case 'i':
+            TryParamConvert(ocad_georef.i,param_value);
+            break;
+        case 'r':
+            TryParamConvert(ocad_georef.r,param_value);
+            break;
+        case 'a':
+            {
+                ocad_georef.a = stod(param_value);
+            }
+            break;
+        case 'd':
+            {
+                auto spacing = stod(param_value);
+                if (spacing >= 0.001)
+                {
+
+                }
+            }
+            break;
+        default:
+            ;
+        }
+    }
+
+    LOG_S(INFO) << "OCAD Georeferencing: " << ocad_georef;
+    ocad_georef.SetupGeoref(georef_);
+
+    georef_.UpdateTransformation();
 }
 
 float OcadImporter::ConvertOcadAngle(int ocad_angle)
@@ -331,58 +385,6 @@ float OcadImporter::ConvertOcadAngle(int ocad_angle)
     throw NotImplementedError();
 }
 
-template <unsigned char N>
-std::string OcadImporter::ConvertOcadString(const Generic::PascalString<N>& src) const
-{
-    throw NotImplementedError();
-}
-
-template <unsigned char N>
-std::string OcadImporter::ConvertOcadString(const Generic::Utf8PascalString<N>& src) const
-{
-    throw NotImplementedError();
-}
-
-
-template <size_t N>
-std::string OcadImporter::ConvertOcadString(const Generic::Utf16String<N>& src) const
-{
-    throw NotImplementedError();
-}
-
-template <>
-std::string OcadImporter::ConvertOcadString<Generic::Custom8BitEncoding>(const char* src, uint len) const
-{
-    len = std::min(std::numeric_limits<int>::max(),static_cast<int>(strnlen(src,len)));
-
-    return std::string(src, len);
-}
-
-template <>
-std::string OcadImporter::ConvertOcadString<Generic::Utf8Encoding>(const char* src, uint len) const
-{
-    len = std::min(std::numeric_limits<int>::max(),static_cast<int>(strnlen(src,len)));
-
-    return std::string(src, len);
-
-}
-
-template <class E>
-std::string OcadImporter::ConvertOcadString(const char* src, uint len) const
-{
-    throw NotImplementedError();
-}
-
-template <class E>
-std::string OcadImporter::ConvertOcadString(const std::vector<std::byte>& data) const
-{
-    return ConvertOcadString<E>(data.data(),static_cast<uint>(data.size()));
-}
-
-std::string OcadImporter::ConvertOcadString(const char* src, uint max_len) const
-{
-    throw NotImplementedError();
-}
 
 template <class F>
 void OcadImporter::HandleStrings(const OcadFile<F>& file, std::initializer_list<StringHandler> handlers)
@@ -393,7 +395,8 @@ void OcadImporter::HandleStrings(const OcadFile<F>& file, std::initializer_list<
         {
             if (ocad_string.entry->type == handler.type)
             {
-                (this->*handler.callback)(ConvertOcadString<typename F::Encoding>(ocad_string));
+                auto param_string = std::string(reinterpret_cast<const char*>(ocad_string.entity),ocad_string.entry->size);
+                (this->*handler.callback)(param_string);
             }
         }
     }

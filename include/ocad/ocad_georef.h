@@ -13,7 +13,39 @@ struct OcadGeoref
 
     void SetupGeoref(Georeferencing& georef) const;
 
-    static OcadGeoref FromGeoref(const Georeferencing& georef);
 };
+
+inline std::ostream& operator<<(std::ostream& os, const OcadGeoref& georef)
+{
+    os
+    << "(a: " << georef.a
+    << " m: " << georef.m
+    << " x: " << georef.x
+    << " y: " << georef.y
+    << " i: " << georef.i
+    << " r: " << georef.r << ")";
+    return os;
+}
+
+inline void OcadGeoref::SetupGeoref(Georeferencing& georef) const
+{
+    if (m > 0)
+    {
+        georef.SetScaleDenominator(m);
+    }
+
+    if (r)
+    {
+
+    }
+
+    Spatial2D proj_ref_point{{static_cast<float>(x),static_cast<float>(y)}};
+    georef.SetProjectedRefPoints(proj_ref_point);
+    georef.SetCombinedScaleFactor(1.0);
+    georef.SetGrivation(std::isfinite(a) ? a : 0);
+}
+
+
+
 
 #endif //PROCEDURALFOLIAGEGENERATOR_OCADGEOREFFIELDS_H

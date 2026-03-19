@@ -16,20 +16,25 @@ using namespace Spatial;
 
 class Georeferencing
 {
+public:
+    Georeferencing();
 
-    void UpdateTransform();
-    Spatial2D ToProjectedCoords(Spatial2D coord);
+    void UpdateTransformation();
+    Spatial2D ToProjectedCoords(Spatial2D coord) const;
 
+    void SetMapRefPoints(Spatial2D coord);
+    void SetProjectedRefPoints(Spatial2D coords);
     void SetDeclination(double value);
     void SetGrivation(double value);
     void SetCombinedScaleFactor(double value);
     void SetAuxiliaryScaleFactor(double value);
     void SetScaleDenominator(unsigned int value);
-public:
+private:
+    boost::qvm::mat<double,2,2> to_projected_;
 
-    matrix<double> to_projection;
 
-    Spatial2D projected_ref_points;
+    Spatial2D projected_ref_points_;
+    Spatial2D map_ref_points_;
 
     double declination_;
     double grivation_;

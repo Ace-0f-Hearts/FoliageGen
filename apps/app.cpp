@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "../src/json_extractor.h"
+#include "foliage/generation.h"
 
 using string = std::string;
 
@@ -17,7 +18,7 @@ map_file_path_(std::move(path_to_map_file)),
 writer_(GeneratedDataWriter()),
 json_builder_(JsonBuilder()),
 species_attr_parser_(SpeciesAttrParser()),
-map_(std::make_shared<Map>()),
+map_(std::make_shared<OrienteeringMap>()),
 map_parser_(map_)
 {
 
@@ -61,7 +62,14 @@ void App::Init()
 
 void App::Generate()
 {
-    DLOG_F(INFO,"Generation started");
+    {
+
+        LOG_SCOPE_F(INFO,"Generation started");
+        auto seeds = Generation::InitializeSeeds(map_,10.f);
+
+        DLOG_F(INFO,"%lu seeds initialized",seeds.size());
+    }
+
     DLOG_F(INFO,"Generation ended");
 }
 

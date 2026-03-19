@@ -35,7 +35,8 @@ private:
     GeneratedDataWriter writer_;
     JsonBuilder json_builder_;
     SpeciesAttrParser species_attr_parser_;
-    std::shared_ptr<Orienteering::Map> map_;
+
+    std::shared_ptr<Orienteering::OrienteeringMap> map_;
     MapParser map_parser_;
 
 

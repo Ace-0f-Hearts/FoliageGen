@@ -19,6 +19,8 @@ target_include_directories(orienteering PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_compile_features(orienteering PUBLIC cxx_std_11)
 target_link_libraries(orienteering PUBLIC
         spatial
+        PRIVATE
+        glm::glm
 )
 
 source_group(

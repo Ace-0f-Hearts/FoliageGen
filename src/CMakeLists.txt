@@ -20,6 +20,15 @@ file(GLOB_RECURSE HEADER_FILES
         ${CMAKE_SOURCE_DIR}/*.h
         ${CMAKE_SOURCE_DIR}/*.hpp)
 
+file(GLOB ALGLIB_SOURCES
+        "${CMAKE_SOURCE_DIR}/external/alglib-cpp/src/*.cpp"
+)
+file(GLOB ALGLIB_HEADER
+        "${CMAKE_SOURCE_DIR}/external/alglib-cpp/src/*.h"
+)
+add_library(alglib STATIC ${ALGLIB_SOURCES})
+target_include_directories(alglib PUBLIC "${CMAKE_SOURCE_DIR}/external/alglib-cpp/src")
+
 add_library(foliage_generator_lib ${HEADER_FILES} ${SOURCE_FILES})
 
 add_subdirectory(botanics_math)
@@ -42,6 +51,7 @@ target_link_libraries(foliage_generator_lib
         PRIVATE
         jsoncpp
         loguru::loguru
+        alglib
 )
 
 source_group(

@@ -13,7 +13,6 @@ namespace Orienteering
     using string = std::string;
 
 
-    constexpr static auto NUMBERCOMPONENTS = 3u;
 
 
     enum SymbolType{

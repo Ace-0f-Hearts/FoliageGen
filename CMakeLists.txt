@@ -80,7 +80,14 @@ FETCHCONTENT_DECLARE(
         FIND_PACKAGE_ARGS COMPONENTS unit_test_framework REQUIRED
 )
 
-FetchContent_MakeAvailable(loguru jsoncpp libjpeg-turbo libpng CImg Boost)
+FetchContent_Declare(
+        glm
+        GIT_REPOSITORY	https://github.com/g-truc/glm.git
+        GIT_TAG 	0af55ccecd98d4e5a8d1fad7de25ba429d60e863 #refs/tags/1.0.1
+        FIND_PACKAGE_ARGS
+)
+
+FetchContent_MakeAvailable(loguru jsoncpp libjpeg-turbo libpng CImg Boost glm)
 
 
 add_subdirectory(src)

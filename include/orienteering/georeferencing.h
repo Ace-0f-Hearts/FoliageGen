@@ -7,6 +7,7 @@
 #include "spatial/spatial_coordinates.h"
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/geometry/strategies/transform/matrix_transformers.hpp>
+#include <glm/ext/matrix_float2x2.hpp>
 
 
 using namespace boost::numeric::ublas;
@@ -25,19 +26,19 @@ public:
     void SetMapRefPoints(Spatial2D coord);
     void SetProjectedRefPoints(Spatial2D coords);
     void SetDeclination(double value);
-    void SetGrivation(double value);
+    void SetGrivation(float value);
     void SetCombinedScaleFactor(double value);
     void SetAuxiliaryScaleFactor(double value);
     void SetScaleDenominator(unsigned int value);
 private:
-    boost::qvm::mat<double,2,2> to_projected_;
+    glm::mat2 to_projected_;
 
 
     Spatial2D projected_ref_points_;
     Spatial2D map_ref_points_;
 
     double declination_;
-    double grivation_;
+    float grivation_;
     double grivation_error_;
     double combined_scale_factor_;
     double auxiliary_scale_factor_;

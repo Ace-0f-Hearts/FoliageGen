@@ -3,8 +3,9 @@
 //
 #include <algorithm>
 #include <filesystem>
-#include <iostream>
-#include <boost/beast/http/field.hpp>
+
+#define LOGURU_WITH_STREAMS 1
+#include <loguru/loguru.hpp>
 #include <spatial/segmented_path.h>
 
 #include "utility/not_implemented_error.h"
@@ -142,7 +143,8 @@ void Spatial::SegmentedPath::SetPoint(const Spatial2D& point)
 
 BoundingBox2D Spatial::SegmentedPath::ComputeBoundingBox() const
 {
-    Spatial2D max, min = paths().front().points().front();
+    Spatial2D max = paths().front().points().front();
+    Spatial2D min = paths().front().points().front();
     for (auto path : paths())
     {
         for (auto point : path.points())
@@ -151,7 +153,8 @@ BoundingBox2D Spatial::SegmentedPath::ComputeBoundingBox() const
             {
                 max[0] = point[0];
             }
-            else if (min[0] > point[0])
+
+            if (min[0] > point[0])
             {
                 min[0] = point[0];
             }
@@ -160,14 +163,18 @@ BoundingBox2D Spatial::SegmentedPath::ComputeBoundingBox() const
             {
                 max[1] = point[1];
             }
-            else if (min[1] > point[1])
+
+            if (min[1] > point[1])
             {
                 min[1] = point[1];
             }
+
+            LOG_S(INFO) << "Point: " << point;
         }
     }
 
     BoundingBox bounding_box {min, max};
+    LOG_S(INFO) << "BBox: " << bounding_box;
 
     return bounding_box;
 }

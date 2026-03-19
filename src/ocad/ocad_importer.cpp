@@ -294,9 +294,14 @@ OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_poi
 {
     OcadCoordinate result;
 
-    float x = ocad_point.x;
-    float y = ocad_point.y;
+    int32_t ocad_x = ocad_point.x >> 8;
+    int32_t ocad_y = ocad_point.y >> 8;
 
+    constexpr auto invalid_value = int32_t(0x80000000u) >> 8; // ... so we use this value here.
+    if (ocad_x == invalid_value)
+        ocad_x = 0;
+    if (ocad_y == invalid_value)
+        ocad_y = 0;
     uint8_t flags = 0;
     if (ocad_point.IsFirstCurvePoint())
     {
@@ -311,10 +316,9 @@ OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_poi
         flags |= OcadCoordinate::DashPoint;
     }
 
-    auto map_coord = Spatial2D({x, y});
-    auto proj_coord = georef_.ToProjectedCoords(map_coord);
-
-    LOG_S(INFO) << "Conversion between map and projective coordinates: " << map_coord << " : " << proj_coord / 1000.f;
+    auto map_coord = Spatial2D({static_cast<float>(ocad_x), static_cast<float>(ocad_y)});
+    auto proj_coord = georef_.ToProjectedCoords(map_coord) / 100.;
+    LOG_S(INFO) << map_coord << " : " << proj_coord;
 
     result.coordinate() = proj_coord;
     result.flags() = flags;
@@ -374,7 +378,7 @@ void OcadImporter::ImportGeoreferencing(const std::string& param)
         }
     }
 
-    LOG_S(INFO) << "OCAD Georeferencing: " << ocad_georef;
+    LOG_S(INFO) << ocad_georef;
     ocad_georef.SetupGeoref(georef_);
 
     georef_.UpdateTransformation();

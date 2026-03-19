@@ -15,6 +15,8 @@
 , libz
 , libpng
 , libjpeg
+, alglib
+, glm
 }:
 
 # stdenv.mkDerivation now accepts a list of named parameters that describe
@@ -48,6 +50,9 @@ stdenv.mkDerivation {
     libjpeg
     libpng
     libz
+    alglib
+    glm
+
    ];
 
   installPhase = ''

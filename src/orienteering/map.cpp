@@ -8,8 +8,6 @@
 #include <orienteering/object.h>
 #include <orienteering/symbol.h>
 
-#include "../../apps/app.h"
-#include "orienteering/path_object.h"
 
 void OrienteeringMap::AppendSymbol(std::unique_ptr<Symbol> symbol)
 {

@@ -10,7 +10,9 @@
 #include "../src/json_builder.h"
 #include "../src/json_extractor.h"
 #include "../src/map_parser.h"
-#include "../src/species_attribute_parser.h"
+#include <foliage/species_attribute.h>
+#include "foliage/generator.h"
+#include "foliage/generator_builder.h"
 
 
 /*!

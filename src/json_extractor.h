@@ -6,7 +6,7 @@
 #define GENERATOR_JSONEXTRACTOR_H
 #include <json/value.h>
 
-#include "species_attribute.h"
+#include <foliage/species_attribute.h>
 
 
 class JsonExtractor

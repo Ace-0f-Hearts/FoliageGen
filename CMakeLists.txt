@@ -48,6 +48,12 @@ FetchContent_Declare(
         FIND_PACKAGE_ARGS NAMES jsoncpp
 )
 
+FETCHCONTENT_DECLARE(
+        libz
+        GIT_REPOSITORY https://github.com/madler/zlib
+        FIND_PACKAGE_ARGS
+)
+
 FetchContent_Declare(
         libpng
         GIT_REPOSITORY https://github.com/pnggroup/libpng
@@ -75,7 +81,6 @@ ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
 FETCHCONTENT_DECLARE(
         Boost
         GIT_REPOSITORY https://github.com/boostorg/boost
-#        GIT_SUBMODULES libs/test libs/heap
         GIT_SHALLOW TRUE
         FIND_PACKAGE_ARGS COMPONENTS unit_test_framework REQUIRED
 )
@@ -87,7 +92,7 @@ FetchContent_Declare(
         FIND_PACKAGE_ARGS
 )
 
-FetchContent_MakeAvailable(loguru jsoncpp libjpeg-turbo libpng CImg Boost glm)
+FetchContent_MakeAvailable(loguru jsoncpp libz libjpeg-turbo libpng CImg Boost glm)
 
 
 add_subdirectory(src)

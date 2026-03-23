@@ -24,6 +24,7 @@ public:
     [[nodiscard]] Dim2 Dim() const;
 protected:
     [[nodiscard]] float At(Coord2 const& coord) const;
+    void At(Coord2 const& coord, float value);
     [[nodiscard]] CImg<> map() const;
 private:
     CImg<> map_;

@@ -48,6 +48,8 @@ namespace Orienteering
         [[nodiscard]] std::vector<std::unique_ptr<Symbol>>& GetSymbols();
         [[nodiscard]] std::vector<std::unique_ptr<Object>>& GetObjects();
 
+        void UpdateBoundingBox();
+
         void ClearSymbols();
         void ClearObjects();
         void Clear();

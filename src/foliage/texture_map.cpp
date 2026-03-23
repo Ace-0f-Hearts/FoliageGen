@@ -22,6 +22,13 @@ float TextureMap::At(Coord2 const& coord) const
     return value;
 }
 
+void TextureMap::At(Coord2 const& coord, float value)
+{
+    assert(!std::isinf(value));
+    assert(!std::isnan(value));
+    map_(coord.x, coord.y) = value;
+}
+
 CImg<> TextureMap::map() const
 {
     return map_;

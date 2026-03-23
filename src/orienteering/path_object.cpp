@@ -20,11 +20,7 @@ PathObject::PathObject(Symbol* symbol) : Object(symbol)
     }
 }
 
-bool PathObject::IsClosed() const
-{
-    return coordinates_.IsClosed();
 
-}
 
 bool PathObject::Contains(const Spatial::Spatial2D& point) const
 {

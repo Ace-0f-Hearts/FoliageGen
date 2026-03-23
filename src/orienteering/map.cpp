@@ -19,6 +19,7 @@ void OrienteeringMap::AppendObject(std::unique_ptr<Object> obj)
 {
     assert(obj.get());
     objects_.push_back(std::move(obj));
+    UpdateBoundingBox();
 }
 
 size_t Orienteering::OrienteeringMap::GetSymbolOfTypeAmount(SymbolType type) const
@@ -110,4 +111,38 @@ void Orienteering::OrienteeringMap::RemoveSymbol(Symbol& symbol)
 {
     RemoveObjectsOfSymbol(symbol);
     symbols_.erase(std::ranges::remove_if(symbols_,[&symbol](const auto& s) -> bool {return *s == symbol;}).begin(), symbols_.end());
+}
+
+void OrienteeringMap::UpdateBoundingBox()
+{
+    Spatial::Spatial2D min, max;
+    min = bounding_box_.min();
+    max = bounding_box_.max();
+    for (auto& object: objects_)
+    {
+        auto bbox = object->bounding_box();
+
+        if (min[0] > bbox.min()[0])
+        {
+            min[0] = bbox.min()[0];
+        }
+
+        if (min[1] > bbox.min()[1])
+        {
+            min[1] = bbox.min()[1];
+        }
+
+        if (max[0] < bbox.max()[0])
+        {
+            max[0] = bbox.max()[0];
+        }
+
+        if (max[1] < bbox.max()[1])
+        {
+            max[1] = bbox.max()[1];
+        }
+
+    }
+
+    bounding_box_ = {min,max};
 }

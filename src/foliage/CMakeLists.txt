@@ -13,14 +13,17 @@ file(GLOB HEADER_LIST CONFIGURE_DEPENDS
         ${ProceduralFoliageGenerator_SOURCE_DIR}/include/foliage/*.hpp
 )
 
+find_package(PNG REQUIRED)
+find_package(JPEG REQUIRED)
 add_library(foliage ${HEADER_LIST} ${SOURCE_LIST})
-
 
 
 target_include_directories(foliage PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_compile_features(foliage PUBLIC cxx_std_11)
 target_link_libraries(foliage PRIVATE
         loguru::loguru
+        PNG::PNG
+        JPEG::JPEG
 )
 source_group(
         TREE "${PROJECT_SOURCE_DIR}/include"

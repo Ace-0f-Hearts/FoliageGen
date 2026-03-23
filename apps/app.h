@@ -39,8 +39,10 @@ private:
     SpeciesAttrParser species_attr_parser_;
 
     std::shared_ptr<Orienteering::OrienteeringMap> map_;
+    std::shared_ptr<HeightMap> height_map_;
     MapParser map_parser_;
 
+    GeneratorBuilder generator_builder_;
 
     void Init();
     void Generate();

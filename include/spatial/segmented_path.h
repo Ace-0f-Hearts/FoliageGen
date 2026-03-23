@@ -22,7 +22,6 @@ namespace Spatial
         [[nodiscard]] bool IsPointOnPath(const Spatial2D& point, float distance_threshold = 0.f) const;
 
         [[nodiscard]] bool Contains(const Spatial2D& point) const;
-        [[nodiscard]] bool IsClosed() const;
 
 
         BoundingBox<2> ComputeBoundingBox() const;

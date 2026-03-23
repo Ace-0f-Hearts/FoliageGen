@@ -16,16 +16,12 @@ bool Spatial::SegmentedPath::IsPointInsideArea(const Spatial2D& point) const
     // Assumption is that: all areas/holes are fully inside the other areas that are to the left
     bool inside = false;
 
-    if (IsClosed())
+
+    for (auto path : paths())
     {
-        for (auto path : paths())
-        {
-            if (path.IsPointInsideArea(point))
-                inside = !inside;
-        }
+        if (path.IsPointInsideArea(point))
+            inside = !inside;
     }
-    else
-        throw std::logic_error("Path does not define area, but queried about area intersection!");
 
     return inside;
 }
@@ -168,21 +164,26 @@ BoundingBox2D Spatial::SegmentedPath::ComputeBoundingBox() const
             {
                 min[1] = point[1];
             }
-
-            LOG_S(INFO) << "Point: " << point;
+            LOG_S(INFO) << point;
         }
     }
 
     BoundingBox bounding_box {min, max};
-    LOG_S(INFO) << "BBox: " << bounding_box;
+
+    LOG_S(INFO) << bounding_box;
+    assert(
+      std::ranges::all_of(paths(),[bounding_box](auto path)
+      {
+          return std::ranges::all_of(path.points(),[bounding_box](auto point)
+          {
+              return bounding_box.Contains(point);
+          });
+      })
+    );
 
     return bounding_box;
 }
 
-bool Spatial::SegmentedPath::IsClosed() const
-{
-    return paths_.front().points().front() == paths_.back().points().back();
-}
 
 Spatial::SegmentedPath::SegmentedPath(bool subdividing) : subdividing_(subdividing)
 {

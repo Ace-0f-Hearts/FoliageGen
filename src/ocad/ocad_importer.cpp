@@ -318,7 +318,7 @@ OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_poi
 
     auto map_coord = Spatial2D({static_cast<float>(ocad_x), static_cast<float>(ocad_y)});
     auto proj_coord = georef_.ToProjectedCoords(map_coord) / 100.;
-    LOG_S(INFO) << map_coord << " : " << proj_coord;
+
 
     result.coordinate() = proj_coord;
     result.flags() = flags;

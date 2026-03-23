@@ -52,6 +52,10 @@ target_link_libraries(foliage_generator_lib
         jsoncpp
         loguru::loguru
         alglib
+
+#        libjpeg-turbo
+#        libpng
+#        CImg
 )
 
 source_group(

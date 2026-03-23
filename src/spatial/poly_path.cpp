@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
+#define LOGURU_WITH_STREAMS 1
+#include <loguru/loguru.hpp>
 #include <spatial/poly_path.h>
 
 #include "utility/not_implemented_error.h"
@@ -17,22 +19,25 @@ bool Spatial::PolyPath::IsClosed() const
 
 bool Spatial::PolyPath::IsPointInsideArea(Spatial2D point) const
 {
+    //TODO: This is faulty atm
     auto inside = false;
     if (points_.size() > 2)
     {
         auto prev = points_.back();
         for (auto curr : points_)
         {
-            if ( ((curr[1] > point[1]) != (prev[1] > point[1])) &&
-                 (point[0] < (prev[0] - curr[0]) *
-                  (point[1] - curr[1]) / (prev[1] - curr[1]) + curr[0]) )
+            if ( curr[1] > point[1] != prev[1] > point[1] &&
+                 point[0] < (prev[0] - curr[0]) *
+                  (point[1] - curr[1]) / (prev[1] - curr[1]) + curr[0])
             {
                 inside = !inside;
+                // LOG_S(INFO) << point << "\t" << prev << "\t" << curr;
             }
-
+            // LOG_S(INFO) << "Not intersecting\t" << prev << "\t" << curr;
             prev = curr;
         }
     }
+    // LOG_S(INFO) << "Debug";
     return inside;
 }
 

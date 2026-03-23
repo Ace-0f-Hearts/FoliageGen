@@ -19,6 +19,10 @@ target_include_directories(spatial PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 target_compile_features(spatial PUBLIC cxx_std_11)
 
+target_link_libraries(spatial PRIVATE
+        loguru
+)
+
 source_group(
         TREE "${PROJECT_SOURCE_DIR}/include"
         PREFIX "Header Files"

@@ -34,6 +34,8 @@ public:
      * @return
      */
     [[nodiscard]] float DistanceTo(Spatial::SpatialCoordinate<D> point) const;
+    [[nodiscard]] bool Contains(Spatial::SpatialCoordinate<D> point) const;
+
 
     [[nodiscard]] BoundingBox GetSubspaceByIndex(int index) const;
 
@@ -191,6 +193,14 @@ template <unsigned int D>
 bool BoundingBox<D>::operator==(const BoundingBox& rhs) const
 {
     return max_ == rhs.max_ && min_ == rhs.min_;
+}
+
+
+template <unsigned int D>
+bool BoundingBox<D>::Contains(Spatial::SpatialCoordinate<D> point) const
+{
+
+    return DistanceTo(point) == 0.f;
 }
 
 using BoundingBox2D = BoundingBox<2>;

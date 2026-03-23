@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "../src/json_extractor.h"
-#include "foliage/generation.h"
+#include "foliage/generator.h"
 
 using string = std::string;
 
@@ -31,7 +31,8 @@ App::~App()
 
 App::App(const App& other) :
     descriptor_file_path_(other.descriptor_file_path_),
-    map_file_path_(other.map_file_path_), map_parser_(other.map_parser_)
+    map_file_path_(other.map_file_path_),
+    map_parser_(other.map_parser_)
 {
 }
 
@@ -53,9 +54,25 @@ void App::Init()
         auto attributes = JsonExtractor::Extract(value);
         DLOG_F(INFO,"JSON attributes extracted");
 
+        DLOG_F(INFO,"Diffusion zones extracted");
+        //TODO: Implemenent Diffusion Zone parsing
+        std::vector<DiffusionZone> zones;
+
         DLOG_F(INFO,"Map parsing started");
         map_parser_.Run(map_file_path_.c_str());
         DLOG_F(INFO,"Map parsing successful");
+
+        DLOG_F(INFO,"Generator building started");
+
+        generator_builder_.SeOrienteeringMap(map_);
+        generator_builder_.SetHeightMap(height_map_);
+        generator_builder_.SetDiffusionZones(zones);
+        generator_builder_.SetSpeciesAttributes(attributes);
+        generator_builder_.SetDensity(10.f);
+        if (!generator_builder_.Build())
+            throw std::logic_error("Error building generator");
+
+        DLOG_F(INFO,"Generator building successful");
     }
     DLOG_F(INFO,"App initialized");
 }
@@ -65,9 +82,12 @@ void App::Generate()
     {
 
         LOG_SCOPE_F(INFO,"Generation started");
-        auto seeds = Generation::InitializeSeeds(map_,10.f);
+        generator_builder_.generator()->Start();
 
-        DLOG_F(INFO,"%lu seeds initialized",seeds.size());
+
+
+        LOG_F(INFO,"Generation successful");
+
     }
 
     DLOG_F(INFO,"Generation ended");

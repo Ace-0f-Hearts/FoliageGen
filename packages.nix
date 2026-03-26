@@ -17,6 +17,7 @@
 , libjpeg
 , alglib
 , glm
+, nanoflann
 }:
 
 # stdenv.mkDerivation now accepts a list of named parameters that describe
@@ -52,7 +53,7 @@ stdenv.mkDerivation {
     libz
     alglib
     glm
-
+    nanoflann
    ];
 
   installPhase = ''

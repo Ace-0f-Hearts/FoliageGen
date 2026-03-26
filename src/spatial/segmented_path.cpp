@@ -164,13 +164,11 @@ BoundingBox2D Spatial::SegmentedPath::ComputeBoundingBox() const
             {
                 min[1] = point[1];
             }
-            LOG_S(INFO) << point;
         }
     }
 
     BoundingBox bounding_box {min, max};
 
-    LOG_S(INFO) << bounding_box;
     assert(
       std::ranges::all_of(paths(),[bounding_box](auto path)
       {

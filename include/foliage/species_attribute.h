@@ -15,10 +15,11 @@ struct SpeciesAttribute
     using string = std::string;
 
     SpeciesAttribute() = delete;
-    SpeciesAttribute(string  name, const Range growth, const Gaussian slope , const Gaussian elevation)
-        : name(std::move(name)), growth(growth), slope(slope), elevation(elevation)
+    SpeciesAttribute(const uint id,string  name, const Range growth, const Gaussian slope , const Gaussian elevation)
+        : id(id),name(std::move(name)), growth(growth), slope(slope), elevation(elevation)
     {}
 
+    uint id;
     string name;
     Range growth;
     Gaussian slope;

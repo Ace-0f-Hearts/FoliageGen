@@ -91,7 +91,7 @@ private:
     constexpr static int kDefault_value = -1;
     constexpr static int kNumber_of_cells = 4;
     constexpr static size_t kRoot = 0;
-    constexpr static size_t kMax_tree_size = 4096; //TODO: Recalc
+    constexpr static size_t kMax_tree_size = 40960 * 1024; //TODO: Recalc
 
 
     void Load(std::vector<Spatial::Spatial2D> data, const BoundingBox2D& bounding_box);

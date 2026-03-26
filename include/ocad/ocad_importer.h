@@ -22,7 +22,7 @@ namespace Ocad
     class OcadImporter : public Importer
     {
     public:
-        OcadImporter(const std::filesystem::path& path, std::shared_ptr<OrienteeringMap> map);
+        OcadImporter(const std::filesystem::path& path, std::shared_ptr<OrienteeringMap> map,const std::vector<SymbolAttribute>& attributes);
 
         constexpr static size_t kBuffer_size = 4096 * 8;
 
@@ -48,6 +48,15 @@ namespace Ocad
 
         void ImportGeoreferencing(const std::string& param);
 
+        template <class F>
+        void ImportColors(const OcadFile<F>& file);
+
+        void ImportColor(const std::string& param);
+
+
+
+        bool SetupAreaSymbol(Symbol* symbol, bool fill_on, const Ocad::Generic);
+
         template<class OcadBaseSymbol>
         bool SetupSymbol(Symbol* ocad_symbol, const OcadBaseSymbol& base);
 
@@ -58,15 +67,7 @@ namespace Ocad
         OcadCoordinate ConvertOcadPoint(const Generic::OcadCoord& ocad_point);
 
         float ConvertOcadAngle(int ocad_angle);
-
-
-        // template <class E>
-        // std::string ConvertOcadString(const std::vector<std::byte>* data) const;
-        // template <class E>
-        // std::string ConvertOcadString(const std::vector<std::byte> data) const;
-
-        // template <class E,class Str>
-        // std::string ConvertOcadString(Str& data) const;
+        const MapColor ConvertColor(int ocad_color);
 
 
 

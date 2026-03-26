@@ -11,13 +11,15 @@
 #include <utility>
 
 #include "ocad/ocad_file_format.h"
+#include "orienteering/symbol_attribute.h"
 #include "utility/not_implemented_error.h"
 
 FileFormatRegistry::FileFormatRegistry() : file_formats_({new OcadFileFormat()})
 {
 }
 
-std::unique_ptr<Importer> FileFormatRegistry::CreateImporter(const std::filesystem::path& path, std::shared_ptr<Orienteering::OrienteeringMap> map) const
+std::unique_ptr<Importer> FileFormatRegistry::CreateImporter(const std::filesystem::path& path, std::shared_ptr<Orienteering::OrienteeringMap> map, const std::vector<
+                                                             SymbolAttribute>& attributes) const
 {
     auto extension = path.extension().string();
     std::cout << extension << std::endl;
@@ -33,7 +35,7 @@ std::unique_ptr<Importer> FileFormatRegistry::CreateImporter(const std::filesyst
         return nullptr;
     }
 
-    return format ? format->CreateImporter(path, std::move(map)) : nullptr;
+    return format ? format->CreateImporter(path, std::move(map),attributes) : nullptr;
 }
 
 std::vector<FileFormat*>& FileFormatRegistry::file_formats()

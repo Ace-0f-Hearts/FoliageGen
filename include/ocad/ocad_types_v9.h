@@ -247,7 +247,7 @@ namespace Ocad
 
         struct AreaSymbol
         {
-            ;
+
             using Element = PointSymbolElement;
 
             BaseSymbol base;

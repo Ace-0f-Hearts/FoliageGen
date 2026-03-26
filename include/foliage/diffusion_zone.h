@@ -10,6 +10,7 @@ struct DiffusionZone
 {
   Spatial::Spatial2D center_;
   float radius_;
+  uint id;
 };
 
 #endif //PROCEDURALFOLIAGEGENERATOR_DIFFUSION_ZONE_H

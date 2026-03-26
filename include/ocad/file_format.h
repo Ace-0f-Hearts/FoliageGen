@@ -8,6 +8,7 @@
 
 #include "importer.h"
 #include "orienteering/map.h"
+#include "orienteering/symbol_attribute.h"
 
 class FileFormat
 {
@@ -17,7 +18,8 @@ public:
     FileFormat(std::string name,std::vector<string> extensions);
     virtual ~FileFormat() = default;
 
-    [[nodiscard]] virtual std::unique_ptr<Importer> CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::OrienteeringMap> map) const;
+    [[nodiscard]] virtual std::unique_ptr<Importer> CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::OrienteeringMap> map, const std::vector<SymbolAttribute>&
+                                                                   attributes) const;
     virtual bool UnderstandsHeader(const char *buffer, int total_read) const;
 
     [[nodiscard]] std::vector<string> extensions() const;

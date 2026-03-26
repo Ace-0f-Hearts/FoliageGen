@@ -11,6 +11,7 @@
 
 #include "file_format.h"
 #include "orienteering/map.h"
+#include "orienteering/symbol_attribute.h"
 
 class FileFormatRegistry
 {
@@ -22,7 +23,8 @@ public:
     FileFormatRegistry& operator=(FileFormatRegistry) = delete;
     FileFormatRegistry& operator=(FileFormatRegistry const&) = delete;
 
-    [[nodiscard]] std::unique_ptr<Importer>  CreateImporter(const std::filesystem::path& path, std::shared_ptr<Orienteering::OrienteeringMap> map) const;
+    [[nodiscard]] std::unique_ptr<Importer>  CreateImporter(const std::filesystem::path& path, std::shared_ptr<Orienteering::OrienteeringMap> map, const std::vector<
+                                                            SymbolAttribute>& attributes) const;
 
     std::vector<FileFormat*>& file_formats();
 private:

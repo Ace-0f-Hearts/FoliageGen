@@ -24,6 +24,7 @@ target_link_libraries(foliage PRIVATE
         loguru::loguru
         PNG::PNG
         JPEG::JPEG
+        nanoflann::nanoflann
 )
 source_group(
         TREE "${PROJECT_SOURCE_DIR}/include"

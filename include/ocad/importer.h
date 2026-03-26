@@ -8,12 +8,13 @@
 #include <filesystem>
 
 #include "orienteering/map.h"
+#include "orienteering/symbol_attribute.h"
 
 class Importer
 {
 public:
     Importer() = delete;
-    Importer(const std::filesystem::path& path, std::shared_ptr<Orienteering::OrienteeringMap> map);
+    Importer(const std::filesystem::path& path, std::shared_ptr<Orienteering::OrienteeringMap> map, const std::vector<SymbolAttribute>& attributes);
     Importer(const Importer&) = delete;
     Importer(Importer&&) = delete;
 
@@ -25,6 +26,7 @@ protected:
 
     std::filesystem::path path_;
     std::shared_ptr<Orienteering::OrienteeringMap> map_;
+    std::vector<SymbolAttribute> attributes_;
     std::ifstream input_stream_;
 };
 

@@ -94,6 +94,8 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(loguru jsoncpp libz libjpeg-turbo libpng CImg Boost glm)
 
+find_package(nanoflann REQUIRED)
+
 
 add_subdirectory(src)
 add_subdirectory(apps)

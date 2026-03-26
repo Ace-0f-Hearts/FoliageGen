@@ -1,8 +1,12 @@
 //
 // Created by ace on 2026-02-02.
 //
+
+#define LOGURU_WITH_STREAMS 1
+
 #include <iostream>
 #include <boost/heap/priority_queue.hpp>
+#include <loguru/loguru.hpp>
 #include <spatial/quadtree.h>
 #include <spatial/spatial_coordinates.h>
 #include <spatial/bounding_box.h>
@@ -376,7 +380,8 @@ void Quadtree::AllocateItemIndex(const int index_to_allocate, const BoundingBox2
     int child_idx = child_path + parent_idx * kNumber_of_cells;
 
 
-
+    assert(child_idx < index_tree_.size());
+    LOG_S(INFO) << index_to_allocate;
     while (index_tree_[child_idx] > item_count_)
     {
         bbox = bbox.GetSubspaceOf(point_to_allocate);
@@ -390,21 +395,26 @@ void Quadtree::AllocateItemIndex(const int index_to_allocate, const BoundingBox2
     {
 
 
+        assert(child_idx < index_tree_.size());
         auto prev_bbox = bbox;
         auto prev_idx = index_tree_[child_idx];
 
         do
         {
+            LOG_S(INFO) << child_idx;
             parent_idx = child_idx;
             int cell = parent_idx;
 
 
+
+            assert(prev_idx < data_.size());
             prev_bbox = prev_bbox.GetSubspaceOf(data_[prev_idx]);
             AllocateNode(cell,prev_bbox); // Allocate parent of both previous and current idx
 
             centroid = prev_bbox.GetCentroid();
             child_path = centroid.PositionOther(data_[prev_idx]);
             child_idx = child_path + (1+cell) * kNumber_of_cells;
+            assert(prev_idx < index_tree_.size());
             index_tree_[child_idx] = prev_idx;
 
             child_path = centroid.PositionOther(data_[index_to_allocate]);

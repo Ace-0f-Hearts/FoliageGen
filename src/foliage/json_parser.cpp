@@ -2,21 +2,21 @@
 // Created by ace on 2026-01-08.
 //
 
-#include "species_attribute_parser.h"
+#include "foliage//json_parser.h"
 
 #include <iostream>
 #include <loguru.hpp>
 
 using Value = Json::Value;
 
-void SpeciesAttrParser::Parse()
+void JsonParser::Parse()
 {
     const Json::CharReaderBuilder builder;
     const auto reader = builder.newCharReader();
     reader->parse(content_.c_str(),content_.c_str() + content_.size(),&root_,&err_);
 }
 
-void SpeciesAttrParser::Run(const char* filename)
+void JsonParser::Run(const char* filename)
 {
     Open(filename);
     Read();
@@ -24,29 +24,21 @@ void SpeciesAttrParser::Run(const char* filename)
     Validate();
 }
 
-Value SpeciesAttrParser::GetAttributes()
+Value JsonParser::GetAttributes()
 {
     return root_;
 }
 
-bool SpeciesAttrParser::Validate()
+bool JsonParser::Validate()
 {
     auto isValid = true;
 
     CHECK_F(isValid = isValid && !root_.empty(),"Empty JSON parsed or empty JSON array.");
-    CHECK_F(isValid = isValid && root_.isArray(),"Invalid JSON parsed: Root is not array.");
-
-    for(auto& attr : root_)
-    {
-        if (!isValid) break;
-        CHECK_F(isValid = isValid && attr.isObject(),"Invalid item in JSON.");
-        CHECK_F(isValid = isValid && attr.size() == NUMBER_OF_MEMBERS,"Invalid number of members in item.");
-    }
 
     return isValid;
 }
 
-void SpeciesAttrParser::Open(const char* filename)
+void JsonParser::Open(const char* filename)
 {
     data_file_.open(filename);
     if (!data_file_.is_open())
@@ -57,13 +49,14 @@ void SpeciesAttrParser::Open(const char* filename)
 }
 
 
-void SpeciesAttrParser::Read()
+void JsonParser::Read()
 {
-    sstream_ << data_file_.rdbuf();
-    content_ = sstream_.str();
+    std::ostringstream sstream;
+    sstream << data_file_.rdbuf();
+    content_ = sstream.str();
 }
 
-void SpeciesAttrParser::Cleanup()
+void JsonParser::Cleanup()
 {
     data_file_.close();
     content_.clear();

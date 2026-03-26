@@ -13,9 +13,9 @@ OcadFileFormat::OcadFileFormat() : FileFormat("OCD",{".ocd"})
 OcadFileFormat::~OcadFileFormat()
 = default;
 
-std::unique_ptr<Importer> OcadFileFormat::CreateImporter(std::filesystem::path path, std::shared_ptr<OrienteeringMap> map) const
+std::unique_ptr<Importer> OcadFileFormat::CreateImporter(std::filesystem::path path, std::shared_ptr<OrienteeringMap> map, const std::vector<SymbolAttribute>& attributes) const
 {
-    return std::make_unique<Ocad::OcadImporter>(path, map);
+    return std::make_unique<Ocad::OcadImporter>(path, map,attributes);
 }
 
 bool OcadFileFormat::UnderstandsHeader(const char* buffer, int total_read) const

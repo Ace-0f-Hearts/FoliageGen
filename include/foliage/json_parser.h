@@ -8,7 +8,7 @@
 #include <fstream>
 #include <json/json.h>
 
-class SpeciesAttrParser
+class JsonParser
 {
     using string = std::string;
     using String = Json::String;
@@ -27,13 +27,14 @@ private:
     void Open(const char* filename);
 
     bool Validate();
-    std::ostringstream sstream_;
     std::ifstream data_file_;
     string content_;
     Value root_;
     String err_;
 
 };
+
+
 
 
 #endif //GENERATOR_SPECIESATTRPARSER_H

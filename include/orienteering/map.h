@@ -12,6 +12,8 @@
 #include <orienteering/symbol.h>
 #include <orienteering/object.h>
 
+#include "map_color.h"
+
 
 namespace Orienteering
 {
@@ -34,17 +36,25 @@ namespace Orienteering
 
         OrienteeringMap(const OrienteeringMap&) = default;
 
+        void AppendColor(MapColor color);
         void AppendSymbol(std::unique_ptr<Symbol> symbol);
         void AppendObject(std::unique_ptr<Object> obj);
 
+        [[nodiscard]] size_t GetColorsAmount() const;
         [[nodiscard]] size_t GetSymbolOfTypeAmount(SymbolType type) const;
         [[nodiscard]] size_t GetObjectOfTypeAmount(ObjectType type) const;
         [[nodiscard]] size_t GetSymbolAmount() const;
         [[nodiscard]] size_t GetObjectAmount() const;
         [[nodiscard]] size_t GetObjectOfSymbolAmount(Symbol* symbol) const;
 
+        std::vector<Object*> GetObjectsOfType(ObjectType type) const;
+        std::vector<Object*> GetObstructingAreas() const;
+        std::vector<Object*> GetFreeAreas() const;
+
         Symbol* GetSymbolById(size_t id);
         [[nodiscard]] BoundingBox2D GetBoundingBox() const;
+
+        [[nodiscard]] std::vector<MapColor>& GetColors();
         [[nodiscard]] std::vector<std::unique_ptr<Symbol>>& GetSymbols();
         [[nodiscard]] std::vector<std::unique_ptr<Object>>& GetObjects();
 
@@ -57,6 +67,7 @@ namespace Orienteering
         void RemoveObjectsOfSymbol(Symbol& symbol);
         void RemoveSymbol(Symbol& symbol);
     private:
+        std::vector<MapColor> colors_;
         std::vector<std::unique_ptr<Symbol>> symbols_;
         std::vector<std::unique_ptr<Object>> objects_;
         BoundingBox2D bounding_box_;

@@ -20,12 +20,13 @@
 #include "ocad/ocad_paramater_stream_reader.h"
 #include "ocad/ocad_types_v2018.h"
 #include "orienteering/georeferencing.h"
+#include "orienteering/map_color.h"
 #include "utility/not_implemented_error.h"
 
 using namespace Ocad;
 
-OcadImporter::OcadImporter(const std::filesystem::path& path, std::shared_ptr<OrienteeringMap> map) :
-    Importer(path, map),
+OcadImporter::OcadImporter(const std::filesystem::path& path, std::shared_ptr<OrienteeringMap> map,const std::vector<SymbolAttribute>& attributes) :
+    Importer(path, map,attributes),
     buffer_(kBuffer_size), georef_(), ocad_version_(0)
 {
     input_stream_.open(path_.string(), std::ios::in | std::ios::binary);
@@ -104,6 +105,7 @@ void OcadImporter::ImportImplementation()
         LOG_F(ERROR, "Incomplete or missing header!");
 
     ImportGeoreferencing(file);
+    ImportColors(file);
     ImportSymbols(file);
     ImportObjects(file);
 }
@@ -165,6 +167,9 @@ void OcadImporter::ImportSymbols(OcadFile<F>& file)
 {
     for (auto symbol : file.symbols())
     {
+
+
+
         if (symbol.entity->status != Ocad::SymbolHidden)
             ImportSymbol(*symbol.entity);
     }
@@ -191,17 +196,33 @@ bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
     symbol->id(base.sym_num);
     auto symbol_is_relevant = false;
 
-    if (base.object_type == SymbolTypePoint)
+    auto id = symbol->id();
+
+    auto idx = std::ranges::find_if(attributes_.cbegin(),attributes_.cend(),[id](const auto& attr)
+    {
+        LOG_S(INFO) << attr.id << " -> " << id;
+        return attr.id == id;
+    });
+    if (idx != attributes_.end())
+    {
+        symbol_is_relevant = true;
+        symbol->SetCultivated(idx->flags  & Cultivated);
+        symbol->SetDirectional(idx->flags & Directional);
+        symbol->SetObstructing(idx->flags & Obstructing);
+    }
+
+
+    if (symbol_is_relevant && base.object_type == SymbolTypePoint)
     {
         symbol->type(PointS);
         symbol_is_relevant = true;
     }
-    else if (base.object_type == SymbolTypeLine)
+    else if (symbol_is_relevant && base.object_type == SymbolTypeLine)
     {
         symbol->type(PathS);
         symbol_is_relevant = true;
     }
-    else if (base.object_type == SymbolTypeArea)
+    else if (symbol_is_relevant && base.object_type == SymbolTypeArea)
     {
         symbol->type(AreaS);
         symbol_is_relevant = true;
@@ -323,6 +344,84 @@ OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_poi
     result.coordinate() = proj_coord;
     result.flags() = flags;
     return result;
+}
+
+template <class F>
+void OcadImporter::ImportColors(const OcadFile<F>& file)
+{
+    HandleStrings(file, {{9, &OcadImporter::ImportColor}});
+}
+
+void OcadImporter::ImportColor(const std::string& param)
+{
+    OcadParameterStreamReader parameters(param);
+
+    const std::string name = parameters.Value();
+    int number;
+    bool number_ok;
+
+    Cmyk cmyk{0,0,0,0};
+    bool overprinting = false;
+    float opacity = 1.f;
+    std::string spot_color_name;
+
+    while (parameters.ReadNext())
+    {
+        float f_value;
+        int i_value;
+        auto param_value = parameters.Value();
+
+        switch (parameters.Key())
+        {
+        case 'n':
+            number = std::stoi(param_value);
+            break;
+        case 'c':
+            f_value = std::stof(param_value);
+            if (f_value >= 0 & f_value <= 100.f)
+                cmyk.c = f_value;
+            break;
+        case 'm':
+            f_value = std::stof(param_value);
+            if (f_value >= 0 & f_value <= 100.f)
+                cmyk.m = f_value;
+            break;
+        case 'y':
+            f_value = std::stof(param_value);
+            if (f_value >= 0 && f_value <= 100.f)
+                cmyk.y = f_value;
+            break;
+        case 'k':
+            f_value = std::stof(param_value);
+            if (f_value >= 0 && f_value <= 100)
+                cmyk.k = f_value;
+            break;
+        case 'o':
+            overprinting = std::stoi(param_value);
+            break;
+        case 't':
+            f_value = std::stof(param_value);
+            if (f_value >= 0 && f_value <= 100)
+                opacity = f_value;
+            break;
+        case 's':
+            spot_color_name = param_value;
+            break;
+        case 'p':
+
+            break;
+        default:
+            break;
+        }
+    }
+    MapColor color;
+
+    int color_prio = map_->GetColorsAmount();
+
+    color.cmyk = cmyk;
+    color.priority = color_prio;
+    color.opacity = opacity;
+    map_->AppendColor(cmyk);
 }
 
 template <class F>

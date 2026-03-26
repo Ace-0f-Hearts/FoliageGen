@@ -10,11 +10,11 @@ MapParser::MapParser(std::shared_ptr<Orienteering::OrienteeringMap> map) : map_(
 {
 }
 
-void MapParser::Run(const std::filesystem::path filename)
+void MapParser::Run(const std::filesystem::path filename, const std::vector<SymbolAttribute>& attributes)
 {
     FileFormatRegistry registry;
 
-    auto importer = registry.CreateImporter(filename,map_);
+    auto importer = registry.CreateImporter(filename,map_,attributes);
     if (!importer->DoImport())
     {
         LOG_F(ERROR, "Error occurred during import!");
@@ -26,12 +26,16 @@ void MapParser::Run(const std::filesystem::path filename)
                    "\tNumber of objects: %lu\n"
                    "\t\tNumber of point objects: %lu\n"
                    "\t\tNumber of path objects: %lu\n"
-                   "\t\tNumber of area objects: %lu",
+                   "\t\tNumber of area objects: %lu\n"
+                   "\t\tNumber of obstructing area objects: %lu\n"
+                   "\t\tNumber of vegetation supporting area objects: %lu\n",
                    map_->GetSymbolAmount(),
                    map_->GetObjectAmount(),
                    map_->GetObjectOfTypeAmount(PointO),
                    map_->GetObjectOfTypeAmount(PathO),
-                   map_->GetObjectOfTypeAmount(AreaO)
+                   map_->GetObjectOfTypeAmount(AreaO),
+                   map_->GetObstructingAreas().size(),
+                   map_->GetFreeAreas().size()
                    );
     }
 

@@ -6,12 +6,15 @@
 #include <utility>
 #include <ocad/file_format.h>
 
+#include "orienteering/symbol_attribute.h"
+
 FileFormat::FileFormat(std::string name,std::vector<string> extensions) : name_(name),extensions_(std::move(extensions))
 {
 }
 
 
-std::unique_ptr<Importer> FileFormat::CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::OrienteeringMap> map) const
+std::unique_ptr<Importer> FileFormat::CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::OrienteeringMap> map, const std::vector<SymbolAttribute>&
+                                                     attributes) const
 {
     LOG_F(WARNING,"Format does not support import");
     return nullptr;

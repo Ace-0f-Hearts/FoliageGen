@@ -12,12 +12,13 @@
 
 using string = std::string;
 
-App::App(std::filesystem::path path_to_description_file, std::filesystem::path path_to_map_file) :
+App::App(std::filesystem::path path_to_description_file, std::filesystem::path path_to_map_file, std::filesystem::path symbol_set_file_path) :
 descriptor_file_path_(std::move(path_to_description_file)),
 map_file_path_(std::move(path_to_map_file)),
+symbol_set_file_path_(std::move(symbol_set_file_path)),
 writer_(GeneratedDataWriter()),
 json_builder_(JsonBuilder()),
-species_attr_parser_(SpeciesAttrParser()),
+json_parser_(JsonParser()),
 map_(std::make_shared<OrienteeringMap>()),
 map_parser_(map_)
 {
@@ -32,6 +33,7 @@ App::~App()
 App::App(const App& other) :
     descriptor_file_path_(other.descriptor_file_path_),
     map_file_path_(other.map_file_path_),
+    symbol_set_file_path_(other.symbol_set_file_path_),
     map_parser_(other.map_parser_)
 {
 }
@@ -47,19 +49,29 @@ void App::Init()
 {
     {
         LOG_SCOPE_F(INFO,"App initialization started");
-        species_attr_parser_.Run(descriptor_file_path_.c_str());
-        auto value = species_attr_parser_.GetAttributes();
-        species_attr_parser_.Cleanup();
-        DLOG_F(INFO,"JSON value parsed from file");
-        auto attributes = JsonExtractor::Extract(value);
-        DLOG_F(INFO,"JSON attributes extracted");
+
+        DLOG_F(INFO,"Species descriptor parsing started");
+        json_parser_.Run(descriptor_file_path_.c_str());
+        auto value = json_parser_.GetAttributes();
+        json_parser_.Cleanup();
+        auto attributes = JsonExtractor::ExtractSpeciesAttributes(value);
+        DLOG_F(INFO,"Species descriptors extracted");
+
+
+        DLOG_F(INFO,"Symbol set extraction started");
+
+        json_parser_.Run(symbol_set_file_path_.c_str());
+        value = json_parser_.GetAttributes();
+        json_parser_.Cleanup();
+        auto symbol_set = JsonExtractor::ExtractSymbolAttributes(value);
+        DLOG_F(INFO,"Symbol set extracted: %lu", symbol_set.size());
 
         DLOG_F(INFO,"Diffusion zones extracted");
         //TODO: Implemenent Diffusion Zone parsing
         std::vector<DiffusionZone> zones;
 
         DLOG_F(INFO,"Map parsing started");
-        map_parser_.Run(map_file_path_.c_str());
+        map_parser_.Run(map_file_path_.c_str(), symbol_set);
         DLOG_F(INFO,"Map parsing successful");
 
         DLOG_F(INFO,"Generator building started");

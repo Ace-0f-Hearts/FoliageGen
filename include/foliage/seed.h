@@ -11,6 +11,7 @@ enum SeedFlag
 {
     Initial = 0x1,
     Active = 0x2,
+    Classified = 0x4,
 };
 
 struct Seed
@@ -22,6 +23,7 @@ struct Seed
 
     bool IsActive() const { return flags & Active; };
     bool IsInitial() const {return flags & Initial; };
+    bool IsClassifed() const { return flags & Classified; };
 
     Spatial::Spatial2D coordinate;
     float scale;

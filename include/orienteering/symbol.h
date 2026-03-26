@@ -8,6 +8,8 @@
 #include <array>
 #include <cstdint>
 
+#include "map_color.h"
+
 namespace Orienteering
 {
     using string = std::string;
@@ -47,6 +49,8 @@ namespace Orienteering
         [[nodiscard]] uint32_t id() const;
         void id(uint32_t value);
 
+        MapColor* color();
+
         [[nodiscard]] uint8_t flags() const;
 
         [[nodiscard]] bool IsArea() const;
@@ -63,8 +67,12 @@ namespace Orienteering
         void SetObstructing(bool obstructing);
         void SetDirectional(bool directional);
 
+        void SetColor(MapColor* color);
+
+
 
     private:
+        MapColor* color_{};
         string name_;
         /**
          * Unique ID to symbol

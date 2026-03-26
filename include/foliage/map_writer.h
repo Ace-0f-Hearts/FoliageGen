@@ -7,17 +7,20 @@
 
 #include "foliage_map.h"
 
-class FoliageMapWriter
+class MapWriter
 {
     public:
     static void Write(FoliageMap map);
 
+
 };
 static const std::string kDefault_path = "/mnt/hobby-partition/Dev/ThesisWork/ProceduralFoliageGenerator/FoliageGen/testing/snapshot.jpeg";
+static const std::string kDefault_path2 = "/mnt/hobby-partition/Dev/ThesisWork/ProceduralFoliageGenerator/FoliageGen/testing/area_snapshot.jpeg";
 
-inline void FoliageMapWriter::Write(FoliageMap map)
+inline void MapWriter::Write(FoliageMap map)
 {
     map.map().save(kDefault_path.c_str());
 }
+
 
 #endif //PROCEDURALFOLIAGEGENERATOR_FOLIAGE_MAP_WRITER_H

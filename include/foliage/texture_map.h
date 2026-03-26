@@ -26,6 +26,7 @@ protected:
     [[nodiscard]] float At(Coord2 const& coord) const;
     void At(Coord2 const& coord, float value);
     [[nodiscard]] CImg<> map() const;
+    [[nodiscard]] CImg<>& map();
 private:
     CImg<> map_;
 };

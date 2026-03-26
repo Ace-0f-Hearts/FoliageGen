@@ -9,6 +9,7 @@
 #include <alglib/optimization.h>
 
 #include "foliage/foliage_map_writer.h"
+#include "foliage/map_writer.h"
 #include "foliage/foliage_snapshot_maker.h"
 
 using namespace alglib;
@@ -52,6 +53,13 @@ void Generator::Start()
 
     ChooseInitialSeeds();
     LabelInitialSeeds();
+
+    FoliageMap f_map(CImg<>(bbox.width(),bbox.height(),1,3,500.f));
+
+    FoliageSnapshotMaker::CreateSnapshot(f_map,map_->GetObjectsOfType(AreaO), bbox);
+
+    FoliageSnapshotMaker::CreateSnapshot(f_map,seeds_ref(), bbox, 10);
+    MapWriter::Write(f_map);
     LabelRestOfSeeds();
     MaximizeCoveredArea();
 }

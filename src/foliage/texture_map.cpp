@@ -33,3 +33,7 @@ CImg<> TextureMap::map() const
 {
     return map_;
 }
+CImg<>& TextureMap::map()
+{
+    return map_;
+}

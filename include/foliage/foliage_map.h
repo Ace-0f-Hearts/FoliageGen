@@ -10,10 +10,13 @@
 using namespace cimg_library;
 class FoliageMap : public TextureMap
 {
-    friend class FoliageMapWriter;
+    friend class MapWriter;
+    friend class FoliageSnapshotMaker;
 public:
     FoliageMap() = delete;
     FoliageMap(CImg<> const& map) : TextureMap(map) {}
 };
+
+
 
 #endif //PROCEDURALFOLIAGEGENERATOR_FOLIAGE_MAP_H

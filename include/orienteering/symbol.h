@@ -49,7 +49,7 @@ namespace Orienteering
         [[nodiscard]] uint32_t id() const;
         void id(uint32_t value);
 
-        MapColor* color();
+        const MapColor* color();
 
         [[nodiscard]] uint8_t flags() const;
 
@@ -67,12 +67,12 @@ namespace Orienteering
         void SetObstructing(bool obstructing);
         void SetDirectional(bool directional);
 
-        void SetColor(MapColor* color);
+        void SetColor(const MapColor* color);
 
 
 
     private:
-        MapColor* color_{};
+        const MapColor* color_{};
         string name_;
         /**
          * Unique ID to symbol

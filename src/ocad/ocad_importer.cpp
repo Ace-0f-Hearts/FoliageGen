@@ -19,6 +19,7 @@
 #include "ocad/ocad_georef.h"
 #include "ocad/ocad_paramater_stream_reader.h"
 #include "ocad/ocad_types_v2018.h"
+#include "ocad/ocad_types_v9.h"
 #include "orienteering/georeferencing.h"
 #include "orienteering/map_color.h"
 #include "utility/not_implemented_error.h"
@@ -165,42 +166,94 @@ void OcadImporter::ImportObject(const O& ocad_object)
 template <class F>
 void OcadImporter::ImportSymbols(OcadFile<F>& file)
 {
-    for (auto symbol : file.symbols())
+    for (auto symbol_idx : file.symbols())
     {
+        auto symbol = std::make_unique<Symbol>();
+        auto& ocad_symbol = *symbol_idx.entity;
+        symbol->id(ocad_symbol.sym_num);
+
+        // TODO: Refactor the symbol type evalutation to happen here OR add F template parameter to ImportSymbol and SetupSymbol
+        if (symbol_idx.entity->status != Ocad::SymbolHidden)
+        {
+            switch (ocad_symbol.object_type)
+            {
+            case (SymbolTypePoint):
+                {
+                    ImportPointSymbol(reinterpret_cast<const typename F::PointSymbol&>(ocad_symbol));
+                }
+            case (SymbolTypeLine):
+                {
+                    ImportLineSymbol(reinterpret_cast<const typename F::LineSymbol&>(ocad_symbol));
+                }
+            case (SymbolTypeArea):
+                {
+                    ImportAreaSymbol(reinterpret_cast<const typename F::AreaSymbol&>(ocad_symbol));
+                }
+            default:
+                {
+                    // Irrelevant object
+                    break;
+                }
+            }
+        }
+    }
+}
 
 
+template <class S>
+void OcadImporter::ImportPointSymbol(const S& ocad_symbol)
+{
+    auto symbol = std::make_unique<Symbol>();
 
-        if (symbol.entity->status != Ocad::SymbolHidden)
-            ImportSymbol(*symbol.entity);
+
+    if (SetupSymbol(symbol.get(), ocad_symbol))
+    {
+        symbol->SetColor(ComputePointColor(ocad_symbol.data_size,ocad_symbol.begin_of_elements));
+        symbol_index_.emplace(symbol->id(),symbol.get());
+        map_->AppendSymbol(std::move(symbol));
     }
 }
 
 template <class S>
-void OcadImporter::ImportSymbol(const S& base)
+void OcadImporter::ImportLineSymbol(const S& ocad_symbol)
 {
-
-
     auto symbol = std::make_unique<Symbol>();
-    if (SetupSymbol(symbol.get(), base))
+
+
+    if (SetupSymbol(symbol.get(), ocad_symbol))
     {
+        symbol->SetColor(ComputeLineColor(ocad_symbol,ocad_symbol.generic));
         symbol_index_.emplace(symbol->id(),symbol.get());
         map_->AppendSymbol(std::move(symbol));
     }
-
 }
+
+template <class S>
+void OcadImporter::ImportAreaSymbol(const S& ocad_symbol)
+{
+    auto symbol = std::make_unique<Symbol>();
+
+
+    if (SetupSymbol(symbol.get(), ocad_symbol))
+    {
+        symbol->SetColor(ComputeAreaColor(ocad_symbol.generic.fill_on_V9,ocad_symbol.generic,ocad_symbol.data_size,ocad_symbol.begin_of_elements));
+        symbol_index_.emplace(symbol->id(),symbol.get());
+        map_->AppendSymbol(std::move(symbol));
+    }
+}
+
+
 
 
 template <class OcadBaseSymbol>
 bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
 {
-    symbol->id(base.sym_num);
-    auto symbol_is_relevant = false;
 
+    bool symbol_is_relevant = false;
     auto id = symbol->id();
 
     auto idx = std::ranges::find_if(attributes_.cbegin(),attributes_.cend(),[id](const auto& attr)
     {
-        LOG_S(INFO) << attr.id << " -> " << id;
         return attr.id == id;
     });
     if (idx != attributes_.end())
@@ -211,22 +264,6 @@ bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
         symbol->SetObstructing(idx->flags & Obstructing);
     }
 
-
-    if (symbol_is_relevant && base.object_type == SymbolTypePoint)
-    {
-        symbol->type(PointS);
-        symbol_is_relevant = true;
-    }
-    else if (symbol_is_relevant && base.object_type == SymbolTypeLine)
-    {
-        symbol->type(PathS);
-        symbol_is_relevant = true;
-    }
-    else if (symbol_is_relevant && base.object_type == SymbolTypeArea)
-    {
-        symbol->type(AreaS);
-        symbol_is_relevant = true;
-    }
 
     return symbol_is_relevant;
 }
@@ -485,7 +522,262 @@ void OcadImporter::ImportGeoreferencing(const std::string& param)
 
 float OcadImporter::ConvertOcadAngle(int ocad_angle)
 {
-    throw NotImplementedError();
+    return M_PI / 180.f * (0.1f * ((ocad_angle + 3600) % 3600));
+}
+
+const MapColor* OcadImporter::ComputePointColor(std::size_t data_size, const OcadTypesV9::PointSymbolElement* elements)
+{
+
+
+    bool color_found = false;
+
+    const MapColor* computed_color = nullptr;
+
+    for (size_t i = 0; i < data_size && !color_found; ++i)
+    {
+        const OcadTypesV9::PointSymbolElement* element = reinterpret_cast<const OcadTypesV9::PointSymbolElement*>(&reinterpret_cast<const Ocad::Generic::OcadCoord*>(elements)[i]);
+        const Ocad::Generic::OcadCoord* const coords = reinterpret_cast<const Ocad::Generic::OcadCoord*>(element) + i + 2;
+
+        const MapColor* inner_color = nullptr;
+        const MapColor* outer_color = nullptr;
+        float outer_width = 0.f;
+        float inner_radius = 0.f;
+
+        switch (element->type)
+        {
+        case OcadTypesV9::PointSymbolElement::TypeDot:
+            {
+                if (element->diameter > 0)
+                {
+                    inner_color = ConvertColor(element->color);
+                    inner_radius = ConvertLength(element->diameter) / 2;
+                    outer_width = 0;
+                }
+                break;
+            }
+        case OcadTypesV9::PointSymbolElement::TypeCircle:
+            {
+                decltype(element->diameter) element_radius = (element->diameter - element->line_width) / 2;
+                if (element_radius > 0 && element->line_width > 0)
+                {
+                    inner_radius = ConvertLength(element_radius);
+                    outer_color = ConvertColor(element->color);
+                    outer_width = ConvertLength(element->line_width);
+                }
+                break;
+
+            }
+        case OcadTypesV9::PointSymbolElement::TypeLine:
+            {
+                if (element->line_width > 0)
+                {
+                    computed_color = ConvertColor(element->color);
+                }
+                break;
+
+            }
+        case OcadTypesV9::PointSymbolElement::TypeArea:
+            {
+
+                computed_color = ConvertColor(element->color);
+                break;
+            }
+        default:
+            {
+                throw std::runtime_error("Type of element didn't match any known ones.");
+            }
+        }
+
+        if (computed_color)
+        {
+            color_found = true;
+        }
+        else if (inner_color && outer_color)
+        {
+            if (inner_color->IsWhite())
+            {
+                computed_color = outer_color;
+            }
+            else if (outer_color->IsWhite())
+            {
+                computed_color = inner_color;
+            }
+            else
+                computed_color = (std::powf(inner_radius,2) * M_PI > std::powf(inner_radius + outer_width, 2) * M_PI - std::powf(inner_radius,2) * M_PI) ? inner_color : outer_color;
+            color_found = true;
+        }
+        else if (inner_color)
+        {
+            computed_color = inner_color;
+            color_found = true;
+        }
+        else if (outer_color)
+        {
+            computed_color = outer_color;
+            color_found = true;
+        }
+
+    }
+    return computed_color;
+}
+
+template<class S>
+const MapColor* OcadImporter::ComputeLineColor(
+    const S& ocad_symbol,const OcadTypesV9::LineSymbolGeneric attributes)
+{
+    const MapColor* computed_color = nullptr;
+
+    const MapColor* main_color = nullptr;
+    const MapColor* border_color = nullptr;
+    const MapColor* right_border_color = nullptr;
+
+    float main_line_width = 0.f;
+    float border_width = 0.f;
+    float right_border_width = 0.f;
+
+    main_line_width = ConvertLength(attributes.line_width);
+    main_color = main_line_width ? ConvertColor(attributes.line_color) : nullptr;
+
+
+    auto const is_visible_double_line = [](auto const& ocad_attributes)
+    {
+        return ocad_attributes.double_mode != OcadTypesV9::LineSymbolGeneric::DoubleLineOff && (ocad_attributes.double_width > 0 || ocad_attributes.double_left_width > 0 || ocad_attributes.double_right_width > 0);
+    };
+
+    if (is_visible_double_line(ocad_symbol.generic))
+    {
+        if (main_line_width && attributes.double_flags & OcadTypesV9::LineSymbolGeneric::DoubleFlagFillColorOn)
+            main_color = ConvertColor(attributes.double_color);
+
+        border_width = ConvertLength(attributes.double_left_width);
+        border_color = border_width ? ConvertColor(attributes.double_left_color) : nullptr;
+
+
+        right_border_width = ConvertLength(attributes.double_right_width);
+        right_border_color = right_border_width ? ConvertColor(attributes.double_right_color) : nullptr;
+
+    }
+
+
+    if (main_color)
+    {
+        if (border_color)
+        {
+            if (right_border_color)
+            {
+                if (main_line_width > 2 * border_width)
+                    computed_color = main_line_width > 2 * right_border_width ? main_color : right_border_color;
+                else
+                    computed_color = border_width > right_border_width ? border_color : right_border_color;
+            }
+            else
+            {
+                computed_color = main_line_width > 2 * border_width ? main_color : border_color;
+            }
+        }
+        else
+        {
+            if (right_border_color)
+            {
+                computed_color = main_line_width > 2 * right_border_width ? main_color : right_border_color;
+            }
+            else
+                computed_color = main_color;
+        }
+    }
+
+
+    // No color was able to be computed from line, left and right borders, trying line decorations
+    if (!computed_color)
+    {
+        // TODO: SetupLineSymbolPointsSymbols
+        const MapColor* mid_symbol_color = nullptr;
+        const MapColor* dash_symbol_color = nullptr;
+        const MapColor* start_symbol_color = nullptr;
+        const MapColor* end_symbol_color = nullptr;
+        const Ocad::Generic::OcadCoord* coords = reinterpret_cast<const Generic::OcadCoord*>(ocad_symbol.begin_of_elements);
+
+        if (attributes.primary_data_size > 0)
+        {
+            // Mid symbol color
+            computed_color = ComputePointColor(attributes.primary_data_size,ocad_symbol.begin_of_elements);
+            return computed_color;
+        }
+        else if (attributes.secondary_data_size > 0)
+        {
+            // Mid symbol color
+            computed_color = ComputePointColor(attributes.secondary_data_size,ocad_symbol.begin_of_elements);
+            return computed_color;
+        }
+        if (attributes.start_data_size > 0)
+        {
+            // Start symbol color
+            computed_color = ComputePointColor(attributes.start_data_size,reinterpret_cast<const OcadTypesV9::PointSymbolElement*>(coords));
+            return computed_color;
+        }
+        if (attributes.end_data_size > 0)
+        {
+            // End symbol color
+            computed_color = ComputePointColor(attributes.end_data_size,reinterpret_cast<const OcadTypesV9::PointSymbolElement*>(coords));
+            return computed_color;
+        }
+
+        if (attributes.corner_data_size > 0)
+        {
+            // Dash symbol color
+            computed_color = ComputePointColor(attributes.corner_data_size,reinterpret_cast<const OcadTypesV9::PointSymbolElement*>(coords));
+            return computed_color;
+        }
+
+
+    }
+    return computed_color;
+}
+
+int OcadImporter::ConvertLength(int16_t ocad_length) const
+{
+    return ConvertLength<int16_t,int>(ocad_length);
+}
+
+int OcadImporter::ConvertLength(uint16_t ocad_length) const
+{
+    return ConvertLength<uint16_t,int>(ocad_length);
+}
+
+template <class T, class R>
+R OcadImporter::ConvertLength(T ocad_length) const
+{
+    return static_cast<R>(ocad_length) * 10;
+}
+
+const MapColor* OcadImporter::ComputeAreaColor(bool fill_on,
+                                         const OcadTypesV9::AreaSymbolGeneric& ocad_symbol, std::size_t data_size,
+                                         const OcadTypesV9::PointSymbolElement* elements)
+{
+    auto computed_color = fill_on ? ConvertColor(ocad_symbol.fill_color) : nullptr;
+
+    if (!computed_color && ocad_symbol.hatch_mode != Ocad::Generic::HatchNone && ocad_symbol.hatch_line_width)
+    {
+        computed_color = ConvertLength(ocad_symbol.hatch_line_width) ?  ConvertColor(ocad_symbol.hatch_color) : nullptr;
+    }
+
+    if (!computed_color && ocad_symbol.structure_mode != Ocad::Generic::StructureNone && ocad_symbol.structure_height && ocad_symbol.structure_width && data_size)
+    {
+        computed_color = ComputePointColor(data_size,elements);
+    }
+
+    return computed_color;
+}
+
+const MapColor* OcadImporter::ConvertColor(int ocad_color)
+{
+
+    if (!color_index_.contains(ocad_color))
+    {
+        LOG_F(WARNING,"Color %d not found, ignoring it.",ocad_color);
+        return nullptr;
+    }
+    return color_index_[ocad_color];
 }
 
 

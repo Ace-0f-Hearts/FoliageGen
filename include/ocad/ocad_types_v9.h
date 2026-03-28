@@ -121,11 +121,19 @@ namespace Ocad
             u16 type;
             u16 flags;
             u16 color;
-            u16 lineWidth;
+            u16 line_width;
             u16 diameter;
-            u16 numOfCoords;
+            u16 num_of_coords;
             u16 RESERVED1;
             u16 RESERVED2;
+
+            enum PointSymbolElementTypes
+            {
+                TypeLine = 1,
+                TypeArea = 2,
+                TypeCircle = 3,
+                TypeDot = 4
+            };
         };
 
         struct PointSymbol : BaseSymbol
@@ -134,9 +142,9 @@ namespace Ocad
 
             BaseSymbol base;
 
-            u16 dataSize;
+            u16 data_size;
             u16 RESERVED;
-            Element* element;
+            Element* begin_of_elements;
         };
 
 
@@ -215,7 +223,7 @@ namespace Ocad
             BaseSymbol base;
             LineSymbolGeneric generic;
 
-            Element* element;
+            Element* begin_of_elements;
         };
 
         struct LineTextSymbol
@@ -254,11 +262,11 @@ namespace Ocad
 
             u16 RESERVED_MEMBER1; // formerly known as area_flags
             u16 fill_on;
-            AreaSymbolGeneric common;
+            AreaSymbolGeneric generic;
             u16 RESERVED_MEMBER2;
             u16 data_size;
 
-            Element* begin_of_elements[1];
+            Element* begin_of_elements;
         };
 
         struct TextSymbol

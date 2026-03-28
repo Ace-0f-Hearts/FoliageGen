@@ -12,6 +12,8 @@ struct Cmyk
 
     ~Cmyk()  = default;
 
+    bool IsWhite() const;
+
     float c;
     float m;
     float y;
@@ -25,11 +27,22 @@ struct MapColor
 
     ~MapColor() = default;
 
+    bool IsWhite() const;
+
     Cmyk cmyk;
     int priority;
     float opacity;
 };
 
+inline bool Cmyk::IsWhite() const
+{
+    return c == 0.f && m == 0.f && y == 0.f && k == 0.f;
+}
+
+inline bool MapColor::IsWhite() const
+{
+    return cmyk.IsWhite();
+}
 
 
 #endif //PROCEDURALFOLIAGEGENERATOR_MAP_COLOR_H

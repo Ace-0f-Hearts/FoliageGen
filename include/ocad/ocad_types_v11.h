@@ -67,9 +67,9 @@ namespace Ocad
 
             BaseSymbol base;
 
-            u16 dataSize;
+            u16 data_size;
             u16 RESERVED_MEMBER;
-            Element* element;
+            Element* begin_of_elements;
         };
 
         struct LineSymbol
@@ -78,7 +78,7 @@ namespace Ocad
             BaseSymbol base;
 
             LineSymbolGeneric generic;
-            Element* element;
+            Element* begin_of_elements;
         };
 
         struct AreaSymbol
@@ -86,18 +86,18 @@ namespace Ocad
             using Element = OcadTypesV10::Format::AreaSymbol::Element;
 
             BaseSymbol base;
-            u32 borderSymbol;
+            u32 border_symbol;
             AreaSymbolGeneric generic;
             u16 RESERVED_MEMBER;
-            u16 dataSize;
-            Element* element;
+            u16 data_size;
+            Element* begin_of_elements;
         };
 
         struct TextSymbol
         {
             BaseSymbol base;
 
-            Generic::Utf8PascalString<31> fontName;
+            Generic::Utf8PascalString<31> font_name;
             BasicTextAttributes basic;
             SpecialtextAttributes special;
             u16 RESERVED_MEMBER;
@@ -108,7 +108,7 @@ namespace Ocad
         {
             BaseSymbol base;
 
-            Generic::Utf8PascalString<31> fontName;
+            Generic::Utf8PascalString<31> font_name;
             BasicTextAttributes basic;
             FramingAttributes framing;
         };

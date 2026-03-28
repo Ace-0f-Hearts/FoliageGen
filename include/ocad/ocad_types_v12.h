@@ -38,14 +38,14 @@ namespace Ocad
             BaseSymbol base;
 
             u32 border_symbol;
-            AreaSymbolGeneric common;
+            AreaSymbolGeneric generic;
             u8 structure_variation_x;
             u8 structure_variation_y;
             u16 structure_minimum_dist;
             u16 RESERVED_MEMBER;
             u16 data_size;
 
-            Element begin_of_elements[1];
+            Element* begin_of_elements;
         };
 
         struct Object

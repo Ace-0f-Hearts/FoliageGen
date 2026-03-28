@@ -13,6 +13,7 @@
 #include "ocad_coordinate.h"
 #include "ocad_helper.h"
 #include "ocad_types.h"
+#include "ocad_types_v9.h"
 #include "orienteering/georeferencing.h"
 #include "orienteering/point_object.h"
 
@@ -38,6 +39,15 @@ namespace Ocad
         template <class O>
         void ImportSymbol(const O& object);
 
+        template <class S>
+        void ImportPointSymbol(const S& ocad_symbol);
+        template <class S>
+        void ImportLineSymbol(const S& ocad_symbol);
+        template <class S>
+        void ImportAreaSymbol(const S& ocad_symbol);
+
+
+
         template <class F>
         void ImportObjects(OcadFile<F>& file);
         template <class O>
@@ -54,8 +64,10 @@ namespace Ocad
         void ImportColor(const std::string& param);
 
 
-
-        bool SetupAreaSymbol(Symbol* symbol, bool fill_on, const Ocad::Generic);
+        const MapColor* ComputePointColor(std::size_t data_size, const OcadTypesV9::PointSymbolElement* elements);
+        template<class S>
+        const MapColor* ComputeLineColor(const S& ocad_symbol,const OcadTypesV9::LineSymbolGeneric attributes);
+        const MapColor* ComputeAreaColor(bool fill_on, const OcadTypesV9::AreaSymbolGeneric& ocad_symbol, std::size_t data_size, const OcadTypesV9::PointSymbolElement* elements);
 
         template<class OcadBaseSymbol>
         bool SetupSymbol(Symbol* ocad_symbol, const OcadBaseSymbol& base);
@@ -66,8 +78,13 @@ namespace Ocad
 
         OcadCoordinate ConvertOcadPoint(const Generic::OcadCoord& ocad_point);
 
+        int ConvertLength(int16_t ocad_length) const;
+        int ConvertLength(uint16_t ocad_length) const;
+        template <class T, class R>
+        R ConvertLength(T ocad_length) const;
+
         float ConvertOcadAngle(int ocad_angle);
-        const MapColor ConvertColor(int ocad_color);
+        const MapColor* ConvertColor(int ocad_color);
 
 
 
@@ -93,6 +110,7 @@ namespace Ocad
         uint8_t ocad_version_;
         // TODO: Take care of pointer at delete
         std::map<unsigned int, Symbol*> symbol_index_;
+        std::map<int, MapColor*> color_index_;
     };
 }
 

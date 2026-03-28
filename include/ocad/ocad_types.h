@@ -94,6 +94,19 @@ namespace Ocad
             };
         };
 
+        enum HatchMode
+        {
+            HatchNone = 0,
+            HatchSingle = 1,
+            HatchCross = 2
+        };
+        enum StructureMode
+        {
+            StructureNone = 0,
+            StructureAlignedRows = 1,
+            StructureShiftedRows = 1
+        };
+
         struct Custom8BitEncoding
         {
         };

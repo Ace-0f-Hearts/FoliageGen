@@ -28,14 +28,16 @@ void MapParser::Run(const std::filesystem::path filename, const std::vector<Symb
                    "\t\tNumber of path objects: %lu\n"
                    "\t\tNumber of area objects: %lu\n"
                    "\t\tNumber of obstructing area objects: %lu\n"
-                   "\t\tNumber of vegetation supporting area objects: %lu\n",
+                   "\t\tNumber of vegetation supporting area objects: %lu\n"
+                   "\t\tNumber of colors: %lu\n",
                    map_->GetSymbolAmount(),
                    map_->GetObjectAmount(),
                    map_->GetObjectOfTypeAmount(PointO),
                    map_->GetObjectOfTypeAmount(PathO),
                    map_->GetObjectOfTypeAmount(AreaO),
                    map_->GetObstructingAreas().size(),
-                   map_->GetFreeAreas().size()
+                   map_->GetFreeAreas().size(),
+                   map_->GetColorsAmount()
                    );
     }
 

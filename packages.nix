@@ -12,7 +12,7 @@
 , loguru
 , doxygen
 , boost
-, libz
+#, zlib
 , libpng
 , libjpeg
 , alglib
@@ -50,7 +50,7 @@ stdenv.mkDerivation {
     boost
     libjpeg
     libpng
-    libz
+#    zlib
     alglib
     glm
     nanoflann

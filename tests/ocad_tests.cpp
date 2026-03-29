@@ -30,19 +30,19 @@ public:
 BOOST_FIXTURE_TEST_CASE(Test_FileFormatRegistry_FileFormatCorrectlyDeduced,F)
 {
     FileFormatRegistry registry{};
-    BOOST_CHECK(registry.CreateImporter(test_map_path_,map_) != nullptr);
+    BOOST_CHECK(registry.CreateImporter(test_map_path_,map_, {}) != nullptr);
 }
 
 BOOST_FIXTURE_TEST_CASE(Text_FileFormatRegistry_CorrectExtensionButEmptyFileProducesNothing,F)
 {
     FileFormatRegistry registry{};
-    BOOST_CHECK(registry.CreateImporter(test_empty_,map_) == nullptr);
+    BOOST_CHECK(registry.CreateImporter(test_empty_,map_, {}) == nullptr);
 }
 
 BOOST_FIXTURE_TEST_CASE(Text_FileFormatRegistry_CorrectExtensionButBadContentProducesNothing,F)
 {
     FileFormatRegistry registry{};
-    BOOST_CHECK(registry.CreateImporter(test_gibberish_,map_) == nullptr);
+    BOOST_CHECK(registry.CreateImporter(test_gibberish_,map_, {}) == nullptr);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -63,7 +63,7 @@ public:
 
 BOOST_FIXTURE_TEST_CASE(Test_OcadImporter_ConstructionBehavingAsExpected,F)
 {
-    Ocad::OcadImporter imp(test_map_path_,map_);
+    Ocad::OcadImporter imp(test_map_path_,map_, {});
 
     imp.DoImport();
 

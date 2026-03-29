@@ -78,7 +78,6 @@ Range JsonExtractor::ParseRange(Value& root)
 std::vector<SymbolAttribute> JsonExtractor::ExtractSymbolAttributes(Value& root)
 {
     std::vector<SymbolAttribute> attributes;
-        LOG_S(INFO) << root.toStyledString();
     for (auto item: root)
     {
         attributes.push_back(ParseSymbolAttribute(item));

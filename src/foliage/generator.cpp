@@ -351,18 +351,53 @@ void Generator::LabelRestOfSeeds()
 
 void Generator::MaximizeCoveredArea()
 {
-    double epsg = 1e-7;
-    double epsf = 0.0;
-    double epsx = 0.0;
-    ae_int_t maxits = 0;
 
-    minbleicstate state;
-    minbleicreport report;
 }
 
-void Generator::GradientFunc(const real_1d_array& x, double& func, real_1d_array& grad, void* ptr)
+void GradientFunc(const real_1d_array& x, double& func, real_1d_array& grad, void* ptr)
 {
     func = -(pow(x[0], 2) + pow(x[1], 2));
     grad[0] = -2 * x[0];
     grad[1] = -2 * x[1];
 }
+
+void Generator::MaximizeSeedRadii(std::vector<double> radii, std::vector<double> bnd_lower,std::vector<double> bnd_upper, std::vector<double> lin_constr)
+{
+    try
+    {
+        real_1d_array r;
+        r.setcontent(radii.size(),radii.data());
+
+        double epsg = 1e-7;
+        double epsf = 0.0;
+        double epsx = 0.0;
+        ae_int_t maxits = 0;
+
+        minbleicstate state;
+        minbleicreport report;
+
+        minbleiccreate(r,state);
+
+        real_1d_array bndl; bndl.setcontent(bnd_lower.size(),bnd_lower.data());
+        real_1d_array bndu; bndu.setcontent(bnd_upper.size(),bnd_upper.data());
+
+        minbleicsetbc(state,bndl,bndu);
+
+        real_2d_array c; //TODO: Figure out how to init this
+
+        integer_1d_array ct = "[-1]";
+        minbleicsetlc(state,c,ct);
+
+        minbleicsetcond(state,epsg, epsf, epsx,maxits);
+
+        alglib::minbleicoptimize(state,GradientFunc);
+
+        minbleicresults(state,r,report);
+    } catch (alglib::ap_error& e)
+    {
+        std::cout << "ALGLIB Error: " << e.msg << std::endl;
+    }
+
+}
+
+

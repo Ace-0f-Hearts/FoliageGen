@@ -72,12 +72,12 @@ private:
     void LabelInitialSeeds();
     void LabelRestOfSeeds();
     void MaximizeCoveredArea();
+    void MaximizeSeedRadii(std::vector<double> seeds, std::vector<double> box_constr,std::vector<double> bnd_upper, std::vector<double> lin_constr);
 
     std::vector<Seed> InitializeSeedsOnObject(float density, Object& object);
     void Randomize(std::vector<Seed>& seeds, float density, float factor = 1.f, float angle = 0);
     void Cull(std::vector<Seed>& seeds, const Object& area);
 
-    void GradientFunc(const real_1d_array& x, double& func, real_1d_array& grad, void* ptr);
 
     std::shared_ptr<OrienteeringMap> map_;
     std::shared_ptr<HeightMap> height_map_;

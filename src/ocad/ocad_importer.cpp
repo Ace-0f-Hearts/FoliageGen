@@ -205,9 +205,9 @@ void OcadImporter::ImportPointSymbol(const S& ocad_symbol)
 {
     auto symbol = std::make_unique<Symbol>();
 
-
     if (SetupSymbol(symbol.get(), ocad_symbol))
     {
+        symbol->type(PointS);
         symbol->SetColor(ComputePointColor(ocad_symbol.data_size,ocad_symbol.begin_of_elements));
         symbol_index_.emplace(symbol->id(),symbol.get());
         map_->AppendSymbol(std::move(symbol));
@@ -220,8 +220,10 @@ void OcadImporter::ImportLineSymbol(const S& ocad_symbol)
     auto symbol = std::make_unique<Symbol>();
 
 
+
     if (SetupSymbol(symbol.get(), ocad_symbol))
     {
+        symbol->type(PathS);
         symbol->SetColor(ComputeLineColor(ocad_symbol,ocad_symbol.generic));
         symbol_index_.emplace(symbol->id(),symbol.get());
         map_->AppendSymbol(std::move(symbol));
@@ -236,6 +238,7 @@ void OcadImporter::ImportAreaSymbol(const S& ocad_symbol)
 
     if (SetupSymbol(symbol.get(), ocad_symbol))
     {
+        symbol->type(AreaS);
         symbol->SetColor(ComputeAreaColor(ocad_symbol.generic.fill_on_V9,ocad_symbol.generic,ocad_symbol.data_size,ocad_symbol.begin_of_elements));
         symbol_index_.emplace(symbol->id(),symbol.get());
         map_->AppendSymbol(std::move(symbol));
@@ -533,15 +536,14 @@ const MapColor* OcadImporter::ComputePointColor(std::size_t data_size, const Oca
 
     const MapColor* computed_color = nullptr;
 
-    for (size_t i = 0; i < data_size && !color_found; ++i)
+    for (size_t i = 0; i < data_size && !color_found; i+=2)
     {
         const OcadTypesV9::PointSymbolElement* element = reinterpret_cast<const OcadTypesV9::PointSymbolElement*>(&reinterpret_cast<const Ocad::Generic::OcadCoord*>(elements)[i]);
-        const Ocad::Generic::OcadCoord* const coords = reinterpret_cast<const Ocad::Generic::OcadCoord*>(element) + i + 2;
 
         const MapColor* inner_color = nullptr;
         const MapColor* outer_color = nullptr;
-        float outer_width = 0.f;
-        float inner_radius = 0.f;
+        int outer_width = 0;
+        int inner_radius = 0;
 
         switch (element->type)
         {
@@ -584,7 +586,7 @@ const MapColor* OcadImporter::ComputePointColor(std::size_t data_size, const Oca
             }
         default:
             {
-                throw std::runtime_error("Type of element didn't match any known ones.");
+                LOG_S(WARNING) << "Type of element not supported";
             }
         }
 

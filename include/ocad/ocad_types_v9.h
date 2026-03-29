@@ -144,7 +144,7 @@ namespace Ocad
 
             u16 data_size;
             u16 RESERVED;
-            Element* begin_of_elements;
+            Element begin_of_elements[1];
         };
 
 
@@ -223,7 +223,7 @@ namespace Ocad
             BaseSymbol base;
             LineSymbolGeneric generic;
 
-            Element* begin_of_elements;
+            Element begin_of_elements[1];
         };
 
         struct LineTextSymbol
@@ -266,7 +266,7 @@ namespace Ocad
             u16 RESERVED_MEMBER2;
             u16 data_size;
 
-            Element* begin_of_elements;
+            Element begin_of_elements[1];
         };
 
         struct TextSymbol

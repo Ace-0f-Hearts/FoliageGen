@@ -168,11 +168,8 @@ void OcadImporter::ImportSymbols(OcadFile<F>& file)
 {
     for (auto symbol_idx : file.symbols())
     {
-        auto symbol = std::make_unique<Symbol>();
         auto& ocad_symbol = *symbol_idx.entity;
-        symbol->id(ocad_symbol.sym_num);
 
-        // TODO: Refactor the symbol type evalutation to happen here OR add F template parameter to ImportSymbol and SetupSymbol
         if (symbol_idx.entity->status != Ocad::SymbolHidden)
         {
             switch (ocad_symbol.object_type)
@@ -251,8 +248,9 @@ void OcadImporter::ImportAreaSymbol(const S& ocad_symbol)
 template <class OcadBaseSymbol>
 bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
 {
-
     bool symbol_is_relevant = false;
+
+    symbol->id(base.base.sym_num);
     auto id = symbol->id();
 
     auto idx = std::ranges::find_if(attributes_.cbegin(),attributes_.cend(),[id](const auto& attr)

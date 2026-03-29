@@ -48,11 +48,12 @@ FetchContent_Declare(
         FIND_PACKAGE_ARGS NAMES jsoncpp
 )
 
-FETCHCONTENT_DECLARE(
-        libz
-        GIT_REPOSITORY https://github.com/madler/zlib
-        FIND_PACKAGE_ARGS
-)
+#FETCHCONTENT_DECLARE(
+#        zlib
+#        GIT_REPOSITORY https://github.com/madler/zlib
+#        GIT_TAG v1.3.1
+#        FIND_PACKAGE_ARGS NAMES ZLIB
+#)
 
 FetchContent_Declare(
         libpng
@@ -92,7 +93,7 @@ FetchContent_Declare(
         FIND_PACKAGE_ARGS
 )
 
-FetchContent_MakeAvailable(loguru jsoncpp libz libjpeg-turbo libpng CImg Boost glm)
+FetchContent_MakeAvailable(loguru jsoncpp  libjpeg-turbo libpng CImg Boost glm)
 
 find_package(nanoflann REQUIRED)
 

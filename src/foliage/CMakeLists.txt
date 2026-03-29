@@ -21,6 +21,7 @@ add_library(foliage ${HEADER_LIST} ${SOURCE_LIST})
 target_include_directories(foliage PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_compile_features(foliage PUBLIC cxx_std_11)
 target_link_libraries(foliage PRIVATE
+        ZLIB::ZLIB
         loguru::loguru
         PNG::PNG
         JPEG::JPEG

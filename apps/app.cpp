@@ -6,9 +6,7 @@
 #include <loguru.hpp>
 #include <string>
 #include <utility>
-
-#include "../src/json_extractor.h"
-#include "foliage/generator.h"
+#include <foliage/generator.h>
 
 using string = std::string;
 

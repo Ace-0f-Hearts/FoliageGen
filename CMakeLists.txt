@@ -74,7 +74,8 @@ FETCHCONTENT_DECLARE(
 
 FetchContent_MakeAvailable(loguru jsoncpp nanoflann Boost)
 
-
+get_property(all_targets DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY BUILDSYSTEM_TARGETS)
+message(STATUS "Targets: ${all_targets}")
 
 add_subdirectory(src)
 add_subdirectory(apps)

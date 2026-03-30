@@ -18,7 +18,12 @@ add_library(utility ${HEADER_LIST} ${SOURCE_LIST})
 target_include_directories(utility PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 target_compile_features(utility PUBLIC cxx_std_11)
-
+TARGET_LINK_LIBRARIES(
+        utility
+        PRIVATE
+        loguru::loguru
+        jsoncpp_lib
+)
 source_group(
         TREE "${PROJECT_SOURCE_DIR}/include"
         PREFIX "Header Files"

@@ -6,14 +6,13 @@
 #define GENERATOR_APP_H
 #include <string>
 
-#include "../src/generated_data_writer.h"
-#include "../src/json_builder.h"
-#include "../src/json_extractor.h"
-#include "../src/map_parser.h"
-#include <foliage/species_attribute.h>
+#include <foliage/json_extractor.h>
+#include <foliage//json_builder.h>
+#include <foliage/map_parser.h>
+#include <foliage/generated_data_writer.h>
 #include <foliage/json_parser.h>
-#include "foliage/generator.h"
-#include "foliage/generator_builder.h"
+#include <foliage/generator.h>
+#include <foliage/generator_builder.h>
 
 
 /*!

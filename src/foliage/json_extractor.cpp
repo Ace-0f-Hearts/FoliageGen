@@ -2,11 +2,9 @@
 // Created by ace on 2026-01-22.
 //
 
-#include "json_extractor.h"
+#include <foliage/json_extractor.h>
 
 #include <loguru.hpp>
-
-#include "../include/utility/not_implemented_error.h"
 
 
 
@@ -104,6 +102,9 @@ SymbolAttribute JsonExtractor::ParseSymbolAttribute(Value& root)
 
 std::vector<DiffusionZone> JsonExtractor::ExtractDiffusionZones(Value& root)
 {
+    std::vector<DiffusionZone> zones;
+
+    return zones;
 }
 
 DiffusionZone JsonExtractor::ParseDiffusionZone(Value& root)

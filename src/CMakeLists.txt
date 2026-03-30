@@ -11,18 +11,11 @@ file(GLOB SOURCE_FILES
 message("${SOURCE_FILES}")
 
 # Add header files
-file(GLOB_RECURSE HEADER_FILES
+file(GLOB HEADER_FILES
         ${CMAKE_SOURCE_DIR}/*.h
         ${CMAKE_SOURCE_DIR}/*.hpp)
 
-file(GLOB ALGLIB_SOURCES
-        "${CMAKE_SOURCE_DIR}/external/alglib-cpp/src/*.cpp"
-)
-file(GLOB ALGLIB_HEADER
-        "${CMAKE_SOURCE_DIR}/external/alglib-cpp/src/*.h"
-)
-add_library(alglib STATIC ${ALGLIB_SOURCES})
-target_include_directories(alglib PUBLIC "${CMAKE_SOURCE_DIR}/external/alglib-cpp/src")
+
 
 add_library(foliage_generator_lib ${HEADER_FILES} ${SOURCE_FILES})
 
@@ -30,8 +23,8 @@ add_subdirectory(botanics_math)
 add_subdirectory(ocad)
 add_subdirectory(utility)
 add_subdirectory(spatial)
-add_subdirectory(foliage)
 add_subdirectory(orienteering)
+add_subdirectory(foliage)
 
 message("${CMAKE_SOURCE_DIR}")
 
@@ -46,8 +39,6 @@ target_link_libraries(foliage_generator_lib
         PRIVATE
         jsoncpp_lib
         loguru::loguru
-        alglib
-A
 )
 
 source_group(

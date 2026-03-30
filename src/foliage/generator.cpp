@@ -181,6 +181,7 @@ void Generator::ChooseInitialSeeds()
     std::ranges::sort(initial_set_indices_);
 }
 
+
 void Generator::LabelInitialSeeds()
 {
     std::vector<DistributionExtremities> height_extremities_per_species;

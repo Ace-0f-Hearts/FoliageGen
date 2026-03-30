@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <boost/heap/priority_queue.hpp>
-#include <loguru/loguru.hpp>
+#include <loguru.hpp>
 #include <spatial/quadtree.h>
 #include <spatial/spatial_coordinates.h>
 #include <spatial/bounding_box.h>

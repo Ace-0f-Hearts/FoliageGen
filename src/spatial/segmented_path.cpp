@@ -5,7 +5,7 @@
 #include <filesystem>
 
 #define LOGURU_WITH_STREAMS 1
-#include <loguru/loguru.hpp>
+#include <loguru.hpp>
 #include <spatial/segmented_path.h>
 
 #include "utility/not_implemented_error.h"

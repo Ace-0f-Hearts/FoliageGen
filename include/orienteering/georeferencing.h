@@ -5,13 +5,11 @@
 #ifndef PROCEDURALFOLIAGEGENERATOR_GEOREFERENCING_H
 #define PROCEDURALFOLIAGEGENERATOR_GEOREFERENCING_H
 #include "spatial/spatial_coordinates.h"
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/geometry/strategies/transform/matrix_transformers.hpp>
-#include <glm/ext/matrix_float2x2.hpp>
+
+#include <glm/ext/matrix_double2x2.hpp>
 
 
-using namespace boost::numeric::ublas;
-using namespace boost::geometry::strategy::transform;
+
 using namespace Spatial;
 
 
@@ -21,7 +19,7 @@ public:
     Georeferencing();
 
     void UpdateTransformation();
-    Spatial2D ToProjectedCoords(Spatial2D coord) const;
+    [[nodiscard]] Spatial2D ToProjectedCoords(Spatial2D coord) const;
 
     void SetMapRefPoints(Spatial2D coord);
     void SetProjectedRefPoints(Spatial2D coords);

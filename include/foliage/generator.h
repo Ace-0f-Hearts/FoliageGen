@@ -9,7 +9,7 @@
 #define cimg_use_png 1
 #define cimg_display 0
 
-#include <alglib/optimization.h>
+#include <optimization.h>
 #include <spatial/bounding_box.h>
 #include <orienteering/object.h>
 

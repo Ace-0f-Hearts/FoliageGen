@@ -7,11 +7,6 @@ set(CMAKE_BUILD_TYPE Debug)
 file(GLOB SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/*.c
         ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/orienteering/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/orienteering/*.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/foliage/*.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/foliage/*.cpp
-
 )
 message("${SOURCE_FILES}")
 
@@ -41,7 +36,7 @@ add_subdirectory(orienteering)
 message("${CMAKE_SOURCE_DIR}")
 
 target_link_libraries(foliage_generator_lib
-        PUBLIC #TODO: This is not nice, need to figure out a better way
+        PUBLIC
         spatial
         utility
         ocad
@@ -49,13 +44,10 @@ target_link_libraries(foliage_generator_lib
         orienteering
         foliage
         PRIVATE
-        jsoncpp
+        jsoncpp_lib
         loguru::loguru
         alglib
-
-#        libjpeg-turbo
-#        libpng
-#        CImg
+A
 )
 
 source_group(

@@ -5,7 +5,8 @@
 #ifndef PROCEDURALFOLIAGEGENERATOR_SEED_H
 #define PROCEDURALFOLIAGEGENERATOR_SEED_H
 #include "spatial/spatial_coordinates.h"
-
+#include <cstdint>
+using uint8_t = std::uint8_t;
 
 enum SeedFlag
 {
@@ -21,9 +22,9 @@ struct Seed
     {
     };
 
-    bool IsActive() const { return flags & Active; };
-    bool IsInitial() const {return flags & Initial; };
-    bool IsClassifed() const { return flags & Classified; };
+    [[nodiscard]] bool IsActive() const { return flags & Active; };
+    [[nodiscard]] bool IsInitial() const {return flags & Initial; };
+    [[nodiscard]] bool IsClassifed() const { return flags & Classified; };
 
     Spatial::Spatial2D coordinate;
     float scale;

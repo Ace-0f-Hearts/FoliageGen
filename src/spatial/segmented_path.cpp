@@ -7,7 +7,7 @@
 #define LOGURU_WITH_STREAMS 1
 #include <loguru.hpp>
 #include <spatial/segmented_path.h>
-
+#include <cassert>
 #include "utility/not_implemented_error.h"
 
 

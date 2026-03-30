@@ -181,6 +181,7 @@ void Generator::ChooseInitialSeeds()
     std::ranges::sort(initial_set_indices_);
 }
 
+
 void Generator::LabelInitialSeeds()
 {
     std::vector<DistributionExtremities> height_extremities_per_species;
@@ -360,7 +361,7 @@ void Generator::MaximizeCoveredArea()
     minbleicreport report;
 }
 
-void Generator::GradientFunc(const real_1d_array& x, double& func, real_1d_array& grad, void* ptr)
+void GradientFunc(const real_1d_array& x, double& func, real_1d_array& grad, void* ptr)
 {
     func = -(pow(x[0], 2) + pow(x[1], 2));
     grad[0] = -2 * x[0];

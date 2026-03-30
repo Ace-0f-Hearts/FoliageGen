@@ -2,7 +2,7 @@
 // Created by ace on 2026-01-08.
 //
 
-#include "generated_data_writer.h"
+#include "../../include/foliage/generated_data_writer.h"
 
 void GeneratedDataWriter::Write(const Json::Value& data)
 {

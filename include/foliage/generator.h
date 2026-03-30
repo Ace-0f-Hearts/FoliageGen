@@ -9,33 +9,31 @@
 #define cimg_use_png 1
 #define cimg_display 0
 
-#include <optimization.h>
 #include <spatial/bounding_box.h>
 #include <orienteering/object.h>
 
-#include "diffusion_zone.h"
-#include "height_map.h"
-#include "seed.h"
-#include "species_attribute.h"
-#include "orienteering/map.h"
+#include <foliage/diffusion_zone.h>
+#include <foliage/height_map.h>
+#include <foliage/seed.h>
+#include <foliage/species_attribute.h>
+#include <orienteering/map.h>
 
-using namespace alglib;
 
 
 struct Spatial2DAdaptor
 {
     std::vector<Spatial2D> points;
 
-    size_t kdtree_get_point_count() const
+    [[nodiscard]] size_t kdtree_get_point_count() const
     {
         return points.size();
     }
-    float kdtree_get_pt(const size_t idx, const size_t dim) const
+    [[nodiscard]] float kdtree_get_pt(const size_t idx, const size_t dim) const
     {
         return points[idx][dim];
     }
     template <class BBOX>
-    bool kdtree_get_bbox(BBOX& bbox) const
+    [[nodiscard]] bool kdtree_get_bbox(BBOX& bbox) const
     {
         return false;
     }
@@ -77,7 +75,6 @@ private:
     void Randomize(std::vector<Seed>& seeds, float density, float factor = 1.f, float angle = 0);
     void Cull(std::vector<Seed>& seeds, const Object& area);
 
-    void GradientFunc(const real_1d_array& x, double& func, real_1d_array& grad, void* ptr);
 
     std::shared_ptr<OrienteeringMap> map_;
     std::shared_ptr<HeightMap> height_map_;

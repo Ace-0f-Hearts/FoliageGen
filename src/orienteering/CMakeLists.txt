@@ -15,13 +15,23 @@ file(GLOB HEADER_LIST CONFIGURE_DEPENDS
 
 add_library(orienteering ${HEADER_LIST} ${SOURCE_LIST})
 
-target_include_directories(orienteering PUBLIC ${CMAKE_SOURCE_DIR}/include)
+FETCHCONTENT_DECLARE(glm
+        GIT_REPOSITORY	https://github.com/g-truc/glm.git
+        GIT_TAG "master"
+)
+
+FETCHCONTENT_MAKEAVAILABLE(glm)
+
+
+target_include_directories(orienteering PUBLIC ${CMAKE_SOURCE_DIR}/include ${glm_SOURCE_DIR})
 target_compile_features(orienteering PUBLIC cxx_std_11)
 target_link_libraries(orienteering PUBLIC
         spatial
-        PRIVATE
         glm::glm
+        PRIVATE
+        loguru::loguru
 )
+
 
 source_group(
         TREE "${PROJECT_SOURCE_DIR}/include"

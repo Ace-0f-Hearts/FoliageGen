@@ -41,19 +41,19 @@ stdenv.mkDerivation {
   # platform at run time) is an important preparation for cross-compilation.
   nativeBuildInputs = [ cmake ninja ];
   buildInputs = [
-    jsoncpp
-    libpkgconf
-    pkg-config
-    cimg
-    loguru
-    doxygen
-    boost
-    libjpeg
-    libpng
-#    zlib
-    alglib
-    glm
-    nanoflann
+#    jsoncpp
+#    libpkgconf
+#    pkg-config
+#    cimg
+#    loguru
+#    doxygen
+#    boost
+#    libjpeg
+#    libpng
+##    zlib
+#    alglib
+#    glm
+#    nanoflann
    ];
 
   installPhase = ''

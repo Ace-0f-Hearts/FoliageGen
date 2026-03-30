@@ -16,7 +16,10 @@ file(GLOB HEADER_LIST CONFIGURE_DEPENDS
 add_library(ocad ${HEADER_LIST} ${SOURCE_LIST})
 
 target_include_directories(ocad PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(ocad PRIVATE
+target_link_libraries(ocad PUBLIC
+        spatial
+        orienteering
+        PRIVATE
         loguru::loguru
 )
 target_compile_features(ocad PUBLIC cxx_std_11)

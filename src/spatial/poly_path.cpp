@@ -6,7 +6,7 @@
 #include <cassert>
 #include <iostream>
 #define LOGURU_WITH_STREAMS 1
-#include <loguru/loguru.hpp>
+#include <loguru.hpp>
 #include <spatial/poly_path.h>
 
 #include "utility/not_implemented_error.h"

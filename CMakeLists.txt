@@ -34,45 +34,30 @@ endif ()
 
 include(FetchContent)
 
+
+
+set(LOGURU_WITH_STREAMS TRUE)
 FetchContent_Declare(
         loguru
         GIT_REPOSITORY https://github.com/emilk/loguru
-        GIT_TAG v2.1.0
-        FIND_PACKAGE_ARGS NAMES loguru
+        GIT_TAG "master"
+#        FIND_PACKAGE_ARGS NAMES loguru
 )
 
 FetchContent_Declare(
         jsoncpp
         GIT_REPOSITORY https://github.com/open-source-parsers/jsoncpp
-        GIT_TAG 1.9.6
-        FIND_PACKAGE_ARGS NAMES jsoncpp
-)
-
-#FETCHCONTENT_DECLARE(
-#        zlib
-#        GIT_REPOSITORY https://github.com/madler/zlib
-#        GIT_TAG v1.3.1
-#        FIND_PACKAGE_ARGS NAMES ZLIB
-#)
-
-FetchContent_Declare(
-        libpng
-        GIT_REPOSITORY https://github.com/pnggroup/libpng
-        FIND_PACKAGE_ARGS NAMES PNG
-)
-
-FetchContent_Declare(
-        libjpeg-turbo
-        GIT_REPOSITORY https://github.com/libjpeg-turbo/libjpeg-turbo
-        GIT_TAG jpeg-9
-        FIND_PACKAGE_ARGS NAMES JPEG
+        GIT_TAG 1.9.7
+#        FIND_PACKAGE_ARGS NAMES jsoncpp
 )
 
 FETCHCONTENT_DECLARE(
-        CImg
-        GIT_REPOSITORY https://github.com/GreycLab/CImg
-        FIND_PACKAGE_ARGS
+        nanoflann
+        GIT_REPOSITORY https://github.com/jlblancoc/nanoflann
+        GIT_TAG v1.9.0
+#        FIND_PACKAGE_ARGS
 )
+
 
 set(BOOST_INCLUDE_LIBRARIES test heap)
 set(BOOST_ENABLE_CMAKE ON)
@@ -83,24 +68,17 @@ FETCHCONTENT_DECLARE(
         Boost
         GIT_REPOSITORY https://github.com/boostorg/boost
         GIT_SHALLOW TRUE
-        FIND_PACKAGE_ARGS COMPONENTS unit_test_framework REQUIRED
+#        FIND_PACKAGE_ARGS COMPONENTS unit_test_framework REQUIRED
 )
 
-FetchContent_Declare(
-        glm
-        GIT_REPOSITORY	https://github.com/g-truc/glm.git
-        GIT_TAG 	0af55ccecd98d4e5a8d1fad7de25ba429d60e863 #refs/tags/1.0.1
-        FIND_PACKAGE_ARGS
-)
 
-FetchContent_MakeAvailable(loguru jsoncpp  libjpeg-turbo libpng CImg Boost glm)
+FetchContent_MakeAvailable(loguru jsoncpp nanoflann Boost)
 
-find_package(nanoflann REQUIRED)
 
 
 add_subdirectory(src)
 add_subdirectory(apps)
 add_subdirectory(tests)
 
-include_directories(src)
+#include_directories(src)
 

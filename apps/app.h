@@ -23,7 +23,7 @@ class App
 
 public:
     App() = delete;
-    App(std::filesystem::path path_to_description_file, std::filesystem::path path_to_map_file, std::filesystem::path symbol_set_file_path = "/mnt/hobby-partition/Dev/ThesisWork/ProceduralFoliageGenerator/FoliageGen/example_assets/symbol_attributes/isom_2017.json");
+    App(std::filesystem::path path_to_description_file, std::filesystem::path path_to_map_file, std::filesystem::path symbol_set_file_path = "../../example_assets/symbol_attributes/isom_2017.json");
     App(const App &);
     ~App();
     void Run();

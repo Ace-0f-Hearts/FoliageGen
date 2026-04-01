@@ -3,7 +3,7 @@
 #include <optional>
 #include <functional>
 #include <string>
-#include <loguru/loguru.hpp>
+#include <loguru.hpp>
 #include "app.h"
 
 struct InitSettings

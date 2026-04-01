@@ -19,6 +19,27 @@ FetchContent_Declare(zlib
 )
 FetchContent_MakeAvailable(zlib)
 
+
+if(NOT TARGET ZLIB::ZLIB)
+ add_library(ZLIB::ZLIB INTERFACE IMPORTED GLOBAL)
+ target_link_libraries(ZLIB::ZLIB INTERFACE zlibstatic)
+ target_include_directories(ZLIB::ZLIB INTERFACE
+         ${zlib_SOURCE_DIR}
+         ${zlib_BINARY_DIR}
+ )
+endif()
+
+set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "")
+set(ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
+set(ZLIB_FOUND TRUE CACHE INTERNAL "")
+
+include_directories(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
+
+message(STATUS "zlib_SOURCE_DIR: ${zlib_SOURCE_DIR}")
+message(STATUS "zlib_BINARY_DIR: ${zlib_BINARY_DIR}")
+message(STATUS "ZLIB_LIBRARY: ${ZLIB_LIBRARY}")
+message(STATUS "ZLIB_INCLUDE_DIR: ${ZLIB_INCLUDE_DIR}")
+
 FetchContent_Declare(libpng
         GIT_REPOSITORY https://github.com/pnggroup/libpng.git
         GIT_TAG "v1.6.43"
@@ -27,9 +48,8 @@ FetchContent_MakeAvailable(libpng)
 
 include(ExternalProject)
 set(LIBJPEG_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/libjpeg-turbo-install)
-message(STATUS "Current binary dir: ${CMAKE_CURRENT_BINARY_DIR}")
-message(STATUS "LIBJPEG install dir: ${LIBJPEG_INSTALL_DIR}")
-ExternalProject_Add(
+
+ ExternalProject_Add(
         libjpeg_turbo
         GIT_REPOSITORY https://github.com/libjpeg-turbo/libjpeg-turbo.git
         GIT_TAG        3.0.3
@@ -58,6 +78,14 @@ FETCHCONTENT_DECLARE(cimg
 
 FETCHCONTENT_MAKEAVAILABLE(cimg)
 
+FETCHCONTENT_DECLARE(
+        nanoflann
+        GIT_REPOSITORY https://github.com/jlblancoc/nanoflann
+        GIT_TAG v1.9.0
+        #        FIND_PACKAGE_ARGS
+)
+
+FETCHCONTENT_MAKEAVAILABLE(nanoflann)
 
 file(GLOB ALGLIB_SOURCES
         "${CMAKE_SOURCE_DIR}/external/alglib-cpp/src/*.cpp"
@@ -67,10 +95,10 @@ file(GLOB ALGLIB_HEADER
 )
 
 add_library(alglib STATIC ${ALGLIB_SOURCES} ${ALGLIB_HEADER})
-target_include_directories(alglib PRIVATE "${CMAKE_SOURCE_DIR}/external/alglib-cpp/src")
+target_include_directories(alglib PUBLIC "${CMAKE_SOURCE_DIR}/external/alglib-cpp/src")
 
 
-add_library(foliage ${HEADER_LIST} ${SOURCE_LIST})
+add_library(foliage STATIC ${HEADER_LIST} ${SOURCE_LIST})
 
 target_include_directories(foliage
         PUBLIC
@@ -95,9 +123,9 @@ target_link_libraries(foliage PRIVATE
         nanoflann::nanoflann
         jsoncpp_lib
         alglib
-        zlibstatic
         png_static
         turbojpeg-static
+        glm::glm
 
 )
 source_group(

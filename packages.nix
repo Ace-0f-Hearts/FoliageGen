@@ -5,19 +5,19 @@
 , stdenv
 , cmake
 , ninja
-, jsoncpp
+#, jsoncpp
 , libpkgconf
 , pkg-config
-, cimg
-, loguru
+#, cimg
+#, loguru
 , doxygen
-, boost
-#, zlib
-, libpng
-, libjpeg
-, alglib
-, glm
-, nanoflann
+#, boost
+# , zlib
+#, libpng
+#, libjpeg
+#, alglib
+#, glm
+#, nanoflann
 }:
 
 # stdenv.mkDerivation now accepts a list of named parameters that describe
@@ -50,7 +50,7 @@ stdenv.mkDerivation {
 #    boost
 #    libjpeg
 #    libpng
-##    zlib
+#    zlib
 #    alglib
 #    glm
 #    nanoflann
@@ -64,5 +64,5 @@ stdenv.mkDerivation {
   # The generic builder script of `mkDerivation` handles all the default
   # command lines of several build systems, so it knows how to run our tests.
   doCheck = true;
-  configureFlags = [ "BOOST_LDFLAGS=-L${boost}/lib" ];
+#   configureFlags = [ "BOOST_LDFLAGS=-L${boost}/lib" ];
 }

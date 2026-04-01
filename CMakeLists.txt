@@ -15,6 +15,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 set(CMAKE_CXX_FLAGS_DEBUG "-O3")
 
 
+
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_BUILD_TYPE Debug)
@@ -34,6 +35,12 @@ endif ()
 
 include(FetchContent)
 
+FETCHCONTENT_DECLARE(glm
+        GIT_REPOSITORY	https://github.com/g-truc/glm.git
+        GIT_TAG "master"
+)
+
+FETCHCONTENT_MAKEAVAILABLE(glm)
 
 
 set(LOGURU_WITH_STREAMS TRUE)
@@ -51,12 +58,7 @@ FetchContent_Declare(
 #        FIND_PACKAGE_ARGS NAMES jsoncpp
 )
 
-FETCHCONTENT_DECLARE(
-        nanoflann
-        GIT_REPOSITORY https://github.com/jlblancoc/nanoflann
-        GIT_TAG v1.9.0
-#        FIND_PACKAGE_ARGS
-)
+
 
 
 set(BOOST_INCLUDE_LIBRARIES test heap)
@@ -67,19 +69,17 @@ ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
 FETCHCONTENT_DECLARE(
         Boost
         GIT_REPOSITORY https://github.com/boostorg/boost
+        GIT_TAG boost-1.90.0
         GIT_SHALLOW TRUE
 #        FIND_PACKAGE_ARGS COMPONENTS unit_test_framework REQUIRED
 )
 
-
-FetchContent_MakeAvailable(loguru jsoncpp nanoflann Boost)
+FetchContent_MakeAvailable(loguru jsoncpp Boost)
 
 get_property(all_targets DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY BUILDSYSTEM_TARGETS)
-message(STATUS "Targets: ${all_targets}")
 
 add_subdirectory(src)
 add_subdirectory(apps)
 add_subdirectory(tests)
 
-#include_directories(src)
 

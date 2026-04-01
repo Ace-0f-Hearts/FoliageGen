@@ -8,7 +8,6 @@ file(GLOB SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/*.c
         ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
 )
-message("${SOURCE_FILES}")
 
 # Add header files
 file(GLOB HEADER_FILES
@@ -17,7 +16,7 @@ file(GLOB HEADER_FILES
 
 
 
-add_library(foliage_generator_lib ${HEADER_FILES} ${SOURCE_FILES})
+add_library(foliage_generator_lib INTERFACE)
 
 add_subdirectory(botanics_math)
 add_subdirectory(ocad)
@@ -26,17 +25,15 @@ add_subdirectory(spatial)
 add_subdirectory(orienteering)
 add_subdirectory(foliage)
 
-message("${CMAKE_SOURCE_DIR}")
 
 target_link_libraries(foliage_generator_lib
-        PUBLIC
+        INTERFACE
         spatial
         utility
         ocad
         botanics_math
         orienteering
         foliage
-        PRIVATE
         jsoncpp_lib
         loguru::loguru
 )

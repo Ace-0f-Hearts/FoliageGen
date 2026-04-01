@@ -4,6 +4,7 @@
 
 #include "foliage//json_parser.h"
 
+#include <filesystem>
 #include <iostream>
 #include <loguru.hpp>
 
@@ -43,6 +44,7 @@ void JsonParser::Open(const char* filename)
     data_file_.open(filename);
     if (!data_file_.is_open())
     {
+        LOG_S(INFO) << std::filesystem::current_path();
         LOG_F(ERROR,"%s could not be opened.",filename);
         throw std::runtime_error("Could not open file " + string(filename));
     }

@@ -14,8 +14,7 @@ class MapWriter
 
 
 };
-static const std::string kDefault_path = "/mnt/hobby-partition/Dev/ThesisWork/ProceduralFoliageGenerator/FoliageGen/testing/snapshot.jpeg";
-static const std::string kDefault_path2 = "/mnt/hobby-partition/Dev/ThesisWork/ProceduralFoliageGenerator/FoliageGen/testing/area_snapshot.jpeg";
+static const std::string kDefault_path = "../../testing/snapshot.jpeg";
 
 inline void MapWriter::Write(FoliageMap map)
 {

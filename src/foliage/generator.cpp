@@ -6,7 +6,7 @@
 #include <loguru.hpp>
 #include <random>
 #include <foliage/generator.h>
-#include <alglib/optimization.h>
+#include <optimization.h> // alglib
 #include <nanoflann.hpp>
 #include "foliage/map_writer.h"
 #include "foliage/foliage_snapshot_maker.h"

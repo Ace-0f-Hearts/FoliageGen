@@ -26,8 +26,9 @@ namespace Orienteering
     enum SymbolFlag
     {
         Obstructing = 0x1, /// prevents the growth of plants around it and inside of it
-        Cultivated  = 0x2, /// reduces the amount of randomization in the seed positions
-        Directional = 0x4, /// introduces some bias to the direction of randomization
+        Cultivated  = 0x2, /// reduces the amount of randomization in the seed positions //TODO
+        Directional = 0x4, /// introduces some bias to the direction of randomization //TODO
+        Irrelevant = 0x8, /// symbol defining features on the map itself, used for isolating empty areas which would be designated as forests otherwise
     };
 
 
@@ -56,16 +57,18 @@ namespace Orienteering
         [[nodiscard]] bool IsArea() const;
         [[nodiscard]] bool IsPath() const;
         [[nodiscard]] bool IsPoint() const;
+        [[nodiscard]] bool IsIrrelevant() const;
         [[nodiscard]] bool IsCultivated() const;
         [[nodiscard]] bool IsObstructing() const;
         [[nodiscard]] bool IsDirectional() const;
 
         void type(SymbolType type);
-        SymbolType type();
+        [[nodiscard]] SymbolType type() const;
 
         void SetCultivated(bool cultivated);
         void SetObstructing(bool obstructing);
         void SetDirectional(bool directional);
+        void SetMapSymbol(bool mapsymbol);
 
         void SetColor(const MapColor* color);
 

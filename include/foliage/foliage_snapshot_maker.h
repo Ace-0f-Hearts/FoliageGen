@@ -10,6 +10,7 @@
 
 #include "orienteering/path_object.h"
 #include "spatial/bounding_box.h"
+#include <memory>
 
 
 class FoliageSnapshotMaker
@@ -18,6 +19,7 @@ public:
 
     static void CreateSnapshot(FoliageMap& map, std::vector<Seed>& seeds,BoundingBox2D bbox, size_t number_of_species);
     static void CreateSnapshot(FoliageMap& map,std::vector<Object*> areas,BoundingBox2D bbox);
+    static void CreateMapMask(FoliageMap& map, std::vector<std::unique_ptr<Object>>& areas,BoundingBox2D bbox);
 private:
     static glm::vec3 GetColorValue(size_t point, size_t number_of_species);
 };

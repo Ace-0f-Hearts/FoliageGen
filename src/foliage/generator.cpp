@@ -3,14 +3,19 @@
 //
 
 #include <iostream>
-#include <loguru.hpp>
 #include <random>
+
+#include <loguru.hpp>
+
+#include <spatial/quadtree.h>
+
 #include <foliage/generator.h>
-#include <optimization.h> // alglib
+#include <foliage/map_writer.h>
+#include <foliage/foliage_snapshot_maker.h>
+
 #include <nanoflann.hpp>
-#include "foliage/map_writer.h"
-#include "foliage/foliage_snapshot_maker.h"
-#include "spatial/quadtree.h"
+
+#include <optimization.h> // alglib
 
 using namespace alglib;
 
@@ -56,10 +61,15 @@ void Generator::Start()
 
     FoliageMap f_map(CImg<>(bbox.width(),bbox.height(),1,3,500.f));
 
-    FoliageSnapshotMaker::CreateSnapshot(f_map,map_->GetObjectsOfType(AreaO), bbox);
-
+    FoliageSnapshotMaker::CreateSnapshot(f_map,map_->GetObjectsOfType(PathO | AreaO), bbox);
     FoliageSnapshotMaker::CreateSnapshot(f_map,seeds_ref(), bbox, 10);
+
+    FoliageMap mask(CImg<>(bbox.width(),bbox.height(),1,3,500.f));
+    FoliageSnapshotMaker::CreateMapMask(mask,map_->GetObjects(),bbox);
+
+
     MapWriter::Write(f_map);
+    MapWriter::Write(mask,"../../testing/mask.jpeg");
     LabelRestOfSeeds();
     // MaximizeCoveredArea();
 }
@@ -101,12 +111,6 @@ std::vector<Seed> Generator::InitializeSeedsOnObject(float density, Object& obje
         return seeds;
 
     seeds.reserve(number_of_seeds);
-    // for (size_t i = 0; i < number_of_seeds; i++)
-    // {
-    //     Spatial2D list =  {offset + i % seeds_per_row * density,offset + i / seeds_per_column * density};
-    //     list = bounding_box.min() + list;
-    //     seeds.emplace_back(list);
-    // }
 
     for (size_t i = 0; i < seeds_per_column; i++)
     {
@@ -348,6 +352,15 @@ void Generator::LabelRestOfSeeds()
         //
         // seeds()[seed_idx].id = majority_idx;
     }
+}
+
+void Generator::ComputeSubgraph()
+{
+
+}
+
+void Generator::MaximizeCoveredAreaOfSubgraph()
+{
 }
 
 void Generator::MaximizeCoveredArea()

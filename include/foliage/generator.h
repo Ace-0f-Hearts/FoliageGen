@@ -50,9 +50,9 @@ public:
     std::vector<Seed> seeds();
     std::vector<Seed>& seeds_ref();
 
-    size_t amount_of_seeds() const;
-    size_t amount_of_active_seeds() const;
-    size_t amount_of_inactive_seeds() const;
+    [[nodiscard]] size_t amount_of_seeds() const;
+    [[nodiscard]] size_t amount_of_active_seeds() const;
+    [[nodiscard]] size_t amount_of_inactive_seeds() const;
 
     void Start();
 
@@ -63,17 +63,19 @@ private:
         float max;
     };
 
-    void PurgeInactiveSeeds();
-
     void InitializeSeeds();
+    std::vector<Seed> InitializeSeedsOnObject(float density, Object& object);
+    void PurgeInactiveSeeds();
+    void Randomize(std::vector<Seed>& seeds, float density, float factor = 1.f, float angle = 0);
+    void Cull(std::vector<Seed>& seeds, const Object& area);
+
     void ChooseInitialSeeds();
     void LabelInitialSeeds();
     void LabelRestOfSeeds();
-    void MaximizeCoveredArea();
 
-    std::vector<Seed> InitializeSeedsOnObject(float density, Object& object);
-    void Randomize(std::vector<Seed>& seeds, float density, float factor = 1.f, float angle = 0);
-    void Cull(std::vector<Seed>& seeds, const Object& area);
+    void MaximizeCoveredArea();
+    void MaximizeCoveredAreaOfSubgraph();
+    void ComputeSubgraph();
 
 
     std::shared_ptr<OrienteeringMap> map_;

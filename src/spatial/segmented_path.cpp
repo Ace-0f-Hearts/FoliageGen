@@ -17,7 +17,7 @@ bool Spatial::SegmentedPath::IsPointInsideArea(const Spatial2D& point) const
     bool inside = false;
 
 
-    for (auto path : paths())
+    for (const auto& path : paths())
     {
         if (path.IsPointInsideArea(point))
             inside = !inside;

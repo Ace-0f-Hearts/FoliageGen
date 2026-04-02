@@ -147,6 +147,19 @@ void OrienteeringMap::UpdateBoundingBox()
     bounding_box_ = {min,max};
 }
 
+std::vector<Object*> OrienteeringMap::GetIrrelevantFeatures() const
+{
+    std::vector<Object*> objects;
+    for (auto& object: objects_)
+    {
+        if (object->symbol()->IsIrrelevant())
+        {
+            objects.emplace_back(object.get());
+        }
+    }
+    return objects;
+}
+
 void OrienteeringMap::AppendColor(MapColor color)
 {
     colors_.push_back(color);
@@ -168,7 +181,21 @@ std::vector<Object*> OrienteeringMap::GetObjectsOfType(ObjectType type) const
 
     for (auto& object: objects_)
     {
-        if (object->type() == AreaO)
+        if (object->type() == type)
+        {
+            objects.emplace_back(object.get());
+        }
+    }
+    return objects;
+}
+
+std::vector<Object*> OrienteeringMap::GetObjectsOfType(uint8_t type) const
+{
+    std::vector<Object*> objects;
+
+    for (auto& object: objects_)
+    {
+        if (object->type() & type)
         {
             objects.emplace_back(object.get());
         }
@@ -196,7 +223,7 @@ std::vector<Object*> OrienteeringMap::GetFreeAreas() const
 
     for (auto& object: objects_)
     {
-        if (!object->symbol()->IsObstructing() && object->type() == AreaO)
+        if (!object->symbol()->IsObstructing() && !object->symbol()->IsIrrelevant() && object->type() == AreaO)
         {
             objects.emplace_back(object.get());
         }

@@ -91,9 +91,22 @@ void Orienteering::Symbol::type(SymbolType type)
     type_ = type;
 }
 
-Orienteering::SymbolType Orienteering::Symbol::type()
+Orienteering::SymbolType Orienteering::Symbol::type() const
 {
     return type_;
+}
+
+bool Orienteering::Symbol::IsIrrelevant() const
+{
+    return flags_ & Irrelevant;
+}
+
+void Orienteering::Symbol::SetMapSymbol(bool mapsymbol)
+{
+    if (mapsymbol)
+        flags_ |= Irrelevant;
+    else
+        flags_ &= ~Irrelevant;
 }
 
 void Orienteering::Symbol::SetCultivated(bool cultivated)

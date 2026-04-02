@@ -253,16 +253,17 @@ bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
     symbol->id(base.base.sym_num);
     auto id = symbol->id();
 
-    auto idx = std::ranges::find_if(attributes_.cbegin(),attributes_.cend(),[id](const auto& attr)
+    auto it = std::ranges::find_if(attributes_.cbegin(),attributes_.cend(),[id](const auto& attr)
     {
         return attr.id == id;
     });
-    if (idx != attributes_.end())
+    if (it != attributes_.end())
     {
         symbol_is_relevant = true;
-        symbol->SetCultivated(idx->flags  & Cultivated);
-        symbol->SetDirectional(idx->flags & Directional);
-        symbol->SetObstructing(idx->flags & Obstructing);
+        symbol->SetMapSymbol(it->flags & Irrelevant);
+        symbol->SetCultivated(it->flags  & Cultivated);
+        symbol->SetDirectional(it->flags & Directional);
+        symbol->SetObstructing(it->flags & Obstructing);
     }
 
 

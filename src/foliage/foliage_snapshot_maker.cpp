@@ -50,6 +50,44 @@ void FoliageSnapshotMaker::CreateSnapshot(FoliageMap& map, std::vector<Seed>& se
 
 }
 
+void FoliageSnapshotMaker::CreateMapMask(FoliageMap& map, std::vector<std::unique_ptr<Object>>& areas, BoundingBox2D bbox)
+{
+    int x_offset, y_offset;
+
+    x_offset = std::abs(std::floor(bbox.min()[0]));
+    y_offset = std::abs(std::floor(bbox.min()[1]));
+
+    int c = 0;
+
+    for (const auto& obj: areas)
+    {
+
+        size_t width = std::ceil(obj->bounding_box().width());
+        size_t height = std::ceil(obj->bounding_box().height());
+
+        for (size_t i = 0; i < width; i++)
+        {
+            for (size_t j = 0; j < height; j++)
+            {
+                Spatial::Spatial2D pix({static_cast<float>(i),static_cast<float>(j)});
+
+                int x,y;
+                x = i + x_offset + std::round(obj->bounding_box().min()[0]);
+                y = j + y_offset + std::round(obj->bounding_box().min()[1]);
+
+                pix += obj->bounding_box().min();
+                if (obj->IsIntersecting(pix))
+                {
+                    map.map()(x,y,0,0) = 0.f;
+                    map.map()(x,y,0,1) = 0.f;
+                    map.map()(x,y,0,2) = 0.f;
+
+                }
+            }
+        }
+    }
+}
+
 void FoliageSnapshotMaker::CreateSnapshot(FoliageMap& map, std::vector<Object*> areas, BoundingBox2D bbox)
 {
     int x_offset, y_offset;
@@ -59,11 +97,11 @@ void FoliageSnapshotMaker::CreateSnapshot(FoliageMap& map, std::vector<Object*> 
 
     int c = 0;
 
-    for (auto &area: areas)
+    for (const auto& obj: areas)
     {
 
-        size_t width = area->bounding_box().width();
-        size_t height = area->bounding_box().height();
+        size_t width = std::ceil(obj->bounding_box().width());
+        size_t height = std::ceil(obj->bounding_box().height());
 
         for (size_t i = 0; i < width; i++)
         {
@@ -72,16 +110,28 @@ void FoliageSnapshotMaker::CreateSnapshot(FoliageMap& map, std::vector<Object*> 
                 Spatial::Spatial2D pix({static_cast<float>(i),static_cast<float>(j)});
 
                 int x,y;
-                x = i + x_offset + area->bounding_box().min()[0];
-                y = j + y_offset + area->bounding_box().min()[1];
+                x = i + x_offset + std::round(obj->bounding_box().min()[0]);
+                y = j + y_offset + std::round(obj->bounding_box().min()[1]);
 
-                pix += area->bounding_box().min();
-                if (area->IsIntersecting(pix))
+                pix += obj->bounding_box().min();
+                if (obj->IsIntersecting(pix))
                 {
-
-                    map.map()(x,y,0,0) -= 16.f;
-                    map.map()(x,y,0,1) -= 16.f;
-                    map.map()(x,y,0,2) -= 16.f;
+                    if (obj->type() == AreaO)
+                    {
+                        if (obj->symbol()->IsObstructing())
+                        {
+                            map.map()(x,y,0,0) -= 64.f;
+                        } else
+                        {
+                            map.map()(x,y,0,2) -= 64.f;
+                        }
+                    } else if (obj->type() == PathO)
+                    {
+                        if (obj->symbol()->IsObstructing())
+                        {
+                            map.map()(x,y,0,1) -= 64.f;
+                        }
+                    }
                 }
             }
         }

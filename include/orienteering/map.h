@@ -48,8 +48,10 @@ namespace Orienteering
         [[nodiscard]] size_t GetObjectOfSymbolAmount(Symbol* symbol) const;
 
         std::vector<Object*> GetObjectsOfType(ObjectType type) const;
+        std::vector<Object*> GetObjectsOfType(uint8_t type) const;
         std::vector<Object*> GetObstructingAreas() const;
         std::vector<Object*> GetFreeAreas() const;
+        std::vector<Object*> GetIrrelevantFeatures() const;
 
         Symbol* GetSymbolById(size_t id);
         [[nodiscard]] BoundingBox2D GetBoundingBox() const;

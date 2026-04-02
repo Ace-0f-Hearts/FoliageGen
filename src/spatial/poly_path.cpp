@@ -52,8 +52,9 @@ bool Spatial::PolyPath::IsPointOnPath(Spatial2D point, float threshold_radius) c
         Spatial2D ba = next - prev;
 
         float h = std::clamp(Dot(pa,ba)/Dot(ba,ba),0.0f,1.0f);
-        if (Spatial::Length(pa - ba * h) < threshold_radius)
+        if (Spatial::Length(pa - ba * h) <= threshold_radius)
             return true;
+        prev = next;
     }
     return false;
 

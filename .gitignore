@@ -41,3 +41,7 @@
 # Doxygen
 docs/content*
 
+build/*
+cmake-build-default/*
+cmake-build-default-system/*
+

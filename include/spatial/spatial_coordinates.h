@@ -38,8 +38,10 @@ namespace Spatial
          */
         [[nodiscard]] int PositionOther(const SpatialCoordinate& other) const;
 
-        float& operator[](int i);
-        float operator[](int i) const;
+        // float& operator[](int i);
+        // float operator[](int i) const;
+        float& operator[](size_t i);
+        float operator[](size_t i) const;
         SpatialCoordinate operator+(const SpatialCoordinate& other) const;
         SpatialCoordinate operator-(const SpatialCoordinate& other) const;
         SpatialCoordinate operator*(float n) const;
@@ -116,13 +118,26 @@ namespace Spatial
         return other.PositionRelativeTo(*this);
     }
 
-    template <unsigned int N>
-    float& SpatialCoordinate<N>::operator[](int i)
-    { return coordinates_[i]; }
 
     template <unsigned int N>
-    float SpatialCoordinate<N>::operator[](int i) const
-    { return coordinates_[i]; }
+    float& SpatialCoordinate<N>::operator[](size_t i)
+    {
+        return coordinates_[i];
+    }
+
+    template <unsigned int N>
+    float SpatialCoordinate<N>::operator[](size_t i) const
+    {
+        return coordinates_[i];
+    }
+
+    // template <unsigned int N>
+    // float& SpatialCoordinate<N>::operator[](int i)
+    // { return coordinates_[i]; }
+    //
+    // template <unsigned int N>
+    // float SpatialCoordinate<N>::operator[](int i) const
+    // { return coordinates_[i]; }
 
     template <unsigned int N>
     SpatialCoordinate<N> SpatialCoordinate<N>::operator+(const SpatialCoordinate& other) const

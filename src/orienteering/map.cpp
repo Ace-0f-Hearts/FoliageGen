@@ -230,3 +230,23 @@ std::vector<Object*> OrienteeringMap::GetFreeAreas() const
     }
     return objects;
 }
+
+void OrienteeringMap::ClearObjectsOfType(ObjectType type)
+{
+    objects_.erase(std::ranges::remove_if(objects_,[type](const auto& object) {return object->type() == type;}).begin(), objects_.end());
+}
+
+void OrienteeringMap::ClearObjectsOfType(uint8_t type)
+{
+    objects_.erase(std::ranges::remove_if(objects_,[type](const auto& object) {return object->type() & type;}).begin(), objects_.end());
+}
+
+void OrienteeringMap::ClearObjectsOfFlag(SymbolFlag flag)
+{
+    objects_.erase(std::ranges::remove_if(objects_,[flag](const auto& object) {return object->symbol()->flags() & flag;}).begin(), objects_.end());
+}
+
+void OrienteeringMap::ClearObjectsOfFlag(uint8_t flag)
+{
+    objects_.erase(std::ranges::remove_if(objects_,[flag](const auto& object) {return object->symbol()->flags() & flag;}).begin(), objects_.end());
+}

@@ -26,7 +26,7 @@ void FoliageSnapshotMaker::CreateSnapshot(FoliageMap& map, std::vector<Seed>& se
         {
             if (seed.IsClassifed())
             {
-                value = GetColorValue(seed.id + 1, number_of_species);
+                value = GetColorValue(seed.species_id + 1, number_of_species);
             }
             else
             {

@@ -118,11 +118,13 @@ target_compile_definitions(foliage PRIVATE
         cimg_display=0
 )
 
-target_link_libraries(foliage PRIVATE
-        loguru::loguru
+target_link_libraries(foliage
+        PUBLIC
         nanoflann::nanoflann
-        jsoncpp_lib
+        PRIVATE
         alglib
+        loguru::loguru
+        jsoncpp_lib
         png_static
         turbojpeg-static
         glm::glm

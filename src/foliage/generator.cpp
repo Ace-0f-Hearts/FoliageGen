@@ -17,6 +17,7 @@
 
 #include <optimization.h> // alglib
 
+#include <queue>
 using namespace alglib;
 
 std::vector<Seed> Generator::seeds()
@@ -36,21 +37,32 @@ size_t Generator::amount_of_seeds() const
 
 size_t Generator::amount_of_active_seeds() const
 {
-    return std::ranges::count_if(seeds_.cbegin(), seeds_.cend(), [](auto seed) { return seed.IsActive(); });
+    return std::ranges::count_if(seeds_.cbegin(), seeds_.cend(), [](const auto& seed) { return seed.IsActive(); });
 }
 
 size_t Generator::amount_of_inactive_seeds() const
 {
-    return std::ranges::count_if(seeds_.cbegin(), seeds_.cend(), [](auto seed) { return !seed.IsActive(); });
+    return std::ranges::count_if(seeds_.cbegin(), seeds_.cend(), [](const auto& seed) { return !seed.IsActive(); });
 }
 
 void Generator::Start()
 {
+    auto bbox = map_->GetBoundingBox();
+    DLOG_S(INFO) << "Forest masking started";
+    {
+        FoliageMap mask(CImg<>(bbox.width(),bbox.height(),1,3,500.f));
+        // FoliageSnapshotMaker::CreateMapMask(mask,map_->GetObjects(),bbox);
+        // MapWriter::Write(mask,"../../testing/mask.jpeg");
+
+        map_->ClearObjectsOfFlag(Irrelevant);
+    }
+
+
+
     InitializeSeeds();
     LOG_F(INFO, "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu",
           amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds());
 
-    auto bbox = map_->GetBoundingBox();
     PurgeInactiveSeeds();
 
     LOG_F(INFO, "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu",
@@ -64,19 +76,14 @@ void Generator::Start()
     FoliageSnapshotMaker::CreateSnapshot(f_map,map_->GetObjectsOfType(PathO | AreaO), bbox);
     FoliageSnapshotMaker::CreateSnapshot(f_map,seeds_ref(), bbox, 10);
 
-    FoliageMap mask(CImg<>(bbox.width(),bbox.height(),1,3,500.f));
-    FoliageSnapshotMaker::CreateMapMask(mask,map_->GetObjects(),bbox);
-
-
     MapWriter::Write(f_map);
-    MapWriter::Write(mask,"../../testing/mask.jpeg");
     LabelRestOfSeeds();
-    // MaximizeCoveredArea();
+    MaximizeCoveredArea();
 }
 
 void Generator::PurgeInactiveSeeds()
 {
-    seeds_.erase(std::ranges::remove_if(seeds_, [](auto seed) { return !seed.IsActive(); }).begin(), seeds_.end());
+    seeds_.erase(std::ranges::remove_if(seeds_, [](const auto& seed) { return !seed.IsActive(); }).begin(), seeds_.end());
 }
 
 void Generator::InitializeSeeds()
@@ -293,7 +300,7 @@ void Generator::LabelInitialSeeds()
             }
         }
 
-        seed.id = max_idx;
+        seed.species_id = max_idx;
         seed.flags |= Classified;
     }
 
@@ -302,24 +309,16 @@ void Generator::LabelInitialSeeds()
 
 void Generator::LabelRestOfSeeds()
 {
-    std::vector<Spatial::Spatial2D> initial_seed_cords;
+    std::vector<Seed> initial_seed_cords;
     initial_seed_cords.reserve(initial_set_indices_.size());
 
     for (auto seed_idx : initial_set_indices_)
     {
-        initial_seed_cords.push_back(seeds_[seed_idx].coordinate);
+        initial_seed_cords.emplace_back(seeds_[seed_idx]);
     }
 
-    using kd_tree = nanoflann::KDTreeSingleIndexAdaptor<
-        nanoflann::L2_Simple_Adaptor<float,Spatial2DAdaptor>,Spatial2DAdaptor,2>;
-
-    Spatial2DAdaptor point_cloud{initial_seed_cords};
-
+    SeedAdaptor point_cloud{initial_seed_cords};
     kd_tree initial_tree(3,point_cloud,{10});
-
-
-
-    // Quadtree initial_set_quadtree(seeds_coordinates,map_->GetBoundingBox());
 
     int idx_of_init_set = 0;
     for (size_t seed_idx = 0; seed_idx < seeds_.size(); seed_idx++)
@@ -344,28 +343,160 @@ void Generator::LabelRestOfSeeds()
         }
 
         std::vector<int> species_counters(attributes_.size());
-        // for (auto neighbour_index : neighbour_indices)
-        // {
-        //     ++species_counters[seeds_[neighbour_index].id];
-        // }
-        // auto majority_idx = std::ranges::distance(species_counters.begin(),std::ranges::max_element(species_counters));
-        //
-        // seeds()[seed_idx].id = majority_idx;
+        for (size_t idx = 0; idx < result_set.size(); idx++)
+        {
+            ++species_counters[seeds_[ret_index[idx]].species_id];
+        }
+        auto majority_idx = std::ranges::distance(species_counters.begin(),std::ranges::max_element(species_counters));
+        // LOG_S(INFO) << seed_idx << " GOT " << majority_idx;
+        seeds()[seed_idx].species_id = majority_idx;
     }
 }
 
-void Generator::ComputeSubgraph()
+std::vector<Constraints> Generator::ComputeConstraintsForSubGraph(const kd_tree& tree,size_t seed_idx,std::vector<bool>& seed_bit_map)
 {
+    std::vector<Constraints> constraints;
+    std::queue<size_t> queue;
+    queue.push(seed_idx);
+    seed_bit_map[seed_idx] = true;
+    while (!queue.empty())
+    {
+        auto idx = queue.front();
+        queue.pop();
+        Constraints c;
 
+        auto neighbour_indices= ProcessSeed(tree,idx,c,seed_bit_map);
+
+
+        for (auto n_idx : neighbour_indices)
+        {
+            if (!seed_bit_map[n_idx])
+            {
+                seed_bit_map[n_idx] = true;
+                queue.push(n_idx);
+            }
+        }
+
+        constraints.emplace_back(c);
+    }
+
+    return constraints;
 }
 
-void Generator::MaximizeCoveredAreaOfSubgraph()
+std::vector<size_t> Generator::ProcessSeed(const kd_tree& tree, size_t seed_idx, Constraints& c,std::vector<bool>& seed_bit_map)
 {
+    const auto& seed = seeds_[seed_idx];
+
+    std::vector<nanoflann::ResultItem<unsigned,float>> indices_list;
+
+    float query[] = {seeds_[seed_idx].coordinate[0],seeds_[seed_idx].coordinate[1]};
+
+
+    //TODO: Make this a global value to avoid recalculation
+    auto max_growth_radius = std::ranges::max_element(attributes_,[](const SpeciesAttribute& attr1, const SpeciesAttribute& attr2){return attr1.growth.max() < attr2.growth.max();});
+
+    auto search_radius = attributes_[seed.species_id].growth.max() + max_growth_radius->growth.max();
+
+    // DLOG_S(INFO) << "Search radius: " << search_radius;
+    tree.radiusSearch(query,search_radius * search_radius,indices_list);
+
+    c.x = seed_idx;
+    c.box_lc = 0.f;
+    c.box_uc = attributes_[seed.species_id].growth.max();
+
+    std::vector<size_t> indices;
+
+    // DLOG_S(INFO) << "Number of indices found in search radius: " << indices_list.size();
+
+    for (const auto& item : indices_list)
+    {
+
+        auto idx = item.first; // Seed idx
+        auto b = item.second; // Distance
+        if (!seed_bit_map[idx])
+        {
+
+            auto a_r = attributes_[seed.species_id].growth.max();
+            auto b_r = attributes_[seeds_[idx].species_id].growth.max();
+            //
+            // DLOG_S(INFO) << "Max growth A: " << a_r;
+            // DLOG_S(INFO) << "Max growth B: " << b_r;
+            // DLOG_S(INFO) << "Distance: " << b;
+
+            if (a_r + b_r > std::sqrt(b))
+            {
+                indices.emplace_back(idx);
+                c.l_const.emplace_back(idx,b);
+
+            }
+        }
+    }
+
+    return indices;
+}
+
+void Generator::MaximizeCoveredAreaOfSubgraph(std::vector<Constraints>& constraints)
+{
+    std::vector<double> bnd_lower, bnd_upper, lin_constr;
+    std::vector<double> radii(constraints.size(),0.1f); //TODO: Issues mgiht arise from this not being < b
+
+    size_t number_of_linear_constraints = 0;
+
+    for (auto& c : constraints)
+    {
+        bnd_lower.emplace_back(c.box_lc);
+        bnd_upper.emplace_back(c.box_uc);
+
+        auto x = c.x;
+        size_t coeff_n = seeds().size();
+
+        number_of_linear_constraints += c.l_const.size();
+        for (auto& l : c.l_const)
+        {
+            auto y = l.y;
+            auto b = l.b;
+
+            for (size_t idx = 0; idx < constraints.size(); idx++)
+            {
+
+                if (idx == x || idx == y)
+                    lin_constr.emplace_back(1);
+                else
+                    lin_constr.emplace_back(0);
+            }
+
+            lin_constr.emplace_back(b);
+        }
+    }
+
+    auto opt_radii = MaximizeSeedRadii(radii,bnd_lower,bnd_upper,number_of_linear_constraints,radii.size() + 1,lin_constr);
+
+    size_t idx = 0;
+    for (const auto& c :  constraints)
+    {
+        seeds_[c.x].scale = opt_radii[idx++];
+    }
 }
 
 void Generator::MaximizeCoveredArea()
 {
 
+    SeedAdaptor point_cloud{seeds_};
+    kd_tree seed_tree(3,point_cloud,{10});
+
+    std::vector<bool> seed_bit_map(seeds().size(),false);
+    size_t idx = 0;
+
+    while (idx < seeds_.size())
+    {
+        DLOG_S(INFO) << "Computing sub graph from index " << idx;
+
+        auto constraints = ComputeConstraintsForSubGraph(seed_tree,idx, seed_bit_map);
+
+        MaximizeCoveredAreaOfSubgraph(constraints);
+
+        idx += std::ranges::distance(seed_bit_map.begin() + idx,std::ranges::find(seed_bit_map.begin() + idx,seed_bit_map.end(),false));
+    }
 }
 
 void GradientFunc(const real_1d_array& x, double& func, real_1d_array& grad, void* ptr)
@@ -375,11 +506,27 @@ void GradientFunc(const real_1d_array& x, double& func, real_1d_array& grad, voi
     grad[1] = -2 * x[1];
 }
 
-void Generator::MaximizeSeedRadii(std::vector<double> radii, std::vector<double> bnd_lower,std::vector<double> bnd_upper, std::vector<double> lin_constr)
+std::vector<double> Generator::MaximizeSeedRadii(std::vector<double> radii, std::vector<double> bnd_lower,std::vector<double> bnd_upper,int number_of_rows,int number_of_cols, std::vector<double> lin_constr)
 {
+    std::vector<double> opt_radii(radii.size());
+
+
+    DLOG_S(INFO) << "Radii: " << radii.size();
+    DLOG_S(INFO) << "Lower Boundary: " << bnd_lower.size();
+    DLOG_S(INFO) << "Upper Boundary: " << bnd_upper.size();
+    DLOG_S(INFO) << "Linear Constraints: " << lin_constr.size();
+
+    if (lin_constr.size() == 0)
+    {
+        // Only one seed found in this subgraph
+        opt_radii[0] = bnd_upper[0];
+
+        return opt_radii;
+    }
+
     try
     {
-        real_1d_array r;
+        real_1d_array r; r.setcontent(radii.size(),radii.data());
         r.setcontent(radii.size(),radii.data());
 
         double epsg = 1e-7;
@@ -395,23 +542,42 @@ void Generator::MaximizeSeedRadii(std::vector<double> radii, std::vector<double>
         real_1d_array bndl; bndl.setcontent(bnd_lower.size(),bnd_lower.data());
         real_1d_array bndu; bndu.setcontent(bnd_upper.size(),bnd_upper.data());
 
+
         minbleicsetbc(state,bndl,bndu);
 
         real_2d_array c; //TODO: Figure out how to init this
+        c.setcontent(number_of_rows,number_of_cols,lin_constr.data());
 
-        integer_1d_array ct = "[-1]";
+        std::vector<long> ct_vec(number_of_rows,-1);
+        integer_1d_array ct;
+        ct.setcontent(ct_vec.size(),ct_vec.data());
+
         minbleicsetlc(state,c,ct);
 
         minbleicsetcond(state,epsg, epsf, epsx,maxits);
 
+        minbleicoptguardsmoothness(state);
+        minbleicoptguardgradient(state,0.001);
+
+
         alglib::minbleicoptimize(state,GradientFunc);
 
         minbleicresults(state,r,report);
+
+        optguardreport ogrep;
+        minbleicoptguardresults(state, ogrep);
+        printf("%s\n", ogrep.badgradsuspected ? "true" : "false"); // EXPECTED: false
+        printf("%s\n", ogrep.nonc0suspected ? "true" : "false"); // EXPECTED: false
+        printf("%s\n", ogrep.nonc1suspected ? "true" : "false"); // EXPECTED: false
+
+
+        opt_radii.assign(r.getcontent(),r.getcontent() + r.length());
+
     } catch (alglib::ap_error& e)
     {
         std::cout << "ALGLIB Error: " << e.msg << std::endl;
     }
-
+    return opt_radii;
 }
 
 

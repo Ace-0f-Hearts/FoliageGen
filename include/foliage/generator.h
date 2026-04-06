@@ -18,19 +18,34 @@
 #include <foliage/species_attribute.h>
 #include <orienteering/map.h>
 
+#include <nanoflann.hpp>
 
 
-struct Spatial2DAdaptor
+struct LinearConstraint
 {
-    std::vector<Spatial2D> points;
+    size_t y;
+    float b;
+};
+
+struct Constraints
+{
+    size_t x;
+    float box_uc;
+    float box_lc;
+    std::vector<LinearConstraint> l_const;
+};
+
+struct SeedAdaptor
+{
+    std::vector<Seed> seeds;
 
     [[nodiscard]] size_t kdtree_get_point_count() const
     {
-        return points.size();
+        return seeds.size();
     }
     [[nodiscard]] float kdtree_get_pt(const size_t idx, const size_t dim) const
     {
-        return points[idx][dim];
+        return seeds[idx].coordinate[dim];
     }
     template <class BBOX>
     [[nodiscard]] bool kdtree_get_bbox(BBOX& bbox) const
@@ -39,6 +54,9 @@ struct Spatial2DAdaptor
     }
 
 };
+
+using kd_tree = nanoflann::KDTreeSingleIndexAdaptor<
+    nanoflann::L2_Simple_Adaptor<float,SeedAdaptor>,SeedAdaptor,2>;
 
 class Generator
 {
@@ -74,9 +92,10 @@ private:
     void LabelRestOfSeeds();
 
     void MaximizeCoveredArea();
-    void MaximizeCoveredAreaOfSubgraph();
-    void ComputeSubgraph();
-    void MaximizeSeedRadii(std::vector<double> seeds, std::vector<double> box_constr,std::vector<double> bnd_upper, std::vector<double> lin_constr);
+    void MaximizeCoveredAreaOfSubgraph(std::vector<Constraints>& constraints);
+    std::vector<Constraints> ComputeConstraintsForSubGraph(const kd_tree& tree,size_t seed_idx, std::vector<bool>&);
+    std::vector<size_t> ProcessSeed(const kd_tree& tree, size_t seed_idx, Constraints& c,std::vector<bool>& seed_bit_map);
+    std::vector<double>  MaximizeSeedRadii(std::vector<double> seeds, std::vector<double> box_constr,std::vector<double> bnd_upper,int number_of_rows,int number_of_cols, std::vector<double> lin_constr);
 
 
     std::shared_ptr<OrienteeringMap> map_;
@@ -89,8 +108,11 @@ private:
     static constexpr int kKnn_number = 3;
     float density_;
 
+
     std::vector<Seed> seeds_;
     std::vector<size_t> initial_set_indices_;
+
+
 };
 
 

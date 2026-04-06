@@ -78,7 +78,7 @@ void App::Init()
         generator_builder_.SetHeightMap(height_map_);
         generator_builder_.SetDiffusionZones(zones);
         generator_builder_.SetSpeciesAttributes(attributes);
-        generator_builder_.SetDensity(10.f);
+        generator_builder_.SetDensity(4.f);
         if (!generator_builder_.Build())
             throw std::logic_error("Error building generator");
 

@@ -415,7 +415,7 @@ std::vector<size_t> Generator::ProcessSeed(const kd_tree& tree, size_t seed_idx,
     {
 
         auto idx = item.first; // Seed idx
-        auto b = item.second; // Distance
+        auto b = std::sqrt(item.second); // Distance
         if (!seed_bit_map[idx])
         {
 
@@ -426,7 +426,7 @@ std::vector<size_t> Generator::ProcessSeed(const kd_tree& tree, size_t seed_idx,
             // DLOG_S(INFO) << "Max growth B: " << b_r;
             // DLOG_S(INFO) << "Distance: " << b;
 
-            if (a_r + b_r > std::sqrt(b))
+            if (a_r + b_r > b)
             {
                 indices.emplace_back(idx);
                 c.l_const.emplace_back(idx,b);
@@ -440,18 +440,23 @@ std::vector<size_t> Generator::ProcessSeed(const kd_tree& tree, size_t seed_idx,
 
 void Generator::MaximizeCoveredAreaOfSubgraph(std::vector<Constraints>& constraints)
 {
-    std::vector<double> bnd_lower, bnd_upper, lin_constr;
-    std::vector<double> radii(constraints.size(),0.1f); //TODO: Issues mgiht arise from this not being < b
+    std::vector<double> bnd_lower, bnd_upper, lin_constr, radii;
+
+    bnd_lower.reserve(constraints.size());
+    bnd_upper.reserve(constraints.size());
+    radii.reserve(constraints.size());
 
     size_t number_of_linear_constraints = 0;
 
     for (auto& c : constraints)
     {
-        bnd_lower.emplace_back(c.box_lc);
+        // bnd_lower.emplace_back(c.box_lc);
+        bnd_lower.emplace_back(0.f);
         bnd_upper.emplace_back(c.box_uc);
 
         auto x = c.x;
-        size_t coeff_n = seeds().size();
+
+        radii.emplace_back((c.box_uc + c.box_lc) / 2.f);
 
         number_of_linear_constraints += c.l_const.size();
         for (auto& l : c.l_const)
@@ -477,6 +482,9 @@ void Generator::MaximizeCoveredAreaOfSubgraph(std::vector<Constraints>& constrai
     size_t idx = 0;
     for (const auto& c :  constraints)
     {
+        // DLOG_S(INFO) << "[" << c.x << "] : [" << opt_radii[idx] << "]";
+        assert(!std::isnan(opt_radii[idx]));
+        assert(std::isfinite(opt_radii[idx]));
         seeds_[c.x].scale = opt_radii[idx++];
     }
 }
@@ -492,7 +500,7 @@ void Generator::MaximizeCoveredArea()
 
     while (idx < seeds_.size())
     {
-        DLOG_S(INFO) << "Computing sub graph from index " << idx;
+        // DLOG_S(INFO) << "Computing sub graph from index " << idx;
 
         auto constraints = ComputeConstraintsForSubGraph(seed_tree,idx, seed_bit_map);
 
@@ -504,9 +512,18 @@ void Generator::MaximizeCoveredArea()
 
 void GradientFunc(const real_1d_array& x, double& func, real_1d_array& grad, void* ptr)
 {
-    func = -(pow(x[0], 2) + pow(x[1], 2));
-    grad[0] = -2 * x[0];
-    grad[1] = -2 * x[1];
+    // func = -(pow(x[0], 2) + pow(x[1], 2));
+
+    for (int i = 0; i < x.length(); ++i)
+    {
+        // DLOG_S(INFO) << "Gradient Func.: " << x[i];
+        func += pow(x[i],2);
+        grad[i] = -2.f * x[i] * M_PI;
+
+    }
+
+
+    func *= -M_PI;
 }
 
 std::vector<double> Generator::MaximizeSeedRadii(std::vector<double> radii, std::vector<double> bnd_lower,std::vector<double> bnd_upper,int number_of_rows,int number_of_cols, std::vector<double> lin_constr)
@@ -519,7 +536,7 @@ std::vector<double> Generator::MaximizeSeedRadii(std::vector<double> radii, std:
     DLOG_S(INFO) << "Upper Boundary: " << bnd_upper.size();
     DLOG_S(INFO) << "Linear Constraints: " << lin_constr.size();
 
-    if (lin_constr.size() == 0)
+    if (lin_constr.empty())
     {
         // Only one seed found in this subgraph
         opt_radii[0] = bnd_upper[0];
@@ -529,8 +546,7 @@ std::vector<double> Generator::MaximizeSeedRadii(std::vector<double> radii, std:
 
     try
     {
-        real_1d_array r; r.setcontent(radii.size(),radii.data());
-        r.setcontent(radii.size(),radii.data());
+        real_1d_array r; r.attach_to_ptr(radii.size(),radii.data());
 
         double epsg = 1e-7;
         double epsf = 0.0;
@@ -542,14 +558,14 @@ std::vector<double> Generator::MaximizeSeedRadii(std::vector<double> radii, std:
 
         minbleiccreate(r,state);
 
-        real_1d_array bndl; bndl.setcontent(bnd_lower.size(),bnd_lower.data());
-        real_1d_array bndu; bndu.setcontent(bnd_upper.size(),bnd_upper.data());
+        real_1d_array bndl; bndl.attach_to_ptr(bnd_lower.size(),bnd_lower.data());
+        real_1d_array bndu; bndu.attach_to_ptr(bnd_upper.size(),bnd_upper.data());
 
 
         minbleicsetbc(state,bndl,bndu);
 
         real_2d_array c; //TODO: Figure out how to init this
-        c.setcontent(number_of_rows,number_of_cols,lin_constr.data());
+        c.attach_to_ptr(number_of_rows,number_of_cols,lin_constr.data());
 
         std::vector<long> ct_vec(number_of_rows,-1);
         integer_1d_array ct;
@@ -560,7 +576,7 @@ std::vector<double> Generator::MaximizeSeedRadii(std::vector<double> radii, std:
         minbleicsetcond(state,epsg, epsf, epsx,maxits);
 
         minbleicoptguardsmoothness(state);
-        minbleicoptguardgradient(state,0.001);
+        minbleicoptguardgradient(state,0.0001);
 
 
         alglib::minbleicoptimize(state,GradientFunc);
@@ -569,15 +585,16 @@ std::vector<double> Generator::MaximizeSeedRadii(std::vector<double> radii, std:
 
         optguardreport ogrep;
         minbleicoptguardresults(state, ogrep);
+        std::cout << "Termination Type: " << (int)report.terminationtype << std::endl;
         printf("%s\n", ogrep.badgradsuspected ? "true" : "false"); // EXPECTED: false
         printf("%s\n", ogrep.nonc0suspected ? "true" : "false"); // EXPECTED: false
         printf("%s\n", ogrep.nonc1suspected ? "true" : "false"); // EXPECTED: false
-
 
         opt_radii.assign(r.getcontent(),r.getcontent() + r.length());
 
     } catch (alglib::ap_error& e)
     {
+        LOG_S(ERROR) << "ALGLIB ERROR: " << e.msg;
         std::cout << "ALGLIB Error: " << e.msg << std::endl;
     }
     return opt_radii;

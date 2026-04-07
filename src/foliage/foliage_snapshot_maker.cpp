@@ -8,12 +8,12 @@
 #include "spatial/bounding_box.h"
 
 
-void FoliageSnapshotMaker::CreateSnapshot(FoliageMap& map, std::vector<Seed>& seeds, BoundingBox2D bbox, size_t number_of_species)
+void FoliageSnapshotMaker::CreateSnapshot(std::vector<Seed>& seeds, BoundingBox2D bbox, size_t number_of_species)
 {
     int x_offset, y_offset;
 
-    x_offset = std::fabs(std::floor(bbox.min()[0]));
-    y_offset = std::fabs(std::floor(bbox.min()[1]));
+    x_offset = std::fabs(std::floor(bbox.min()[0] * kResolution_mult));
+    y_offset = std::fabs(std::floor(bbox.min()[1] * kResolution_mult));
 
     int c = 0;
     for (auto &seed: seeds)
@@ -39,38 +39,42 @@ void FoliageSnapshotMaker::CreateSnapshot(FoliageMap& map, std::vector<Seed>& se
         }
 
         int x, y;
-        x = std::round(seed.coordinate[0]) + x_offset;
-        y = std::round(seed.coordinate[1]) + y_offset;
+        x = std::round(seed.coordinate[0] * kResolution_mult) + x_offset;
+        y = std::round(seed.coordinate[1] * kResolution_mult) + y_offset;
 
-        // seed.scale = 3;
+        if (rand() > 0.5)
+            seed.scale = 3;
 
-        if (seed.scale > 1.f)
+        if (seed.scale * kResolution_mult > 1.f)
         {
             int x1, y1;
-            for (int i = -seed.scale/2.f; i < seed.scale / 2; i++)
+            for (int i = -seed.scale * kResolution_mult / 2.f; i < seed.scale * kResolution_mult / 2; i++)
             {
-                for (int j = -seed.scale/2.f; j < seed.scale / 2; j++)
+                for (int j = -seed.scale * kResolution_mult / 2.f; j < seed.scale * kResolution_mult / 2; j++)
                 {
-                    x1 = x+i;
-                    y1 = y+j;
+                    x1 = x + i;
+                    y1 = y + j;
 
-                    if (x1 < 0 || y1 < 0 || x1 >= map.Dim().x || y1 >= map.Dim().y)
+                    if (x1 < 0 || y1 < 0 || x1 >= f_map_.Dim().x || y1 >= f_map_.Dim().y)
                         continue;
-                    map.map()(x1,y1,0,0) = value.x;
-                    map.map()(x1,y1,0,1) = value.y;
-                    map.map()(x1,y1,0,2) = value.z;
+
+                    if (std::pow(i,2) + std::pow(j,2) > seed.scale * kResolution_mult)
+                        continue;
+                    f_map_.map()(x1,y1,0,0) = value.x;
+                    f_map_.map()(x1,y1,0,1) = value.y;
+                    f_map_.map()(x1,y1,0,2) = value.z;
                 }
             }
         }
-        map.map()(x,y,0,0) = value.x;
-        map.map()(x,y,0,1) = value.y;
-        map.map()(x,y,0,2) = value.z;
+        f_map_.map()(x,y,0,0) = value.x;
+        f_map_.map()(x,y,0,1) = value.y;
+        f_map_.map()(x,y,0,2) = value.z;
     }
 
 
 }
 
-void FoliageSnapshotMaker::CreateMapMask(FoliageMap& map, std::vector<std::unique_ptr<Object>>& areas, BoundingBox2D bbox)
+void FoliageSnapshotMaker::CreateMapMask(std::vector<std::unique_ptr<Object>>& areas, BoundingBox2D bbox)
 {
     int x_offset, y_offset;
 
@@ -98,9 +102,9 @@ void FoliageSnapshotMaker::CreateMapMask(FoliageMap& map, std::vector<std::uniqu
                 pix += obj->bounding_box().min();
                 if (obj->IsIntersecting(pix))
                 {
-                    map.map()(x,y,0,0) = 0.f;
-                    map.map()(x,y,0,1) = 0.f;
-                    map.map()(x,y,0,2) = 0.f;
+                    f_map_.map()(x,y,0,0) = 0.f;
+                    f_map_.map()(x,y,0,1) = 0.f;
+                    f_map_.map()(x,y,0,2) = 0.f;
 
                 }
             }
@@ -108,30 +112,30 @@ void FoliageSnapshotMaker::CreateMapMask(FoliageMap& map, std::vector<std::uniqu
     }
 }
 
-void FoliageSnapshotMaker::CreateSnapshot(FoliageMap& map, std::vector<Object*> areas, BoundingBox2D bbox)
+void FoliageSnapshotMaker::CreateSnapshot(std::vector<Object*> areas, BoundingBox2D bbox)
 {
     int x_offset, y_offset;
 
-    x_offset = std::abs(std::floor(bbox.min()[0]));
-    y_offset = std::abs(std::floor(bbox.min()[1]));
+    x_offset = std::abs(std::floor(bbox.min()[0] * kResolution_mult));
+    y_offset = std::abs(std::floor(bbox.min()[1] * kResolution_mult));
 
     int c = 0;
 
     for (const auto& obj: areas)
     {
 
-        size_t width = std::ceil(obj->bounding_box().width());
-        size_t height = std::ceil(obj->bounding_box().height());
+        size_t width = std::ceil(obj->bounding_box().width() * kResolution_mult);
+        size_t height = std::ceil(obj->bounding_box().height() * kResolution_mult);
 
         for (size_t i = 0; i < width; i++)
         {
             for (size_t j = 0; j < height; j++)
             {
-                Spatial::Spatial2D pix({static_cast<float>(i),static_cast<float>(j)});
+                Spatial::Spatial2D pix({static_cast<float>(i / kResolution_mult),static_cast<float>(j / kResolution_mult)});
 
                 int x,y;
-                x = i + x_offset + std::round(obj->bounding_box().min()[0]);
-                y = j + y_offset + std::round(obj->bounding_box().min()[1]);
+                x = i + x_offset + std::round(obj->bounding_box().min()[0] * kResolution_mult);
+                y = j + y_offset + std::round(obj->bounding_box().min()[1] * kResolution_mult);
 
                 pix += obj->bounding_box().min();
                 if (obj->IsIntersecting(pix))
@@ -140,16 +144,16 @@ void FoliageSnapshotMaker::CreateSnapshot(FoliageMap& map, std::vector<Object*> 
                     {
                         if (obj->symbol()->IsObstructing())
                         {
-                            map.map()(x,y,0,0) -= 64.f;
+                            f_map_.map()(x,y,0,0) -= 64.f;
                         } else
                         {
-                            map.map()(x,y,0,2) -= 64.f;
+                            f_map_.map()(x,y,0,2) -= 64.f;
                         }
                     } else if (obj->type() == PathO)
                     {
                         if (obj->symbol()->IsObstructing())
                         {
-                            map.map()(x,y,0,1) -= 64.f;
+                            f_map_.map()(x,y,0,1) -= 64.f;
                         }
                     }
                 }
@@ -177,3 +181,14 @@ glm::vec3 FoliageSnapshotMaker::GetColorValue(size_t point, size_t number_of_spe
     return value;
 }
 
+FoliageSnapshotMaker::FoliageSnapshotMaker(float resolution_mult, const BoundingBox2D& bbox) :
+f_map_(CImg<>(std::round(bbox.width() * resolution_mult) ,std::round(bbox.height() * resolution_mult),1,3,500.f)),
+kResolution_mult(resolution_mult)
+{
+
+}
+
+FoliageMap& FoliageSnapshotMaker::GetMap()
+{
+    return f_map_;
+}

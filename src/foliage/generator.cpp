@@ -72,15 +72,17 @@ void Generator::Start()
     ChooseInitialSeeds();
     LabelInitialSeeds();
 
-    FoliageMap f_map(CImg<>(std::round(bbox.width()),std::round(bbox.height()),1,3,500.f));
 
-    FoliageSnapshotMaker::CreateSnapshot(f_map,map_->GetObjectsOfType(PathO | AreaO), bbox);
+
+    auto snap = FoliageSnapshotMaker(4.f,map_->GetBoundingBox());
+
 
     LabelRestOfSeeds();
-    MaximizeCoveredArea();
+    // MaximizeCoveredArea();
 
-    FoliageSnapshotMaker::CreateSnapshot(f_map,seeds_ref(), bbox, 10);
-    MapWriter::Write(f_map);
+    snap.CreateSnapshot(map_->GetObjectsOfType(PathO | AreaO), bbox);
+    snap.CreateSnapshot(seeds_ref(), bbox, 10);
+    MapWriter::Write(snap.GetMap());
 
 }
 

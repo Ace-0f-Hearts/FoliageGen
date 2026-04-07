@@ -14,8 +14,6 @@ App::App(std::filesystem::path path_to_description_file, std::filesystem::path p
 descriptor_file_path_(std::move(path_to_description_file)),
 map_file_path_(std::move(path_to_map_file)),
 symbol_set_file_path_(std::move(symbol_set_file_path)),
-writer_(GeneratedDataWriter()),
-json_builder_(JsonBuilder()),
 json_parser_(JsonParser()),
 map_(std::make_shared<OrienteeringMap>()),
 map_parser_(map_)
@@ -78,7 +76,7 @@ void App::Init()
         generator_builder_.SetHeightMap(height_map_);
         generator_builder_.SetDiffusionZones(zones);
         generator_builder_.SetSpeciesAttributes(attributes);
-        generator_builder_.SetDensity(4.f);
+        generator_builder_.SetDensity(10.f);
         if (!generator_builder_.Build())
             throw std::logic_error("Error building generator");
 
@@ -94,7 +92,11 @@ void App::Generate()
         LOG_SCOPE_F(INFO,"Generation started");
         generator_builder_.generator()->Start();
 
+        auto seeds = generator_builder_.generator()->seeds();
 
+        auto value = JsonBuilder::FromGeneratedDataVec(seeds);
+        output_file_path_ = "../../testing/seeds.json";
+        JsonWriter::Run(output_file_path_,value);
 
         LOG_F(INFO,"Generation successful");
 

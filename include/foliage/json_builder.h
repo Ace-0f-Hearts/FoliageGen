@@ -6,20 +6,16 @@
 #define GENERATOR_JSONBUILDER_H
 #include <json/value.h>
 
-#include "generated_data.h"
+#include "seed.h"
 
 
 class JsonBuilder
 {
-    using Value = Json::Value;
-    using String = Json::String;
+
 public:
-    JsonBuilder();
-    Value BuildNGet(const GeneratedData&);
-    void Clear();
-private:
-    Value root_;
-    String err_;
+    static Json::Value FromGeneratedData(const Seed& data);
+    static Json::Value FromGeneratedDataVec(const std::vector<Seed>& datas);
+
 };
 
 

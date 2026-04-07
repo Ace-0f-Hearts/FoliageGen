@@ -9,7 +9,7 @@
 #include <foliage/json_extractor.h>
 #include <foliage//json_builder.h>
 #include <foliage/map_parser.h>
-#include <foliage/generated_data_writer.h>
+#include <foliage/json_writer.h>
 #include <foliage/json_parser.h>
 #include <foliage/generator.h>
 #include <foliage/generator_builder.h>
@@ -35,8 +35,6 @@ private:
 
     std::filesystem::path output_file_path_;
 
-    GeneratedDataWriter writer_;
-    JsonBuilder json_builder_;
     JsonParser json_parser_;
 
 

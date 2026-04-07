@@ -65,8 +65,8 @@ public:
               const std::vector<DiffusionZone>& diffusion_zones, const std::vector<SpeciesAttribute>& attributes,
               float density);
 
-    std::vector<Seed> seeds();
-    std::vector<Seed>& seeds_ref();
+    [[nodiscard]] std::vector<Seed> seeds();
+    [[nodiscard]] std::vector<Seed>& seeds_ref();
 
     [[nodiscard]] size_t amount_of_seeds() const;
     [[nodiscard]] size_t amount_of_active_seeds() const;
@@ -82,7 +82,7 @@ private:
     };
 
     void InitializeSeeds();
-    std::vector<Seed> InitializeSeedsOnObject(float density, Object& object);
+    std::vector<Seed> InitializeSeedsOnObject(float density, const Object& object);
     void PurgeInactiveSeeds();
     void Randomize(std::vector<Seed>& seeds, float density, float factor = 1.f, float angle = 0);
     void Cull(std::vector<Seed>& seeds, const Object& area);

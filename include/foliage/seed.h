@@ -27,7 +27,7 @@ struct Seed
     // Seed(Seed&& other) noexcept : coordinate(std::move(other.coordinate)), scale(other.scale), flags(other.flags), species_id(other.species_id) {};
     [[nodiscard]] bool IsActive() const { return flags & Active; };
     [[nodiscard]] bool IsInitial() const {return flags & Initial; };
-    [[nodiscard]] bool IsClassifed() const { return flags & Classified; };
+    [[nodiscard]] bool IsClassified() const { return flags & Classified; };
 
     Spatial::Spatial2D coordinate;
     float scale;

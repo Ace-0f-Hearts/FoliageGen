@@ -18,6 +18,7 @@
 #include <optimization.h> // alglib
 
 #include <queue>
+
 using namespace alglib;
 
 std::vector<Seed> Generator::seeds()
@@ -71,14 +72,16 @@ void Generator::Start()
     ChooseInitialSeeds();
     LabelInitialSeeds();
 
-    FoliageMap f_map(CImg<>(bbox.width(),bbox.height(),1,3,500.f));
+    FoliageMap f_map(CImg<>(std::round(bbox.width()),std::round(bbox.height()),1,3,500.f));
 
     FoliageSnapshotMaker::CreateSnapshot(f_map,map_->GetObjectsOfType(PathO | AreaO), bbox);
-    FoliageSnapshotMaker::CreateSnapshot(f_map,seeds_ref(), bbox, 10);
 
-    MapWriter::Write(f_map);
     LabelRestOfSeeds();
     MaximizeCoveredArea();
+
+    FoliageSnapshotMaker::CreateSnapshot(f_map,seeds_ref(), bbox, 10);
+    MapWriter::Write(f_map);
+
 }
 
 void Generator::PurgeInactiveSeeds()
@@ -104,15 +107,15 @@ void Generator::InitializeSeeds()
     }
 }
 
-std::vector<Seed> Generator::InitializeSeedsOnObject(float density, Object& object)
+std::vector<Seed> Generator::InitializeSeedsOnObject(float density, const Object& object)
 {
-    auto bounding_box = object.bounding_box();
+    const auto bounding_box = object.bounding_box();
     std::vector<Seed> seeds;
-    float offset = density / 2;
+    const float offset = density / 2;
 
-    size_t seeds_per_row = std::floor(bounding_box.width() / density);
-    size_t seeds_per_column = std::floor(bounding_box.height() / density);
-    size_t number_of_seeds = std::floor(bounding_box.width() * bounding_box.height() / density);
+    const size_t seeds_per_row = std::floor(bounding_box.width() / density);
+    const size_t seeds_per_column = std::floor(bounding_box.height() / density);
+    const size_t number_of_seeds = std::floor(bounding_box.width() * bounding_box.height() / density);
 
     if (seeds_per_column == 0 || seeds_per_row == 0 || number_of_seeds == 0)
         return seeds;

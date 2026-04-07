@@ -12,8 +12,8 @@ void FoliageSnapshotMaker::CreateSnapshot(FoliageMap& map, std::vector<Seed>& se
 {
     int x_offset, y_offset;
 
-    x_offset = std::abs(std::floor(bbox.min()[0]));
-    y_offset = std::abs(std::floor(bbox.min()[1]));
+    x_offset = std::fabs(std::floor(bbox.min()[0]));
+    y_offset = std::fabs(std::floor(bbox.min()[1]));
 
     int c = 0;
     for (auto &seed: seeds)
@@ -24,7 +24,7 @@ void FoliageSnapshotMaker::CreateSnapshot(FoliageMap& map, std::vector<Seed>& se
 
         if (seed.IsActive())
         {
-            if (seed.IsClassifed())
+            if (seed.IsClassified())
             {
                 value = GetColorValue(seed.species_id + 1, number_of_species);
             }
@@ -42,6 +42,26 @@ void FoliageSnapshotMaker::CreateSnapshot(FoliageMap& map, std::vector<Seed>& se
         x = std::round(seed.coordinate[0]) + x_offset;
         y = std::round(seed.coordinate[1]) + y_offset;
 
+        // seed.scale = 3;
+
+        if (seed.scale > 1.f)
+        {
+            int x1, y1;
+            for (int i = -seed.scale/2.f; i < seed.scale / 2; i++)
+            {
+                for (int j = -seed.scale/2.f; j < seed.scale / 2; j++)
+                {
+                    x1 = x+i;
+                    y1 = y+j;
+
+                    if (x1 < 0 || y1 < 0 || x1 >= map.Dim().x || y1 >= map.Dim().y)
+                        continue;
+                    map.map()(x1,y1,0,0) = value.x;
+                    map.map()(x1,y1,0,1) = value.y;
+                    map.map()(x1,y1,0,2) = value.z;
+                }
+            }
+        }
         map.map()(x,y,0,0) = value.x;
         map.map()(x,y,0,1) = value.y;
         map.map()(x,y,0,2) = value.z;

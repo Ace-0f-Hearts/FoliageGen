@@ -10,7 +10,7 @@
 Mask::Mask(BoundingBox2D bbox, float resolution_mult, int channels) :
 bbox_(bbox),
 resolution_mult_(resolution_mult),
-img_(std::ceil(bbox.width()) * resolution_mult,std::ceil(bbox.height()) * resolution_mult,1,channels,0),
+img_(static_cast<size_t>(std::ceil(bbox.width()) * resolution_mult),static_cast<size_t>(std::ceil(bbox.height()) * resolution_mult),1,channels,0),
 x_offset_(-std::floor(bbox.min()[0] * resolution_mult_)),
 y_offset_(-std::floor(bbox.min()[1] * resolution_mult_))
 {
@@ -19,7 +19,7 @@ y_offset_(-std::floor(bbox.min()[1] * resolution_mult_))
 
 int Mask::At(Coord2 const& coord, int channel) const
 {
-    LOG_S(INFO) << coord.x << " | " << coord.y << " | " << img_.width() << " | " << img_.height();
+    // LOG_S(INFO) << coord.x << " | " << coord.y << " | " << img_.width() << " | " << img_.height();
     assert(coord.x >= 0);
     assert(coord.y >= 0);
     assert(coord.x < img_.width());
@@ -29,7 +29,7 @@ int Mask::At(Coord2 const& coord, int channel) const
 
 void Mask::At(Coord2 const& coord, int value, int channel)
 {
-    LOG_S(INFO) << coord.x << " | " << coord.y << " | " << img_.width() << " | " << img_.height();
+    // LOG_S(INFO) << coord.x << " | " << coord.y << " | " << img_.width() << " | " << img_.height();
     assert(coord.x >= 0);
     assert(coord.y >= 0);
     assert(coord.x < img_.width());

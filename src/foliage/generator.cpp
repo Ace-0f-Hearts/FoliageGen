@@ -103,7 +103,7 @@ void Generator::Start()
 
     {
         LOG_SCOPE_F(INFO,"Vegetation maximalization started!");
-        // MaximizeCoveredArea();
+        MaximizeCoveredArea();
         DLOG_S(INFO) << "Vegetation maximalization finished!";
     }
 
@@ -186,7 +186,18 @@ void Generator::Randomize(std::vector<Seed>& seeds, float density, float factor,
     for (auto& seed : seeds)
     {
         auto offset = Spatial::Spatial2D({dist(x_gen), dist(y_gen)});
+
+        auto bbox = map_->GetBoundingBox();
+
         seed.coordinate += offset;
+        if (seed.coordinate[0] < bbox.min()[0])
+            seed.coordinate[0] = bbox.min()[0];
+        if (seed.coordinate[1] < bbox.min()[1])
+            seed.coordinate[1] = bbox.min()[1];
+        if (seed.coordinate[0] > bbox.max()[0])
+            seed.coordinate[0] = bbox.max()[0];
+        if (seed.coordinate[1] > bbox.max()[1])
+            seed.coordinate[1] = bbox.max()[1];
     }
 }
 
@@ -197,12 +208,12 @@ void Generator::Cull(std::vector<Seed>& seeds, const Object& object, Mask& mask)
         // auto coord = mask.SpatialToMaskCoordinate(seed.coordinate);
         // auto value = mask.At(coord);
 
-        int x, y;
-        x = (seed.coordinate[0] - std::round(map_->GetBoundingBox().min()[0])) * mask.resolution_mult();
-        y = (seed.coordinate[1] - std::round(map_->GetBoundingBox().min()[1])) * mask.resolution_mult();
-        auto value = mask.At({x,y});
+        // int x, y;
+        // x = std::round(seed.coordinate[0] - std::round(map_->GetBoundingBox().min()[0])) * mask.resolution_mult();
+        // y = std::round(seed.coordinate[1] - std::round(map_->GetBoundingBox().min()[1])) * mask.resolution_mult();
+        // auto value = mask.At({x,y});
 
-        if (object.IsIntersecting(seed.coordinate) && value == 0)
+        if (object.IsIntersecting(seed.coordinate))
         {
             seed.flags |= Active;
         }

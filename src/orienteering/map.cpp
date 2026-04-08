@@ -203,13 +203,13 @@ std::vector<Object*> OrienteeringMap::GetObjectsOfType(uint8_t type) const
     return objects;
 }
 
-std::vector<Object*> OrienteeringMap::GetObstructingAreas() const
+std::vector<Object*> OrienteeringMap::GetObstructingObjects() const
 {
     std::vector<Object*> objects;
 
     for (auto& object: objects_)
     {
-        if (object->symbol()->IsObstructing() && object->type() == AreaO)
+        if (object->symbol()->IsObstructing() && (object->type() == AreaO || object->type() == PathO))
         {
             objects.emplace_back(object.get());
         }

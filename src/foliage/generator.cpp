@@ -46,44 +46,78 @@ size_t Generator::amount_of_inactive_seeds() const
     return std::ranges::count_if(seeds_.cbegin(), seeds_.cend(), [](const auto& seed) { return !seed.IsActive(); });
 }
 
+size_t Generator::amount_of_classified_seeds() const
+{
+    return std::ranges::count_if(seeds_.cbegin(), seeds_.cend(), [](const auto& seed) { return seed.IsClassified(); });
+}
+
 void Generator::Start()
 {
     auto bbox = map_->GetBoundingBox();
-    DLOG_S(INFO) << "Forest masking started";
+    LOG_SCOPE_F(INFO,"Forest masking started");
     {
-        FoliageMap mask(CImg<>(bbox.width(),bbox.height(),1,3,500.f));
-        // FoliageSnapshotMaker::CreateMapMask(mask,map_->GetObjects(),bbox);
-        // MapWriter::Write(mask,"../../testing/mask.jpeg");
+        // FoliageMap mask(CImg<>(bbox.width(),bbox.height(),1,3,500.f));
+
 
         map_->ClearObjectsOfFlag(Irrelevant);
     }
 
+    MaskMaker mask_maker;
+    mask_maker.CreateNewMask(map_->GetBoundingBox(),2,1);
+    LOG_SCOPE_F(INFO,"Diffusion zones");
+    {
+        mask_maker.MaskObjects(map_->GetObstructingObjects());
+    }
+
+    auto mask = mask_maker.GetMask().value();
+    InitializeSeeds(mask);
+    mask.Write("../../testing/mask.jpeg");
+    LOG_F(INFO, "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
+          amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(),amount_of_classified_seeds());
+
+    {
+        LOG_SCOPE_F(INFO,"Labeling of initial set of seeds started!");
+
+        PurgeInactiveSeeds();
+        ChooseInitialSeeds();
+        LabelInitialSeeds();
+        LOG_F(INFO, "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
+              amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(),amount_of_classified_seeds());
+        for (uint32_t i = 0; i < attributes_.size(); i++)
+        {
+            LOG_S(INFO) << "Number of " << attributes_[i].name << " seeds: " << CountSeedOfSpecies(i);
+        }
+        DLOG_S(INFO) << "Labeling of initial set of seeds finished";
+    }
 
 
-    InitializeSeeds();
-    LOG_F(INFO, "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu",
-          amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds());
+    {
+        LOG_SCOPE_F(INFO,"Labeling of all other seeds started!");
+        LabelRestOfSeeds();
+        for (uint32_t i = 0; i < attributes_.size(); i++)
+        {
+            LOG_S(INFO) << "Number of " << attributes_[i].name << " seeds: " << CountSeedOfSpecies(i);
+        }
+        DLOG_S(INFO) << "Labeling of seeds finished!";
+    }
 
-    PurgeInactiveSeeds();
+    {
+        LOG_SCOPE_F(INFO,"Vegetation maximalization started!");
+        // MaximizeCoveredArea();
+        DLOG_S(INFO) << "Vegetation maximalization finished!";
+    }
 
-    LOG_F(INFO, "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu",
-          amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds());
-
-    ChooseInitialSeeds();
-    LabelInitialSeeds();
-
-
-
-    auto snap = FoliageSnapshotMaker(4.f,map_->GetBoundingBox());
-
-
-    LabelRestOfSeeds();
-    // MaximizeCoveredArea();
-
-    snap.CreateSnapshot(map_->GetObjectsOfType(PathO | AreaO), bbox);
-    snap.CreateSnapshot(seeds_ref(), bbox, 10);
+    auto snap = FoliageSnapshotMaker(2.f,map_->GetBoundingBox());
+    snap.RasterizeObjects(map_->GetObjectsOfType(PathO | AreaO), bbox);
+    snap.RasterizeSeeds(seeds_ref(), bbox, attributes_.size());
     MapWriter::Write(snap.GetMap());
+    LOG_F(INFO, "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
+          amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(),amount_of_classified_seeds());
+}
 
+unsigned int Generator::CountSeedOfSpecies(uint32_t idx)
+{
+    return std::ranges::count_if(seeds(),[idx](const auto& seed) {return seed.species_id == idx;});
 }
 
 void Generator::PurgeInactiveSeeds()
@@ -91,7 +125,7 @@ void Generator::PurgeInactiveSeeds()
     seeds_.erase(std::ranges::remove_if(seeds_, [](const auto& seed) { return !seed.IsActive(); }).begin(), seeds_.end());
 }
 
-void Generator::InitializeSeeds()
+void Generator::InitializeSeeds(Mask & map)
 {
     auto bounding_box = map_->GetBoundingBox();
 
@@ -101,7 +135,7 @@ void Generator::InitializeSeeds()
         assert(object->type() == AreaO);
         assert(!object->symbol()->IsObstructing());
 
-        auto seeds = InitializeSeedsOnObject(density_, *object);
+        auto seeds = InitializeSeedsOnObject(density_, *object,map);
         // LOG_F(INFO,"Amount of seeds initialized in object: %lu",seeds.size());
         seeds_.reserve(seeds_.size() + seeds.size());
         seeds_.insert(seeds_.end(), seeds.begin(), seeds.end());
@@ -109,7 +143,7 @@ void Generator::InitializeSeeds()
     }
 }
 
-std::vector<Seed> Generator::InitializeSeedsOnObject(float density, const Object& object)
+std::vector<Seed> Generator::InitializeSeedsOnObject(float density, const Object& object,Mask & map)
 {
     const auto bounding_box = object.bounding_box();
     std::vector<Seed> seeds;
@@ -134,7 +168,7 @@ std::vector<Seed> Generator::InitializeSeedsOnObject(float density, const Object
         }
     }
     Randomize(seeds, density);
-    Cull(seeds, object);
+    Cull(seeds, object,map);
 
     return seeds;
 }
@@ -156,24 +190,30 @@ void Generator::Randomize(std::vector<Seed>& seeds, float density, float factor,
     }
 }
 
-void Generator::Cull(std::vector<Seed>& seeds, const Object& object)
+void Generator::Cull(std::vector<Seed>& seeds, const Object& object, Mask& mask)
 {
     for (auto& seed : seeds)
     {
-        if (object.IsIntersecting(seed.coordinate))
+        auto coord = mask.SpatialToMaskCoordinate(seed.coordinate);
+        auto value = mask.At(coord);
+
+        if (object.IsIntersecting(seed.coordinate) && value == 0)
         {
             seed.flags |= Active;
         }
     }
 }
 
+
+
 Generator::Generator(
     const std::shared_ptr<OrienteeringMap>& map,
     const std::shared_ptr<HeightMap>& height_map,
     const std::vector<DiffusionZone>& diffusion_zones,
     const std::vector<SpeciesAttribute>& attributes,
-    float density)
-    : map_(map), height_map_(height_map), diffusion_zones_(diffusion_zones), attributes_(attributes), density_(density)
+    float density,
+    bool random_initial_classification )
+    : map_(map), height_map_(height_map), diffusion_zones_(diffusion_zones), attributes_(attributes), density_(density), random_initial_classification_(random_initial_classification)
 {
 }
 
@@ -195,6 +235,8 @@ void Generator::ChooseInitialSeeds()
     }
 
     std::ranges::sort(initial_set_indices_);
+    const auto ret = std::ranges::unique(initial_set_indices_);
+    initial_set_indices_.erase(ret.begin(), ret.end());
 }
 
 
@@ -271,6 +313,17 @@ void Generator::LabelInitialSeeds()
         size_t max_idx = 0;
         float max_value = 0.f;
 
+        if (random_initial_classification_)
+        {
+            std::random_device rng;
+            std::mt19937 gen(rng());
+            std::uniform_int_distribution<> dist(0,attributes_.size());
+            seed.species_id = dist(gen);
+            seed.flags |= Classified;
+            continue;
+        }
+
+
         for (size_t attr_idx = 0; attr_idx < attributes_.size(); attr_idx++)
         {
             auto attr = attributes_[attr_idx];
@@ -292,8 +345,16 @@ void Generator::LabelInitialSeeds()
                     slope_extremities_per_species[attr_idx].max - slope_extremities_per_species[attr_idx].min);
             }
 
-            if (diffusion_zones_.size() > 0)
+            for (auto zone : diffusion_zones_)
             {
+                if (zone.id == attr_idx)
+                {
+                    auto dist = seed.coordinate.DistanceTo(zone.center);
+                    auto val = 1 - dist / zone.radius;
+
+                    if (diff_w < val)
+                        diff_w = val;
+                }
             }
 
             float value = height_w_normalized * height_c + slope_w_normalized * slope_c + diff_w * diff_c;
@@ -323,7 +384,7 @@ void Generator::LabelRestOfSeeds()
     }
 
     SeedAdaptor point_cloud{initial_seed_cords};
-    kd_tree initial_tree(3,point_cloud,{10});
+    kd_tree initial_tree(2,point_cloud,{10});
 
     int idx_of_init_set = 0;
     for (size_t seed_idx = 0; seed_idx < seeds_.size(); seed_idx++)
@@ -347,14 +408,15 @@ void Generator::LabelRestOfSeeds()
             // LOG_S(INFO) << ret_index[idx]  << "\t" << out_dist_sqr[idx];
         }
 
-        std::vector<int> species_counters(attributes_.size());
+        std::vector<int> species_counters(attributes_.size(),0);
         for (size_t idx = 0; idx < result_set.size(); idx++)
         {
             ++species_counters[seeds_[ret_index[idx]].species_id];
         }
         auto majority_idx = std::ranges::distance(species_counters.begin(),std::ranges::max_element(species_counters));
         // LOG_S(INFO) << seed_idx << " GOT " << majority_idx;
-        seeds()[seed_idx].species_id = majority_idx;
+        seeds_[seed_idx].species_id = majority_idx;
+        seeds_[seed_idx].flags |= Classified;
     }
 }
 
@@ -495,7 +557,7 @@ void Generator::MaximizeCoveredArea()
 {
 
     SeedAdaptor point_cloud{seeds_};
-    kd_tree seed_tree(3,point_cloud,{10});
+    kd_tree seed_tree(2,point_cloud,{10});
 
     std::vector<bool> seed_bit_map(seeds().size(),false);
     size_t idx = 0;

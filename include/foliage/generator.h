@@ -20,6 +20,9 @@
 
 #include <nanoflann.hpp>
 
+#include "foliage_map.h"
+#include "mask.h"
+
 
 struct LinearConstraint
 {
@@ -63,7 +66,7 @@ class Generator
 public:
     Generator(const std::shared_ptr<OrienteeringMap>& map, const std::shared_ptr<HeightMap>& height_map,
               const std::vector<DiffusionZone>& diffusion_zones, const std::vector<SpeciesAttribute>& attributes,
-              float density);
+              float density, bool random_initial_classification = false);
 
     [[nodiscard]] std::vector<Seed> seeds();
     [[nodiscard]] std::vector<Seed>& seeds_ref();
@@ -71,6 +74,7 @@ public:
     [[nodiscard]] size_t amount_of_seeds() const;
     [[nodiscard]] size_t amount_of_active_seeds() const;
     [[nodiscard]] size_t amount_of_inactive_seeds() const;
+    [[nodiscard]] size_t amount_of_classified_seeds() const;
 
     void Start();
 
@@ -81,11 +85,12 @@ private:
         float max;
     };
 
-    void InitializeSeeds();
-    std::vector<Seed> InitializeSeedsOnObject(float density, const Object& object);
+    void InitializeSeeds(Mask& map);
+    std::vector<Seed> InitializeSeedsOnObject(float density, const Object& object,Mask & map);
     void PurgeInactiveSeeds();
     void Randomize(std::vector<Seed>& seeds, float density, float factor = 1.f, float angle = 0);
-    void Cull(std::vector<Seed>& seeds, const Object& area);
+    void Cull(std::vector<Seed>& seeds, const Object& area,Mask & map);
+
 
     void ChooseInitialSeeds();
     void LabelInitialSeeds();
@@ -97,6 +102,7 @@ private:
     std::vector<size_t> ProcessSeed(const kd_tree& tree, size_t seed_idx, Constraints& c,std::vector<bool>& seed_bit_map);
     std::vector<double>  MaximizeSeedRadii(std::vector<double> seeds, std::vector<double> box_constr,std::vector<double> bnd_upper,int number_of_rows,int number_of_cols, std::vector<double> lin_constr);
 
+    unsigned int CountSeedOfSpecies(uint32_t idx);
 
     std::shared_ptr<OrienteeringMap> map_;
     std::shared_ptr<HeightMap> height_map_;
@@ -104,9 +110,10 @@ private:
     std::vector<DiffusionZone> diffusion_zones_;
     std::vector<SpeciesAttribute> attributes_;
 
-    static constexpr float kInitial_percentage = 0.1f;
-    static constexpr int kKnn_number = 3;
+    static constexpr float kInitial_percentage{0.1f};
+    static constexpr int kKnn_number{3};
     float density_;
+    bool random_initial_classification_{false};
 
 
     std::vector<Seed> seeds_;

@@ -12,7 +12,7 @@ Dim2 TextureMap::Dim() const
     return Dim2(map_.height(), map_.width());
 }
 
-float TextureMap::At(Coord2 const& coord) const
+float TextureMap::At_(Coord2 const& coord) const
 {
     float value = map_(coord.x, coord.y);
 
@@ -22,7 +22,7 @@ float TextureMap::At(Coord2 const& coord) const
     return value;
 }
 
-void TextureMap::At(Coord2 const& coord, float value)
+void TextureMap::At_(Coord2 const& coord, float value)
 {
     assert(!std::isinf(value));
     assert(!std::isnan(value));

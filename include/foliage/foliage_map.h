@@ -15,6 +15,9 @@ class FoliageMap : public TextureMap
 public:
     FoliageMap() = delete;
     FoliageMap(CImg<> const& map) : TextureMap(map) {}
+
+    FoliageMap(FoliageMap const& map) = default;
+
 };
 
 

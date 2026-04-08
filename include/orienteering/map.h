@@ -49,7 +49,7 @@ namespace Orienteering
 
         std::vector<Object*> GetObjectsOfType(ObjectType type) const;
         std::vector<Object*> GetObjectsOfType(uint8_t type) const;
-        std::vector<Object*> GetObstructingAreas() const;
+        std::vector<Object*> GetObstructingObjects() const;
         std::vector<Object*> GetFreeAreas() const;
         std::vector<Object*> GetIrrelevantFeatures() const;
 

@@ -17,11 +17,10 @@ class FoliageSnapshotMaker
 {
 public:
 
-    FoliageSnapshotMaker(float resolution_mult, const BoundingBox2D& bbox);
+    FoliageSnapshotMaker(float resolution_mult, const BoundingBox2D& bbox, float default_value = 500);
 
-    void CreateSnapshot(std::vector<Seed>& seeds,BoundingBox2D bbox, size_t number_of_species);
-    void CreateSnapshot(std::vector<Object*> areas,BoundingBox2D bbox);
-    void CreateMapMask(std::vector<std::unique_ptr<Object>>& areas,BoundingBox2D bbox);
+    void RasterizeSeeds(std::vector<Seed>& seeds,BoundingBox2D bbox, size_t number_of_species);
+    void RasterizeObjects(std::vector<Object*> areas, BoundingBox2D bbox, bool write_id = false, bool write_cmyk = false);
 
     FoliageMap& GetMap();
 private:

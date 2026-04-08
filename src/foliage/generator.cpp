@@ -194,8 +194,13 @@ void Generator::Cull(std::vector<Seed>& seeds, const Object& object, Mask& mask)
 {
     for (auto& seed : seeds)
     {
-        auto coord = mask.SpatialToMaskCoordinate(seed.coordinate);
-        auto value = mask.At(coord);
+        // auto coord = mask.SpatialToMaskCoordinate(seed.coordinate);
+        // auto value = mask.At(coord);
+
+        int x, y;
+        x = (seed.coordinate[0] - std::round(map_->GetBoundingBox().min()[0])) * mask.resolution_mult();
+        y = (seed.coordinate[1] - std::round(map_->GetBoundingBox().min()[1])) * mask.resolution_mult();
+        auto value = mask.At({x,y});
 
         if (object.IsIntersecting(seed.coordinate) && value == 0)
         {

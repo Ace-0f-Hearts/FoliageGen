@@ -71,7 +71,7 @@ void Generator::Start()
 
     auto mask = mask_maker.GetMask().value();
     InitializeSeeds(mask);
-    mask.Write("../../testing/mask.jpeg");
+    mask.Write("./mask.jpeg");
     LOG_F(INFO, "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
           amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(),amount_of_classified_seeds());
 

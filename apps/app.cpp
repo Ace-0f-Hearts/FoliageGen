@@ -123,7 +123,7 @@ void App::Generate()
         auto seeds = generator_builder_.generator()->seeds();
 
         auto value = JsonBuilder::FromGeneratedDataVec(seeds);
-        settings_.output_file = "../../testing/seeds.json";
+        settings_.output_file = "./seeds.json";
         JsonWriter::Run(*settings_.output_file,value);
 
         LOG_F(INFO,"Generation successful");

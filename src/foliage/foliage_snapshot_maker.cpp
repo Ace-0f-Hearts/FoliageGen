@@ -8,7 +8,7 @@
 #include "spatial/bounding_box.h"
 
 
-void FoliageSnapshotMaker::RasterizeSeeds(std::vector<Seed>& seeds, BoundingBox2D bbox, size_t number_of_species)
+void FoliageSnapshotMaker::RasterizeSeeds(std::vector<Seed>& seeds, const BoundingBox2D& bbox, size_t number_of_species)
 {
     int x_offset, y_offset;
 
@@ -42,15 +42,12 @@ void FoliageSnapshotMaker::RasterizeSeeds(std::vector<Seed>& seeds, BoundingBox2
         x = std::round(seed.coordinate[0] * kResolution_mult) + x_offset;
         y = std::round(seed.coordinate[1] * kResolution_mult) + y_offset;
 
-        if (rand() % 2 == 0)
-            seed.scale = 3;
-
         if (seed.scale * kResolution_mult > 1.f)
         {
             int x1, y1;
-            for (int i = -seed.scale * kResolution_mult / 2.f; i < seed.scale * kResolution_mult / 2; i++)
+            for (int i = -seed.scale * std::round(kResolution_mult / 2.f); i < seed.scale * std::round(kResolution_mult / 2.0f); i++)
             {
-                for (int j = -seed.scale * kResolution_mult / 2.f; j < seed.scale * kResolution_mult / 2; j++)
+                for (int j = -seed.scale * std::round(kResolution_mult / 2.f); j < seed.scale * std::round(kResolution_mult / 2.0f); j++)
                 {
                     x1 = x + i;
                     y1 = y + j;

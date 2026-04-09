@@ -5,6 +5,8 @@
 #ifndef PROCEDURALFOLIAGEGENERATOR_MAP_COLOR_H
 #define PROCEDURALFOLIAGEGENERATOR_MAP_COLOR_H
 
+#include <fstream>
+
 struct Cmyk
 {
     Cmyk() : c(0), m(0), y(0), k(0) {};
@@ -12,7 +14,7 @@ struct Cmyk
 
     ~Cmyk()  = default;
 
-    bool IsWhite() const;
+    [[nodiscard]] bool IsWhite() const;
 
     float c;
     float m;
@@ -23,7 +25,7 @@ struct Cmyk
 struct MapColor
 {
     MapColor() : cmyk(0,0,0,0),priority(-1), opacity(1.f) {};
-    MapColor(Cmyk cmyk, int priority = -1.f, float opacity = 1.f) : cmyk(cmyk), priority(priority), opacity(opacity) {};
+    MapColor(const Cmyk cmyk, const int priority = -1.f, const float opacity = 1.f) : cmyk(cmyk), priority(priority), opacity(opacity) {};
 
     ~MapColor() = default;
 
@@ -42,6 +44,18 @@ inline bool Cmyk::IsWhite() const
 inline bool MapColor::IsWhite() const
 {
     return cmyk.IsWhite();
+}
+
+inline std::ostream& operator<<(std::ostream& os, const Cmyk& cmyk)
+{
+    os << "<" << cmyk.c << "," << cmyk.m << "," << cmyk.y << ">";
+    return os;
+}
+
+inline std::ostream& operator<<(std::ostream& os, const MapColor& map_color)
+{
+    os << "(" << map_color.cmyk << ";" << map_color.priority << ";" << map_color.opacity << ")";
+    return os;
 }
 
 

@@ -19,7 +19,7 @@ public:
 
     FoliageSnapshotMaker(float resolution_mult, const BoundingBox2D& bbox, float default_value = 500);
 
-    void RasterizeSeeds(std::vector<Seed>& seeds,BoundingBox2D bbox, size_t number_of_species);
+    void RasterizeSeeds(std::vector<Seed>& seeds, const BoundingBox2D& bbox, size_t number_of_species);
     void RasterizeObjects(std::vector<Object*> areas, BoundingBox2D bbox, bool write_id = false, bool write_cmyk = false);
 
     FoliageMap& GetMap();

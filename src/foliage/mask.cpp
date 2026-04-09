@@ -47,9 +47,7 @@ Coord2 Mask::SpatialToMaskCoordinate(Spatial::Spatial2D const& coord) const
 
 
 
-MaskMaker::MaskMaker()
-{
-}
+MaskMaker::MaskMaker() = default;
 
 void MaskMaker::CreateNewMask( BoundingBox2D bbox, float mask_resolution, int channels)
 {
@@ -60,9 +58,8 @@ void MaskMaker::CreateNewMask( BoundingBox2D bbox, float mask_resolution, int ch
 
 void MaskMaker::MaskObjects(std::vector<Object*> objects)
 {
-    int x_offset, y_offset;
-    x_offset = -std::floor(bbox_.min()[0] * mask_resolution_);
-    y_offset = -std::floor(bbox_.min()[1] * mask_resolution_);
+    int x_offset = -static_cast<int>(std::floor(bbox_.min()[0] * mask_resolution_));
+    int y_offset = -static_cast<int>(std::floor(bbox_.min()[1] * mask_resolution_));
     if (!mask_.has_value())
     {
         return;
@@ -93,12 +90,8 @@ void MaskMaker::MaskObjects(std::vector<Object*> objects)
                     // Coord2 coord = mask_->SpatialToMaskCoordinate(point);
                     mask_->At({x,y},obj->symbol()->id(),0);
                 }
-
-
             }
-
         }
-
     }
 }
 

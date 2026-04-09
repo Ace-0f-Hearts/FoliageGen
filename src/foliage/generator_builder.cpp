@@ -3,7 +3,7 @@
 //
 #include <foliage/generator_builder.h>
 
-bool GeneratorBuilder::Ready()
+bool GeneratorBuilder::Ready() const
 {
     auto ready = map_ != nullptr && attributes_.size() >= 1;
 

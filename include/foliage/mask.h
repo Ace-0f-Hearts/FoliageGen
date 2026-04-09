@@ -53,7 +53,7 @@ public:
 
 
 private:
-    float mask_resolution_;
+    float mask_resolution_{};
     BoundingBox2D bbox_;
     std::optional<Mask> mask_;
 };

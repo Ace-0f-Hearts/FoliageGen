@@ -15,7 +15,7 @@ class GeneratorBuilder
 public:
     GeneratorBuilder() = default;
 
-    bool Ready();
+    bool Ready() const;
 
     bool Build();
 

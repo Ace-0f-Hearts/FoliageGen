@@ -76,6 +76,10 @@ public:
     [[nodiscard]] size_t amount_of_inactive_seeds() const;
     [[nodiscard]] size_t amount_of_classified_seeds() const;
 
+
+    /**
+     * Starts the generation process, resulting in a vector of seeds distributed across the orienteering map
+     */
     void Start();
 
 private:
@@ -86,10 +90,10 @@ private:
     };
 
     void InitializeSeeds(Mask& map);
-    std::vector<Seed> InitializeSeedsOnObject(float density, const Object& object,Mask & map);
+    std::vector<Seed> InitializeSeedsOnObject(float density, const Object& object,Mask & map) const;
     void PurgeInactiveSeeds();
-    void Randomize(std::vector<Seed>& seeds, float density, float factor = 1.f, float angle = 0);
-    void Cull(std::vector<Seed>& seeds, const Object& area,Mask & map);
+    void Randomize(std::vector<Seed>& seeds, float density, float factor = 1.f, float angle = 0) const;
+    void Cull(std::vector<Seed>& seeds, const Object& area,Mask & map) const;
 
 
     void ChooseInitialSeeds();
@@ -112,9 +116,12 @@ private:
 
     static constexpr float kInitial_percentage{0.1f};
     static constexpr int kKnn_number{3};
-    float density_;
-    bool random_initial_classification_{false};
 
+    float density_;
+    float max_growth_radius_;
+
+    bool do_random_initial_classification_{false};
+    bool prefer_larger_plants_{true};
 
     std::vector<Seed> seeds_;
     std::vector<size_t> initial_set_indices_;

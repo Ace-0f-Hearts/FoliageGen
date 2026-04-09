@@ -133,7 +133,7 @@ void Orienteering::Symbol::SetDirectional(bool directional)
         flags_ &= ~Directional;
 }
 
-const MapColor* Orienteering::Symbol::color()
+const MapColor* Orienteering::Symbol::color() const
 {
     return color_;
 }

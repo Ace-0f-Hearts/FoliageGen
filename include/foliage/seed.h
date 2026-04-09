@@ -29,6 +29,18 @@ struct Seed
     [[nodiscard]] bool IsInitial() const {return flags & Initial; };
     [[nodiscard]] bool IsClassified() const { return flags & Classified; };
 
+    float DistanceTo(const Seed& other) const
+    {
+        float dist = coordinate.DistanceTo(other.coordinate);
+
+        return dist - scale - other.scale;
+    };
+    float DistanceTo(const Spatial::Spatial2D& point)
+    {
+        float dist = coordinate.DistanceTo(point);
+        return dist - scale;
+    }
+
     Spatial::Spatial2D coordinate;
     float scale;
     uint8_t flags;
@@ -36,5 +48,11 @@ struct Seed
 
 
 };
+
+inline std::ostream& operator<<(std::ostream& os, const Seed& seed)
+{
+    os << "(" << seed.coordinate << "|" << seed.scale << "|" << seed.flags << "|" << seed.species_id << ")";
+    return os;
+}
 
 #endif //PROCEDURALFOLIAGEGENERATOR_SEED_H

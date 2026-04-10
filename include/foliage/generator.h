@@ -58,6 +58,25 @@ struct SeedAdaptor
 
 };
 
+struct ObjectWrapper
+{
+
+    Object* object;
+    bool operator<(ObjectWrapper other) const
+    {
+        return object->symbol()->color()->priority < other.object->symbol()->color()->priority;
+    };
+    bool operator>(ObjectWrapper other) const
+    {
+        return object->symbol()->color()->priority > other.object->symbol()->color()->priority;
+    };
+    bool operator==(ObjectWrapper other) const
+    {
+        return object->symbol()->color()->priority == other.object->symbol()->color()->priority;
+    };
+};
+
+
 using kd_tree = nanoflann::KDTreeSingleIndexAdaptor<
     nanoflann::L2_Simple_Adaptor<float,SeedAdaptor>,SeedAdaptor,2>;
 

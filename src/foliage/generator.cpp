@@ -131,25 +131,39 @@ unsigned int Generator::CountSeedOfSpecies(uint32_t idx)
 
 void Generator::PurgeInactiveSeeds()
 {
-    seeds_.erase(std::ranges::remove_if(seeds_, [](const auto& seed) { return !seed.IsActive(); }).begin(), seeds_.end());
+    seeds_.erase(std::ranges::remove_if(seeds_, [](const auto& seed) { return !seed.IsActive(); }).begin(),
                  seeds_.end());
 }
+
+
 
 void Generator::InitializeSeeds(Mask& map)
 {
     auto bounding_box = map_->GetBoundingBox();
 
-
+    // boost::heap::priority_queue<ObjectWrapper> object_queue;
+    //
+    // for (auto object : map_->GetFreeAreas())
+    // {
+    //     object_queue.push({object});
+    // }
+    //
+    // while (!object_queue.empty())
+    // {
+    //     auto object = object_queue.top();
+    //     object_queue.pop();
+    //     auto seeds = InitializeSeedsOnObject(density_, *(object.object),map);
+    //
+    //     seeds_.reserve(seeds_.size() + seeds.size());
+    //     seeds_.insert(seeds_.end(), seeds.begin(), seeds.end());
+    // }
+    //
     for (auto& object : map_->GetFreeAreas())
     {
-        assert(object->type() == AreaO);
-        assert(!object->symbol()->IsObstructing());
-
-        auto seeds = InitializeSeedsOnObject(density_, *object,map);
-        // LOG_F(INFO,"Amount of seeds initialized in object: %lu",seeds.size());
+        LOG_S(INFO) << object->symbol()->id() << ":" << object->symbol()->color();
+        auto seeds = InitializeSeedsOnObject(density_, *object, map);
         seeds_.reserve(seeds_.size() + seeds.size());
         seeds_.insert(seeds_.end(), seeds.begin(), seeds.end());
-
     }
 }
 

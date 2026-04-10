@@ -128,6 +128,7 @@ target_link_libraries(foliage
         png_static
         turbojpeg-static
         glm::glm
+        Boost::heap
 
 )
 source_group(

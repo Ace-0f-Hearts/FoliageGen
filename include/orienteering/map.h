@@ -49,7 +49,7 @@ namespace Orienteering
 
         std::vector<Object*> GetObjectsOfType(ObjectType type) const;
         std::vector<Object*> GetObjectsOfType(uint8_t type) const;
-        std::vector<Object*> GetObstructingAreas() const;
+        std::vector<Object*> GetObstructingObjects() const;
         std::vector<Object*> GetFreeAreas() const;
         std::vector<Object*> GetIrrelevantFeatures() const;
 
@@ -59,12 +59,15 @@ namespace Orienteering
         [[nodiscard]] std::vector<MapColor>& GetColors();
         [[nodiscard]] std::vector<std::unique_ptr<Symbol>>& GetSymbols();
         [[nodiscard]] std::vector<std::unique_ptr<Object>>& GetObjects();
-
         void UpdateBoundingBox();
 
         void ClearSymbols();
         void ClearObjects();
         void Clear();
+        void ClearObjectsOfType(ObjectType type);
+        void ClearObjectsOfType(uint8_t type);
+        void ClearObjectsOfFlag(SymbolFlag flag);
+        void ClearObjectsOfFlag(uint8_t type);
 
         void RemoveObjectsOfSymbol(Symbol& symbol);
         void RemoveSymbol(Symbol& symbol);

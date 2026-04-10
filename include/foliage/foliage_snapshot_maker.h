@@ -17,11 +17,17 @@ class FoliageSnapshotMaker
 {
 public:
 
-    static void CreateSnapshot(FoliageMap& map, std::vector<Seed>& seeds,BoundingBox2D bbox, size_t number_of_species);
-    static void CreateSnapshot(FoliageMap& map,std::vector<Object*> areas,BoundingBox2D bbox);
-    static void CreateMapMask(FoliageMap& map, std::vector<std::unique_ptr<Object>>& areas,BoundingBox2D bbox);
+    FoliageSnapshotMaker(float resolution_mult, const BoundingBox2D& bbox, float default_value = 500);
+
+    void RasterizeSeeds(std::vector<Seed>& seeds, const BoundingBox2D& bbox, size_t number_of_species);
+    void RasterizeObjects(std::vector<Object*> areas, BoundingBox2D bbox, bool write_id = false, bool write_cmyk = false);
+
+    FoliageMap& GetMap();
 private:
-    static glm::vec3 GetColorValue(size_t point, size_t number_of_species);
+    glm::vec3 GetColorValue(size_t point, size_t number_of_species);
+
+    FoliageMap f_map_;
+    const float kResolution_mult;
 };
 
 #endif //PROCEDURALFOLIAGEGENERATOR_FOLIAGE_SNAPSHOT_MAKER_H

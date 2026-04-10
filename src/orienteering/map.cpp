@@ -203,13 +203,13 @@ std::vector<Object*> OrienteeringMap::GetObjectsOfType(uint8_t type) const
     return objects;
 }
 
-std::vector<Object*> OrienteeringMap::GetObstructingAreas() const
+std::vector<Object*> OrienteeringMap::GetObstructingObjects() const
 {
     std::vector<Object*> objects;
 
     for (auto& object: objects_)
     {
-        if (object->symbol()->IsObstructing() && object->type() == AreaO)
+        if (object->symbol()->IsObstructing() && (object->type() == AreaO || object->type() == PathO))
         {
             objects.emplace_back(object.get());
         }
@@ -229,4 +229,24 @@ std::vector<Object*> OrienteeringMap::GetFreeAreas() const
         }
     }
     return objects;
+}
+
+void OrienteeringMap::ClearObjectsOfType(ObjectType type)
+{
+    objects_.erase(std::ranges::remove_if(objects_,[type](const auto& object) {return object->type() == type;}).begin(), objects_.end());
+}
+
+void OrienteeringMap::ClearObjectsOfType(uint8_t type)
+{
+    objects_.erase(std::ranges::remove_if(objects_,[type](const auto& object) {return object->type() & type;}).begin(), objects_.end());
+}
+
+void OrienteeringMap::ClearObjectsOfFlag(SymbolFlag flag)
+{
+    objects_.erase(std::ranges::remove_if(objects_,[flag](const auto& object) {return object->symbol()->flags() & flag;}).begin(), objects_.end());
+}
+
+void OrienteeringMap::ClearObjectsOfFlag(uint8_t flag)
+{
+    objects_.erase(std::ranges::remove_if(objects_,[flag](const auto& object) {return object->symbol()->flags() & flag;}).begin(), objects_.end());
 }

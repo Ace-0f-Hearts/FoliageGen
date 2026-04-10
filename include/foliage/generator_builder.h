@@ -15,7 +15,7 @@ class GeneratorBuilder
 public:
     GeneratorBuilder() = default;
 
-    bool Ready();
+    bool Ready() const;
 
     bool Build();
 
@@ -29,6 +29,10 @@ public:
             throw std::invalid_argument("Density must be greater than 0.0");
         density_ = density;
     }
+    void SetRandomInitialClassification(bool random_initial_classification)
+    {
+        random_initial_classification_ = random_initial_classification;
+    }
 
 
     std::unique_ptr<Generator>& generator();
@@ -37,6 +41,7 @@ private:
     std::shared_ptr<HeightMap> height_map_;
     std::vector<DiffusionZone> diffusion_zones_;
     std::vector<SpeciesAttribute> attributes_;
+    bool random_initial_classification_{false};
     float density_ = 10.f;
 
     std::unique_ptr<Generator> generator_;

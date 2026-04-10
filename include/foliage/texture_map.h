@@ -23,8 +23,8 @@ public:
     ~TextureMap() = default;
     [[nodiscard]] Dim2 Dim() const;
 protected:
-    [[nodiscard]] float At(Coord2 const& coord) const;
-    void At(Coord2 const& coord, float value);
+    [[nodiscard]] float At_(Coord2 const& coord) const;
+    void At_(Coord2 const& coord, float value);
     [[nodiscard]] CImg<> map() const;
     [[nodiscard]] CImg<>& map();
 private:

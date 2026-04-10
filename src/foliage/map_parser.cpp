@@ -35,7 +35,7 @@ void MapParser::Run(const std::filesystem::path filename, const std::vector<Symb
                    map_->GetObjectOfTypeAmount(PointO),
                    map_->GetObjectOfTypeAmount(PathO),
                    map_->GetObjectOfTypeAmount(AreaO),
-                   map_->GetObstructingAreas().size(),
+                   map_->GetObstructingObjects().size(),
                    map_->GetFreeAreas().size(),
                    map_->GetColorsAmount()
                    );

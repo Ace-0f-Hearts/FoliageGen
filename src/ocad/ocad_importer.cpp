@@ -193,6 +193,7 @@ void OcadImporter::ImportSymbols(OcadFile<F>& file)
                 }
             }
         }
+
     }
 }
 
@@ -619,6 +620,8 @@ const MapColor* OcadImporter::ComputePointColor(std::size_t data_size, const Oca
         }
 
     }
+
+    LOG_S(INFO) << computed_color;
     return computed_color;
 }
 

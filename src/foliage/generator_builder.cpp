@@ -3,7 +3,7 @@
 //
 #include <foliage/generator_builder.h>
 
-bool GeneratorBuilder::Ready()
+bool GeneratorBuilder::Ready() const
 {
     auto ready = map_ != nullptr && attributes_.size() >= 1;
 
@@ -14,7 +14,7 @@ bool GeneratorBuilder::Build()
 {
     bool ready;
     if ((ready = Ready()))
-        generator_ = std::make_unique<Generator>(map_,height_map_,diffusion_zones_,attributes_,density_);
+        generator_ = std::make_unique<Generator>(map_,height_map_,diffusion_zones_,attributes_,density_,random_initial_classification_);
 
     return ready;
 }

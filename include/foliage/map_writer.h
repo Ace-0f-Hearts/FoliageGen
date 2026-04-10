@@ -30,4 +30,5 @@ inline void MapWriter::Write(FoliageMap map, std::filesystem::path path)
 }
 
 
+
 #endif //PROCEDURALFOLIAGEGENERATOR_FOLIAGE_MAP_WRITER_H

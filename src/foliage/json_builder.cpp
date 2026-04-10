@@ -4,17 +4,33 @@
 
 #include <foliage/json_builder.h>
 
-JsonBuilder::JsonBuilder()
+#include "loguru.hpp"
+#include "foliage/seed.h"
+
+
+Json::Value JsonBuilder::FromGeneratedData(const Seed& data)
 {
+    Json::Value result = Json::objectValue;
+    result["x"] = data.coordinate[0];
+    result["y"] = data.coordinate[1];
+    result["scale"] = data.scale;
+    result["id"] = data.species_id;
+
+    return result;
 }
 
-JsonBuilder::Value JsonBuilder::BuildNGet(const GeneratedData&)
+Json::Value JsonBuilder::FromGeneratedDataVec(const std::vector<Seed>& datas)
 {
-    throw std::logic_error("Not implemented yet!");
+
+    Json::Value result = Json::arrayValue;
+    int idx = 0;
+    for (const auto& data : datas)
+    {
+
+        result.append(FromGeneratedData(data));
+    }
+
+    return result;
 }
 
-void JsonBuilder::Clear()
-{
-    root_.clear();
-    err_.clear();
-}
+

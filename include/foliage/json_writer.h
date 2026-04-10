@@ -4,18 +4,14 @@
 
 #ifndef GENERATOR_GENERATEDDATAWRITER_H
 #define GENERATOR_GENERATEDDATAWRITER_H
-#include <fstream>
+#include <filesystem>
 #include <json/value.h>
 
 
-class GeneratedDataWriter
+class JsonWriter
 {
 public:
-    void Write(const Json::Value& data);
-private:
-    std::ofstream of_stream_;
-    Json::Value root_;
-    Json::String err_;
+    static void Run(const std::filesystem::path& output_file, const Json::Value& data);
 };
 
 

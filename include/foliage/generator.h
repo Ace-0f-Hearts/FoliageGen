@@ -18,19 +18,37 @@
 #include <foliage/species_attribute.h>
 #include <orienteering/map.h>
 
+#include <nanoflann.hpp>
+
+#include "foliage_map.h"
+#include "mask.h"
 
 
-struct Spatial2DAdaptor
+struct LinearConstraint
 {
-    std::vector<Spatial2D> points;
+    size_t y;
+    float b;
+};
+
+struct Constraints
+{
+    size_t x;
+    float box_uc;
+    float box_lc;
+    std::vector<LinearConstraint> l_const;
+};
+
+struct SeedAdaptor
+{
+    std::vector<Seed> seeds;
 
     [[nodiscard]] size_t kdtree_get_point_count() const
     {
-        return points.size();
+        return seeds.size();
     }
     [[nodiscard]] float kdtree_get_pt(const size_t idx, const size_t dim) const
     {
-        return points[idx][dim];
+        return seeds[idx].coordinate[dim];
     }
     template <class BBOX>
     [[nodiscard]] bool kdtree_get_bbox(BBOX& bbox) const
@@ -40,20 +58,47 @@ struct Spatial2DAdaptor
 
 };
 
+struct ObjectWrapper
+{
+
+    Object* object;
+    bool operator<(ObjectWrapper other) const
+    {
+        return object->symbol()->color()->priority < other.object->symbol()->color()->priority;
+    };
+    bool operator>(ObjectWrapper other) const
+    {
+        return object->symbol()->color()->priority > other.object->symbol()->color()->priority;
+    };
+    bool operator==(ObjectWrapper other) const
+    {
+        return object->symbol()->color()->priority == other.object->symbol()->color()->priority;
+    };
+};
+
+
+using kd_tree = nanoflann::KDTreeSingleIndexAdaptor<
+    nanoflann::L2_Simple_Adaptor<float,SeedAdaptor>,SeedAdaptor,2>;
+
 class Generator
 {
 public:
     Generator(const std::shared_ptr<OrienteeringMap>& map, const std::shared_ptr<HeightMap>& height_map,
               const std::vector<DiffusionZone>& diffusion_zones, const std::vector<SpeciesAttribute>& attributes,
-              float density);
+              float density, bool random_initial_classification = false);
 
-    std::vector<Seed> seeds();
-    std::vector<Seed>& seeds_ref();
+    [[nodiscard]] std::vector<Seed> seeds();
+    [[nodiscard]] std::vector<Seed>& seeds_ref();
 
     [[nodiscard]] size_t amount_of_seeds() const;
     [[nodiscard]] size_t amount_of_active_seeds() const;
     [[nodiscard]] size_t amount_of_inactive_seeds() const;
+    [[nodiscard]] size_t amount_of_classified_seeds() const;
 
+
+    /**
+     * Starts the generation process, resulting in a vector of seeds distributed across the orienteering map
+     */
     void Start();
 
 private:
@@ -63,20 +108,24 @@ private:
         float max;
     };
 
-    void InitializeSeeds();
-    std::vector<Seed> InitializeSeedsOnObject(float density, Object& object);
+    void InitializeSeeds(Mask& map);
+    std::vector<Seed> InitializeSeedsOnObject(float density, const Object& object,Mask & map) const;
     void PurgeInactiveSeeds();
-    void Randomize(std::vector<Seed>& seeds, float density, float factor = 1.f, float angle = 0);
-    void Cull(std::vector<Seed>& seeds, const Object& area);
+    void Randomize(std::vector<Seed>& seeds, float density, float factor = 1.f, float angle = 0) const;
+    void Cull(std::vector<Seed>& seeds, const Object& area,Mask & map) const;
+
 
     void ChooseInitialSeeds();
     void LabelInitialSeeds();
     void LabelRestOfSeeds();
 
     void MaximizeCoveredArea();
-    void MaximizeCoveredAreaOfSubgraph();
-    void ComputeSubgraph();
+    void MaximizeCoveredAreaOfSubgraph(std::vector<Constraints>& constraints);
+    std::vector<Constraints> ComputeConstraintsForSubGraph(const kd_tree& tree,size_t seed_idx, std::vector<bool>&);
+    std::vector<size_t> ProcessSeed(const kd_tree& tree, size_t seed_idx, Constraints& c,std::vector<bool>& seed_bit_map);
+    std::vector<double>  MaximizeSeedRadii(std::vector<double> seeds, std::vector<double> box_constr,std::vector<double> bnd_upper,int number_of_rows,int number_of_cols, std::vector<double> lin_constr);
 
+    unsigned int CountSeedOfSpecies(uint32_t idx);
 
     std::shared_ptr<OrienteeringMap> map_;
     std::shared_ptr<HeightMap> height_map_;
@@ -84,12 +133,19 @@ private:
     std::vector<DiffusionZone> diffusion_zones_;
     std::vector<SpeciesAttribute> attributes_;
 
-    static constexpr float kInitial_percentage = 0.1f;
-    static constexpr int kKnn_number = 3;
+    static constexpr float kInitial_percentage{0.1f};
+    static constexpr int kKnn_number{3};
+
     float density_;
+    float max_growth_radius_;
+
+    bool do_random_initial_classification_{false};
+    bool prefer_larger_plants_{true};
 
     std::vector<Seed> seeds_;
     std::vector<size_t> initial_set_indices_;
+
+
 };
 
 

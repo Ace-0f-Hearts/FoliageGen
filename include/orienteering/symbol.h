@@ -50,7 +50,7 @@ namespace Orienteering
         [[nodiscard]] uint32_t id() const;
         void id(uint32_t value);
 
-        const MapColor* color();
+        const MapColor* color() const;
 
         [[nodiscard]] uint8_t flags() const;
 

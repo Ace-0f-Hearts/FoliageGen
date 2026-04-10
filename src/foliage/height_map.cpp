@@ -21,7 +21,7 @@ float HeightMap::HeightAt(const Coord2 coord) const
 {
     assert(coord.x >= 0 && coord.y >= 0 && coord.x < map().width() && coord.y < map().height());
 
-    return At(coord) * vertical_scale();
+    return At_(coord) * vertical_scale();
 }
 
 Spatial::Spatial3D HeightMap::NormalVecAt(const Coord2 coord) const
@@ -56,7 +56,7 @@ float HeightMap::HeightAtOrValue(const Coord2 coord, const float value) const
     }
 
 
-    return At(coord) * vertical_scale();
+    return At_(coord) * vertical_scale();
 }
 
 float HeightMap::vertical_scale() const

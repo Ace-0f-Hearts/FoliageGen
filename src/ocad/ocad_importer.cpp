@@ -151,7 +151,11 @@ void OcadImporter::ImportObject(const O& ocad_object)
     }
     else if (symbol->IsPoint())
     {
-        object = std::make_unique<PointObject>(symbol);
+        auto point_object = std::make_unique<PointObject>(symbol);
+        const auto pos = ConvertOcadPoint(ocad_object.coords[0]);
+        SetPointCoord(point_object.get(),pos);
+        object = std::move(point_object);
+
         LOG_F(INFO,"Point object with symbol %d imported",ocad_object.symbol);
     }
     else
@@ -162,6 +166,13 @@ void OcadImporter::ImportObject(const O& ocad_object)
 
 
     map_->AppendObject(std::move(object));
+}
+
+
+
+void OcadImporter::SetPointCoord(PointObject* object, const OcadCoordinate& ocad_point)
+{
+    object->SetPoint(ocad_point.coordinate());
 }
 
 template <class F>
@@ -515,9 +526,7 @@ void OcadImporter::ImportColor(const std::string& param)
     bool number_ok;
 
     Cmyk cmyk{0,0,0,0};
-    bool overprinting = false;
     float opacity = 1.f;
-    std::string spot_color_name;
 
     while (parameters.ReadNext())
     {
@@ -549,16 +558,10 @@ void OcadImporter::ImportColor(const std::string& param)
             if (f_value >= 0 && f_value <= 100)
                 cmyk.k = f_value;
             break;
-        case 'o':
-            overprinting = std::stoi(param_value);
-            break;
         case 't':
             f_value = std::stof(param_value);
             if (f_value >= 0 && f_value <= 100)
                 opacity = f_value;
-            break;
-        case 's':
-            spot_color_name = param_value;
             break;
         default:
             break;
@@ -637,7 +640,7 @@ void OcadImporter::ImportGeoreferencing(const std::string& param)
 
 float OcadImporter::ConvertOcadAngle(int ocad_angle)
 {
-    return M_PI / 180.f * (0.1f * ((ocad_angle + 3600) % 3600));
+    return M_PI / 180.f * (0.1f * static_cast<float>((ocad_angle + 3600) % 3600));
 }
 
 MapColor* OcadImporter::ComputePointColor(std::size_t data_size, const OcadTypesV9::PointSymbolElement* elements)

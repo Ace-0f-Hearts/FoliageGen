@@ -75,6 +75,8 @@ namespace Ocad
 
         void FillPathCoords(PathObject* object, bool is_area, uint32_t num_points,
                     const Generic::OcadCoord* ocad_points);
+
+        void SetPointCoord(PointObject* object, const OcadCoordinate& ocad_point);
         void SetPointFlags(std::vector<OcadCoordinate>& object, uint32_t pos, bool is_area, Generic::OcadCoord ocd_point);
 
         OcadCoordinate ConvertOcadPoint(const Generic::OcadCoord& ocad_point);

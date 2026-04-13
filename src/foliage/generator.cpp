@@ -81,7 +81,6 @@ void Generator::Start()
     LOG_F(INFO,
           "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
           amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(), amount_of_classified_seeds());
-
     {
         LOG_SCOPE_F(INFO, "Labeling of initial set of seeds started!");
 
@@ -587,15 +586,12 @@ void Generator::MaximizeCoveredAreaOfSubgraph(std::vector<Constraints>& constrai
         ++x_idx;
     }
 
-    auto opt_radii = MaximizeSeedRadii(radii, bnd_lower, bnd_upper, number_of_linear_constraints, radii.size() + 1,
-                                       lin_constr);
-
+    auto opt_radii = MaximizeSeedRadii(radii, bnd_lower, bnd_upper, number_of_linear_constraints, radii.size() + 1,lin_constr);
     size_t idx = 0;
     for (const auto& c : constraints)
     {
         seeds_[c.x].scale = static_cast<float>(opt_radii[idx++]);
     }
-
 }
 
 void Generator::MaximizeCoveredArea()

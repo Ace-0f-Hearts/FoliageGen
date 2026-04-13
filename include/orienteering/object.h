@@ -58,7 +58,6 @@ namespace Orienteering
         ObjectType type_;
         Symbol* symbol_;
 
-        float distance_threshold_ = 4.f;
         Spatial::SegmentedPath coordinates_;
         BoundingBox2D bounding_box_;
 

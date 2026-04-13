@@ -72,7 +72,7 @@ void FoliageSnapshotMaker::RasterizeSeeds(std::vector<Seed>& seeds, const Boundi
 }
 
 
-void FoliageSnapshotMaker::RasterizeObjects(std::vector<Object*> areas, BoundingBox2D bbox, bool write_id, bool write_cmyk)
+void FoliageSnapshotMaker::RasterizeObjects(const std::vector<Object*>& areas, const BoundingBox2D& bbox, bool write_id, bool write_cmyk)
 {
     int x_offset, y_offset;
 
@@ -123,6 +123,10 @@ void FoliageSnapshotMaker::RasterizeObjects(std::vector<Object*> areas, Bounding
                         {
                             f_map_.map()(x,y,0,1) -= 64.f;
                         }
+                    } else if (obj->type() == PointO)
+                    {
+                        f_map_.map()(x,y,0,1) -= 64.f;
+                        f_map_.map()(x,y,0,2) -= 64.f;
                     }
                 }
             }

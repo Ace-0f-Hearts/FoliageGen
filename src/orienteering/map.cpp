@@ -224,7 +224,7 @@ std::vector<Object*> OrienteeringMap::GetObstructingObjects() const
 
     for (auto& object: objects_)
     {
-        if (object->symbol()->IsObstructing() && (object->type() == AreaO || object->type() == PathO))
+        if (object->symbol()->IsObstructing())
         {
             objects.emplace_back(object.get());
         }

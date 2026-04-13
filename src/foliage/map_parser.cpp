@@ -41,12 +41,12 @@ void MapParser::Run(const std::filesystem::path filename, const std::vector<Symb
                    );
     }
 
-    for (const auto& sym : map_->GetSymbols())
-    {
-        if (sym->GetColor())
-            LOG_S(INFO) << sym->GetId() << " :: " << *sym->GetColor();
-        else
-            LOG_S(INFO) << sym->GetId() << " :: " << 0;
-    }
+    // for (const auto& sym : map_->GetSymbols())
+    // {
+    //     if (sym->GetColor())
+    //         LOG_S(INFO) << sym->GetId() << " :: " << *sym->GetColor();
+    //     else
+    //         LOG_S(INFO) << sym->GetId() << " :: " << 0;
+    // }
 
 }

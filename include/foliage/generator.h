@@ -64,15 +64,15 @@ struct ObjectWrapper
     Object* object;
     bool operator<(ObjectWrapper other) const
     {
-        return object->symbol()->color()->priority < other.object->symbol()->color()->priority;
+        return object->symbol()->GetColor()->GetPriority() < other.object->symbol()->GetColor()->GetPriority();
     };
     bool operator>(ObjectWrapper other) const
     {
-        return object->symbol()->color()->priority > other.object->symbol()->color()->priority;
+        return object->symbol()->GetColor()->GetPriority() > other.object->symbol()->GetColor()->GetPriority();
     };
     bool operator==(ObjectWrapper other) const
     {
-        return object->symbol()->color()->priority == other.object->symbol()->color()->priority;
+        return object->symbol()->GetColor()->GetPriority() == other.object->symbol()->GetColor()->GetPriority();
     };
 };
 
@@ -108,11 +108,11 @@ private:
         float max;
     };
 
-    void InitializeSeeds(Mask& map);
-    std::vector<Seed> InitializeSeedsOnObject(float density, const Object& object,Mask & map) const;
+    void InitializeSeeds();
+    [[nodiscard]] std::vector<Seed> InitializeSeedsOnObject(float density, const Object& object);
     void PurgeInactiveSeeds();
     void Randomize(std::vector<Seed>& seeds, float density, float factor = 1.f, float angle = 0) const;
-    void Cull(std::vector<Seed>& seeds, const Object& area,Mask & map) const;
+    void Cull(std::vector<Seed>& seeds, const Object& area);
 
 
     void ChooseInitialSeeds();
@@ -145,7 +145,7 @@ private:
     std::vector<Seed> seeds_;
     std::vector<size_t> initial_set_indices_;
 
-
+    MaskMaker seed_masker_;
 };
 
 

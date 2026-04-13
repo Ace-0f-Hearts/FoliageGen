@@ -10,6 +10,7 @@ struct SymbolAttribute
 {
     uint32_t id;
     uint8_t flags;
+    float radius_of_influence;
 };
 
 #endif //PROCEDURALFOLIAGEGENERATOR_SYMBOL_ATTRIBUTE_H

@@ -37,7 +37,7 @@ bool PathObject::IsIntersecting(const Spatial::Spatial2D& point) const
         intersecting = coordinates_.IsPointInsideArea(point);
         break;
     case PathO:
-        intersecting = coordinates_.IsPointOnPath(point,distance_threshold_);
+        intersecting = coordinates_.IsPointOnPath(point,symbol_->GetRadiusOfInfluence());
         break;
     default:
         throw std::logic_error("Type of path object is corrupted.");

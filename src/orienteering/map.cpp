@@ -12,7 +12,22 @@
 void OrienteeringMap::AppendSymbol(std::unique_ptr<Symbol> symbol)
 {
     assert(symbol.get());
-    symbols_.push_back(std::move(symbol));
+
+    auto id_to_search = symbol->GetId();
+    auto predicate = [id_to_search](const std::unique_ptr<Symbol>& s){ return id_to_search == s->GetId(); };
+
+    if (auto ptr = std::ranges::find_if(symbols_,predicate); ptr != symbols_.end())
+    {
+        // Combine the symbol with previously inserted one
+        if (!ptr->operator->()->HasColor() && symbol->HasColor())
+        {
+            ptr->operator->()->SetColor(symbol->GetColor());
+        }
+    } else
+    {
+        symbols_.push_back(std::move(symbol));
+    }
+
 }
 
 void OrienteeringMap::AppendObject(std::unique_ptr<Object> obj)
@@ -59,7 +74,7 @@ size_t Orienteering::OrienteeringMap::GetObjectOfSymbolAmount(Symbol* symbol) co
 
 Symbol* Orienteering::OrienteeringMap::GetSymbolById(size_t id)
 {
-    auto predicate = [id](const std::unique_ptr<Symbol>& symbol) -> bool {return symbol->id() == id;};
+    auto predicate = [id](const std::unique_ptr<Symbol>& symbol) -> bool {return symbol->GetId() == id;};
     auto symbol = std::ranges::find_if(symbols_,predicate);
 
     if (symbol != symbols_.end())
@@ -160,7 +175,7 @@ std::vector<Object*> OrienteeringMap::GetIrrelevantFeatures() const
     return objects;
 }
 
-void OrienteeringMap::AppendColor(MapColor color)
+void OrienteeringMap::AppendColor(std::shared_ptr<MapColor> color)
 {
     colors_.push_back(color);
 }
@@ -170,7 +185,7 @@ size_t OrienteeringMap::GetColorsAmount() const
     return colors_.size();
 }
 
-std::vector<MapColor>& OrienteeringMap::GetColors()
+std::vector<std::shared_ptr<MapColor>>& OrienteeringMap::GetColors()
 {
     return colors_;
 }

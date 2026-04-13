@@ -121,11 +121,10 @@ namespace Ocad
             u16 type;
             u16 flags;
             u16 color;
-            u16 line_width;
-            u16 diameter;
+            i16 line_width;
+            i16 diameter;
             u16 num_of_coords;
-            u16 RESERVED1;
-            u16 RESERVED2;
+            u32 RESERVED1;
 
             enum PointSymbolElementTypes
             {
@@ -260,8 +259,7 @@ namespace Ocad
 
             BaseSymbol base;
 
-            u16 RESERVED_MEMBER1; // formerly known as area_flags
-            u16 fill_on;
+            u32 border_symbol; // formerly known as area_flags
             AreaSymbolGeneric generic;
             u16 RESERVED_MEMBER2;
             u16 data_size;

@@ -1,6 +1,7 @@
 //
 // Created by ace on 2026-02-19.
 //
+#include <algorithm>
 #include <iostream>
 #include <string.h>
 #include <ocad/ocad_importer.h>
@@ -206,8 +207,13 @@ void OcadImporter::ImportPointSymbol(const S& ocad_symbol)
     if (SetupSymbol(symbol.get(), ocad_symbol))
     {
         symbol->type(PointS);
-        symbol->SetColor(ComputePointColor(ocad_symbol.data_size,ocad_symbol.begin_of_elements));
-        symbol_index_.emplace(symbol->id(),symbol.get());
+
+        auto color = ComputePointColor(ocad_symbol.data_size,ocad_symbol.begin_of_elements);
+        if (color)
+        {
+            symbol->SetColor(color);
+        }
+        symbol_index_.emplace(symbol->GetId(),symbol.get());
         map_->AppendSymbol(std::move(symbol));
     }
 }
@@ -222,8 +228,12 @@ void OcadImporter::ImportLineSymbol(const S& ocad_symbol)
     if (SetupSymbol(symbol.get(), ocad_symbol))
     {
         symbol->type(PathS);
-        symbol->SetColor(ComputeLineColor(ocad_symbol,ocad_symbol.generic));
-        symbol_index_.emplace(symbol->id(),symbol.get());
+        auto color = ComputeLineColor(ocad_symbol,ocad_symbol.generic);
+        if (color)
+        {
+            symbol->SetColor(color);
+        }
+        symbol_index_.emplace(symbol->GetId(),symbol.get());
         map_->AppendSymbol(std::move(symbol));
     }
 }
@@ -237,8 +247,15 @@ void OcadImporter::ImportAreaSymbol(const S& ocad_symbol)
     if (SetupSymbol(symbol.get(), ocad_symbol))
     {
         symbol->type(AreaS);
-        symbol->SetColor(ComputeAreaColor(ocad_symbol.generic.fill_on_V9,ocad_symbol.generic,ocad_symbol.data_size,ocad_symbol.begin_of_elements));
-        symbol_index_.emplace(symbol->id(),symbol.get());
+
+        LOG_S(INFO) << "Importing Area with ID " << symbol->GetId();
+        auto color = ComputeAreaColor(ocad_symbol.generic.fill_on_V9,ocad_symbol.generic,ocad_symbol.data_size,ocad_symbol.begin_of_elements);
+        if (color)
+        {
+            symbol->SetColor(color);
+        }
+
+        symbol_index_.emplace(symbol->GetId(),symbol.get());
         map_->AppendSymbol(std::move(symbol));
     }
 }
@@ -251,8 +268,8 @@ bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
 {
     bool symbol_is_relevant = false;
 
-    symbol->id(base.base.sym_num);
-    auto id = symbol->id();
+    symbol->SetId(base.base.sym_num);
+    auto id = symbol->GetId();
 
     auto it = std::ranges::find_if(attributes_.cbegin(),attributes_.cend(),[id](const auto& attr)
     {
@@ -265,6 +282,7 @@ bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
         symbol->SetCultivated(it->flags  & Cultivated);
         symbol->SetDirectional(it->flags & Directional);
         symbol->SetObstructing(it->flags & Obstructing);
+        symbol->SetRadiusOfInfluence(it->radius_of_influence);
     }
 
 
@@ -389,7 +407,103 @@ OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_poi
 template <class F>
 void OcadImporter::ImportColors(const OcadFile<F>& file)
 {
+    spot_colors_.clear();
+    spot_colors_.reserve(10);
+
+    HandleStrings(file, {{10, &OcadImporter::ImportSpotColor}});
     HandleStrings(file, {{9, &OcadImporter::ImportColor}});
+
+    std::sort(spot_colors_.begin(), spot_colors_.end(), [](const auto a, const auto b) {
+        return a->GetPriority() < b->GetPriority();
+    });
+
+    for (const auto& spot_color : spot_colors_)
+    {
+        map_->AppendColor(std::make_shared<MapColor>(*spot_color));
+    }
+}
+
+
+void OcadImporter::ImportSpotColor(const std::string& param)
+{
+    OcadParameterStreamReader reader(param);
+
+    const std::string name = reader.Value();
+    int number = -1;
+    Cmyk cmyk {0.f, 0.f, 0.f, 0.f};
+    double screen_angle = 45;
+    double screen_frequency = 150;
+
+    while (reader.ReadNext())
+    {
+        float f_value;
+        auto param_value = reader.Value();
+
+        switch (reader.Key())
+        {
+            case 'n':
+                {
+                    number = std::stoi(param_value);
+                    break;
+                }
+            case 'c':
+                {
+                    f_value = std::stof(param_value);
+                    if (f_value >= 0 & f_value <= 100)
+                        cmyk.c = 0.01f * f_value;
+                    break;
+                }
+            case 'm':
+                {
+                    f_value = std::stof(param_value);
+                    if (f_value >= 0 & f_value <= 100)
+                        cmyk.m = 0.01f * f_value;
+                    break;
+                }
+            case 'y':
+                {
+                    f_value = std::stof(param_value);
+                    if (f_value >= 0 & f_value <= 100)
+                        cmyk.y = 0.01f * f_value;
+                    break;
+                }
+            case 'k':
+                {
+                    f_value = std::stof(param_value);
+                    if (f_value >= 0 & f_value <= 100)
+                        cmyk.k = 0.01f * f_value;
+                    break;
+                }
+            case 'f':
+                {
+                    f_value = std::stof(param_value);
+                    if (f_value >= 0)
+                    {
+                        screen_frequency = 0.1 * f_value;
+                    }
+                    break;
+                }
+            case 'a':
+                {
+                    f_value = std::stof(param_value);
+                    if (f_value >= 0)
+                    {
+                        screen_angle = f_value;
+                    }
+                    break;
+                }
+            default:
+                {
+                    break;
+                }
+        }
+    }
+    std::shared_ptr<MapColor> color = std::make_shared<MapColor>();
+    color->SetCmyk(cmyk);
+    color->SetName(name);
+    spot_colors_.push_back(std::make_shared<MapColor>(*color));
+    color_index_.emplace(number,std::make_shared<MapColor>(*color));
+
 }
 
 void OcadImporter::ImportColor(const std::string& param)
@@ -408,7 +522,6 @@ void OcadImporter::ImportColor(const std::string& param)
     while (parameters.ReadNext())
     {
         float f_value;
-        int i_value;
         auto param_value = parameters.Value();
 
         switch (parameters.Key())
@@ -447,21 +560,20 @@ void OcadImporter::ImportColor(const std::string& param)
         case 's':
             spot_color_name = param_value;
             break;
-        case 'p':
-
-            break;
         default:
             break;
         }
     }
-    MapColor color;
 
     int color_prio = map_->GetColorsAmount();
+    auto color = std::make_shared<MapColor>();
+    color->SetCmyk(cmyk);
+    color->SetPriority(color_prio);
+    color->SetName(name);
+    color->SetOpacity(opacity);
+    map_->AppendColor(std::make_shared<MapColor>(*color));
+    color_index_.emplace(number,std::make_shared<MapColor>(*color));
 
-    color.cmyk = cmyk;
-    color.priority = color_prio;
-    color.opacity = opacity;
-    map_->AppendColor(cmyk);
 }
 
 template <class F>
@@ -528,20 +640,20 @@ float OcadImporter::ConvertOcadAngle(int ocad_angle)
     return M_PI / 180.f * (0.1f * ((ocad_angle + 3600) % 3600));
 }
 
-const MapColor* OcadImporter::ComputePointColor(std::size_t data_size, const OcadTypesV9::PointSymbolElement* elements)
+MapColor* OcadImporter::ComputePointColor(std::size_t data_size, const OcadTypesV9::PointSymbolElement* elements)
 {
 
 
     bool color_found = false;
 
-    const MapColor* computed_color = nullptr;
+    MapColor* computed_color = nullptr;
 
     for (size_t i = 0; i < data_size && !color_found; i+=2)
     {
-        const OcadTypesV9::PointSymbolElement* element = reinterpret_cast<const OcadTypesV9::PointSymbolElement*>(&reinterpret_cast<const Ocad::Generic::OcadCoord*>(elements)[i]);
+        const auto* element = reinterpret_cast<const OcadTypesV9::PointSymbolElement*>(&reinterpret_cast<const Ocad::Generic::OcadCoord*>(elements)[i]);
 
-        const MapColor* inner_color = nullptr;
-        const MapColor* outer_color = nullptr;
+        MapColor* inner_color = nullptr;
+        MapColor* outer_color = nullptr;
         int outer_width = 0;
         int inner_radius = 0;
 
@@ -621,23 +733,23 @@ const MapColor* OcadImporter::ComputePointColor(std::size_t data_size, const Oca
 
     }
 
-    LOG_S(INFO) << computed_color;
+    LOG_S(INFO) << "POINT COLOUR:" <<  computed_color;
     return computed_color;
 }
 
 template<class S>
-const MapColor* OcadImporter::ComputeLineColor(
+MapColor* OcadImporter::ComputeLineColor(
     const S& ocad_symbol,const OcadTypesV9::LineSymbolGeneric attributes)
 {
-    const MapColor* computed_color = nullptr;
+    MapColor* computed_color = nullptr;
 
-    const MapColor* main_color = nullptr;
-    const MapColor* border_color = nullptr;
-    const MapColor* right_border_color = nullptr;
+    MapColor* main_color = nullptr;
+    MapColor* border_color = nullptr;
+    MapColor* right_border_color = nullptr;
 
-    float main_line_width = 0.f;
-    float border_width = 0.f;
-    float right_border_width = 0.f;
+    int main_line_width = 0.f;
+    int border_width = 0.f;
+    int right_border_width = 0.f;
 
     main_line_width = ConvertLength(attributes.line_width);
     main_color = main_line_width ? ConvertColor(attributes.line_color) : nullptr;
@@ -659,7 +771,6 @@ const MapColor* OcadImporter::ComputeLineColor(
 
         right_border_width = ConvertLength(attributes.double_right_width);
         right_border_color = right_border_width ? ConvertColor(attributes.double_right_color) : nullptr;
-
     }
 
 
@@ -695,10 +806,7 @@ const MapColor* OcadImporter::ComputeLineColor(
     if (!computed_color)
     {
         // TODO: SetupLineSymbolPointsSymbols
-        const MapColor* mid_symbol_color = nullptr;
-        const MapColor* dash_symbol_color = nullptr;
-        const MapColor* start_symbol_color = nullptr;
-        const MapColor* end_symbol_color = nullptr;
+
         const Ocad::Generic::OcadCoord* coords = reinterpret_cast<const Generic::OcadCoord*>(ocad_symbol.begin_of_elements);
 
         if (attributes.primary_data_size > 0)
@@ -735,6 +843,7 @@ const MapColor* OcadImporter::ComputeLineColor(
 
 
     }
+    LOG_S(INFO) << "LINE COLOR: " << computed_color;
     return computed_color;
 }
 
@@ -754,18 +863,19 @@ R OcadImporter::ConvertLength(T ocad_length) const
     return static_cast<R>(ocad_length) * 10;
 }
 
-const MapColor* OcadImporter::ComputeAreaColor(bool fill_on,
+MapColor* OcadImporter::ComputeAreaColor(bool fill_on,
                                          const OcadTypesV9::AreaSymbolGeneric& ocad_symbol, std::size_t data_size,
                                          const OcadTypesV9::PointSymbolElement* elements)
 {
+    LOG_S(INFO) << "Fill on: " << fill_on << " : "<< ConvertColor(ocad_symbol.fill_color);
     auto computed_color = fill_on ? ConvertColor(ocad_symbol.fill_color) : nullptr;
 
-    if (!computed_color && ocad_symbol.hatch_mode != Ocad::Generic::HatchNone && ocad_symbol.hatch_line_width)
+    if (!computed_color && ocad_symbol.hatch_mode != Generic::HatchNone && ocad_symbol.hatch_line_width)
     {
         computed_color = ConvertLength(ocad_symbol.hatch_line_width) ?  ConvertColor(ocad_symbol.hatch_color) : nullptr;
     }
 
-    if (!computed_color && ocad_symbol.structure_mode != Ocad::Generic::StructureNone && ocad_symbol.structure_height && ocad_symbol.structure_width && data_size)
+    if (!computed_color && ocad_symbol.structure_mode != Generic::StructureNone && ocad_symbol.structure_height && ocad_symbol.structure_width && data_size)
     {
         computed_color = ComputePointColor(data_size,elements);
     }
@@ -773,15 +883,17 @@ const MapColor* OcadImporter::ComputeAreaColor(bool fill_on,
     return computed_color;
 }
 
-const MapColor* OcadImporter::ConvertColor(int ocad_color)
+MapColor* OcadImporter::ConvertColor(int ocad_color)
 {
+
+    LOG_S(INFO) << "COLOR QUERY: " << ocad_color;
 
     if (!color_index_.contains(ocad_color))
     {
         LOG_F(WARNING,"Color %d not found, ignoring it.",ocad_color);
         return nullptr;
     }
-    return color_index_[ocad_color];
+    return color_index_[ocad_color].get();
 }
 
 

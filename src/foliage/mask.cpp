@@ -56,6 +56,42 @@ void MaskMaker::CreateNewMask( BoundingBox2D bbox, float mask_resolution, int ch
     bbox_ = bbox;
 }
 
+void MaskMaker::MaskObject(const Object* object)
+{
+    int x_offset = -static_cast<int>(std::floor(bbox_.min()[0] * mask_resolution_));
+    int y_offset = -static_cast<int>(std::floor(bbox_.min()[1] * mask_resolution_));
+    if (!mask_.has_value())
+    {
+        return;
+    }
+
+    size_t width = std::ceil(object->bounding_box().width() * mask_resolution_);
+    size_t height = std::ceil(object->bounding_box().height() * mask_resolution_);
+
+    float fi = 0.f;
+    for (size_t i = 0; i < width; i++, fi+= 1.0f/mask_resolution_)
+    {
+        float fj = 0.f;
+        for (size_t j = 0; j < height; j++, fj += 1.0f / mask_resolution_)
+        {
+
+            int x,y;
+            x = i + x_offset + std::round(object->bounding_box().min()[0] * mask_resolution_);
+            y = j + y_offset + std::round(object->bounding_box().min()[1] * mask_resolution_);
+
+            // Spatial::Spatial2D point({fi + obj->bounding_box().min()[0],fj + obj->bounding_box().min()[1]});
+            Spatial::Spatial2D pix({static_cast<float>(i / mask_resolution_),static_cast<float>(j / mask_resolution_)});
+            pix += object->bounding_box().min();
+            if (object->IsIntersecting(pix))
+            {
+                // Store the ID of the object in the pixel
+                // Coord2 coord = mask_->SpatialToMaskCoordinate(point);
+                mask_->At({x,y},object->symbol()->GetId(),0);
+            }
+        }
+    }
+}
+
 void MaskMaker::MaskObjects(std::vector<Object*> objects)
 {
     int x_offset = -static_cast<int>(std::floor(bbox_.min()[0] * mask_resolution_));
@@ -88,7 +124,7 @@ void MaskMaker::MaskObjects(std::vector<Object*> objects)
                 {
                     // Store the ID of the object in the pixel
                     // Coord2 coord = mask_->SpatialToMaskCoordinate(point);
-                    mask_->At({x,y},obj->symbol()->id(),0);
+                    mask_->At({x,y},obj->symbol()->GetId(),0);
                 }
             }
         }
@@ -100,7 +136,12 @@ void MaskMaker::ClearMask()
     mask_.reset();
 }
 
-std::optional<Mask> MaskMaker::GetMask()
+std::optional<Mask>& MaskMaker::GetMask()
+{
+    return mask_;
+}
+
+std::optional<Mask> MaskMaker::GetMask() const
 {
     return mask_;
 }

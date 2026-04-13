@@ -68,15 +68,15 @@ void Generator::Start()
         map_->ClearObjectsOfFlag(Irrelevant);
     }
 
-    MaskMaker mask_maker;
-    mask_maker.CreateNewMask(map_->GetBoundingBox(), 2, 1);
+
+    seed_masker_.CreateNewMask(map_->GetBoundingBox(), 2, 1);
     LOG_SCOPE_F(INFO, "Diffusion zones");
     {
-        mask_maker.MaskObjects(map_->GetObstructingObjects());
+        seed_masker_.MaskObjects(map_->GetObstructingObjects());
     }
 
-    auto mask = mask_maker.GetMask().value();
-    InitializeSeeds(mask);
+    auto mask = seed_masker_.GetMask().value();
+    InitializeSeeds();
     mask.Write("../../testing/mask.jpeg");
     LOG_F(INFO,
           "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
@@ -137,7 +137,7 @@ void Generator::PurgeInactiveSeeds()
 
 
 
-void Generator::InitializeSeeds(Mask& map)
+void Generator::InitializeSeeds()
 {
     auto bounding_box = map_->GetBoundingBox();
 
@@ -160,14 +160,14 @@ void Generator::InitializeSeeds(Mask& map)
     //
     for (auto& object : map_->GetFreeAreas())
     {
-        LOG_S(INFO) << object->symbol()->id() << ":" << object->symbol()->color();
-        auto seeds = InitializeSeedsOnObject(density_, *object, map);
+        LOG_S(INFO) << object->symbol()->GetId() << ":" << object->symbol()->GetColor();
+        auto seeds = InitializeSeedsOnObject(density_, *object);
         seeds_.reserve(seeds_.size() + seeds.size());
         seeds_.insert(seeds_.end(), seeds.begin(), seeds.end());
     }
 }
 
-std::vector<Seed> Generator::InitializeSeedsOnObject(float density, const Object& object, Mask& map) const
+std::vector<Seed> Generator::InitializeSeedsOnObject(float density, const Object& object)
 {
     const auto bounding_box = object.bounding_box();
     std::vector<Seed> seeds;
@@ -192,7 +192,9 @@ std::vector<Seed> Generator::InitializeSeedsOnObject(float density, const Object
         }
     }
     Randomize(seeds, density);
-    Cull(seeds, object, map);
+    Cull(seeds, object);
+
+    seed_masker_.MaskObject(&object);
 
     return seeds;
 }
@@ -225,8 +227,9 @@ void Generator::Randomize(std::vector<Seed>& seeds, float density, const float f
     }
 }
 
-void Generator::Cull(std::vector<Seed>& seeds, const Object& object, Mask& mask) const
+void Generator::Cull(std::vector<Seed>& seeds, const Object& object)
 {
+    auto mask = seed_masker_.GetMask().value();
     for (auto& seed : seeds)
     {
         // auto coord = mask.SpatialToMaskCoordinate(seed.coordinate);
@@ -643,7 +646,7 @@ std::vector<double> Generator::MaximizeSeedRadii(std::vector<double> radii, std:
         real_1d_array r;
         r.attach_to_ptr(radii.size(), radii.data());
 
-        double epsg = 1e-9;
+        double epsg = 1e-7;
         double epsf = 0.0;
         double epsx = 0.0;
         ae_int_t maxits = 0;

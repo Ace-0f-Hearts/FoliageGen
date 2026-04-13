@@ -22,18 +22,31 @@ struct Cmyk
     float k;
 };
 
-struct MapColor
+class MapColor
 {
-    MapColor() : cmyk(0,0,0,0),priority(-1), opacity(1.f) {};
-    MapColor(const Cmyk cmyk, const int priority = -1.f, const float opacity = 1.f) : cmyk(cmyk), priority(priority), opacity(opacity) {};
+public:
+    MapColor() : cmyk_(0,0,0,0),priority_(-1), opacity_(1.f) {};
+    MapColor(const Cmyk cmyk, const int priority = -1.f, const float opacity = 1.f) : cmyk_(cmyk), priority_(priority), opacity_(opacity) {};
 
     ~MapColor() = default;
 
-    bool IsWhite() const;
+    [[nodiscard]] bool IsWhite() const;
 
-    Cmyk cmyk;
-    int priority;
-    float opacity;
+    [[nodiscard]] std::string GetName() const;
+    [[nodiscard]] Cmyk GetCmyk() const;
+    [[nodiscard]] int GetPriority() const;
+    [[nodiscard]] float GetOpacity() const;
+
+    void SetName(const std::string& name);
+    void SetCmyk(const Cmyk& cmyk);
+    void SetPriority(const int priority);
+    void SetOpacity(const float opacity);
+private:
+
+    std::string name_;
+    Cmyk cmyk_;
+    int priority_;
+    float opacity_;
 };
 
 inline bool Cmyk::IsWhite() const
@@ -43,7 +56,7 @@ inline bool Cmyk::IsWhite() const
 
 inline bool MapColor::IsWhite() const
 {
-    return cmyk.IsWhite();
+    return cmyk_.IsWhite();
 }
 
 inline std::ostream& operator<<(std::ostream& os, const Cmyk& cmyk)
@@ -54,7 +67,7 @@ inline std::ostream& operator<<(std::ostream& os, const Cmyk& cmyk)
 
 inline std::ostream& operator<<(std::ostream& os, const MapColor& map_color)
 {
-    os << "(" << map_color.cmyk << ";" << map_color.priority << ";" << map_color.opacity << ")";
+    os << "(" << map_color.GetName() << ";" << map_color.GetCmyk() << ";" << map_color.GetPriority() << ";" << map_color.GetOpacity() << ")";
     return os;
 }
 

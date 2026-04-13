@@ -88,16 +88,18 @@ SymbolAttribute JsonExtractor::ParseSymbolAttribute(Value& root)
 {
     uint32_t id;
     uint8_t flags;
+    float radius;
     if (root.isObject())
     {
         id = root["id"].asUInt();
         flags = root["flags"].asUInt();
+        radius = root["radius"].asFloat();
     }
     else
     {
         throw std::runtime_error("Couldn't parse SymbolAttribute. Item was instead: " + root.toStyledString());
     }
-    return SymbolAttribute{id,flags};
+    return SymbolAttribute{id,flags,radius};
 }
 
 std::vector<DiffusionZone> JsonExtractor::ExtractDiffusionZones(Value& root)

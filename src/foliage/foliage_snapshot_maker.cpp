@@ -102,9 +102,9 @@ void FoliageSnapshotMaker::RasterizeObjects(std::vector<Object*> areas, Bounding
                     if (write_id)
                     {
                         // Store the ID of the object in the pixel
-                        f_map_.map()(x,y,0,0) = obj->symbol()->id();
-                        f_map_.map()(x,y,0,1) = obj->symbol()->id();
-                        f_map_.map()(x,y,0,2) = obj->symbol()->id();
+                        f_map_.map()(x,y,0,0) = obj->symbol()->GetId();
+                        f_map_.map()(x,y,0,1) = obj->symbol()->GetId();
+                        f_map_.map()(x,y,0,2) = obj->symbol()->GetId();
                         continue;
                     }
 

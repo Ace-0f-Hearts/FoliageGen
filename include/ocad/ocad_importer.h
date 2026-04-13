@@ -62,12 +62,13 @@ namespace Ocad
         void ImportColors(const OcadFile<F>& file);
 
         void ImportColor(const std::string& param);
+        void ImportSpotColor(const std::string& param);
 
 
-        const MapColor* ComputePointColor(std::size_t data_size, const OcadTypesV9::PointSymbolElement* elements);
+        MapColor* ComputePointColor(std::size_t data_size, const OcadTypesV9::PointSymbolElement* elements);
         template<class S>
-        const MapColor* ComputeLineColor(const S& ocad_symbol,const OcadTypesV9::LineSymbolGeneric attributes);
-        const MapColor* ComputeAreaColor(bool fill_on, const OcadTypesV9::AreaSymbolGeneric& ocad_symbol, std::size_t data_size, const OcadTypesV9::PointSymbolElement* elements);
+        MapColor* ComputeLineColor(const S& ocad_symbol,const OcadTypesV9::LineSymbolGeneric attributes);
+        MapColor* ComputeAreaColor(bool fill_on, const OcadTypesV9::AreaSymbolGeneric& ocad_symbol, std::size_t data_size, const OcadTypesV9::PointSymbolElement* elements);
 
         template<class OcadBaseSymbol>
         bool SetupSymbol(Symbol* ocad_symbol, const OcadBaseSymbol& base);
@@ -84,7 +85,7 @@ namespace Ocad
         R ConvertLength(T ocad_length) const;
 
         float ConvertOcadAngle(int ocad_angle);
-        const MapColor* ConvertColor(int ocad_color);
+        MapColor* ConvertColor(int ocad_color);
 
 
 
@@ -110,7 +111,9 @@ namespace Ocad
         uint8_t ocad_version_;
         // TODO: Take care of pointer at delete
         std::map<unsigned int, Symbol*> symbol_index_;
-        std::map<int, MapColor*> color_index_;
+        std::map<int, std::shared_ptr<MapColor>> color_index_;
+
+        std::vector<std::shared_ptr<MapColor>> spot_colors_;
     };
 }
 

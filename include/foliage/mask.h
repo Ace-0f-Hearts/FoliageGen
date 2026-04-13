@@ -47,9 +47,11 @@ public:
 
     void CreateNewMask(BoundingBox2D bbox,float mask_resolution = 1.f, int channels = 1);
     void MaskObjects(std::vector<Object*> objects);
+    void MaskObject(const Object* object);
     void ClearMask();
 
-    std::optional<Mask> GetMask();
+    std::optional<Mask>& GetMask();
+    std::optional<Mask> GetMask() const;
 
 
 private:

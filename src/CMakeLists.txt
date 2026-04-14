@@ -34,8 +34,6 @@ target_link_libraries(foliage_generator_lib
         botanics_math
         orienteering
         foliage
-        jsoncpp_lib
-        loguru::loguru
 )
 
 source_group(

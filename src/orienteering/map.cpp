@@ -89,12 +89,12 @@ BoundingBox2D OrienteeringMap::GetBoundingBox() const
     return bounding_box_;
 }
 
-std::vector<std::unique_ptr<Symbol>>& OrienteeringMap::GetSymbols()
+std::vector<std::unique_ptr<Symbol>>& OrienteeringMap::symbols()
 {
     return symbols_;
 }
 
-std::vector<std::unique_ptr<Object>>& OrienteeringMap::GetObjects()
+std::vector<std::unique_ptr<Object>>& OrienteeringMap::objects()
 {
     return objects_;
 }
@@ -185,9 +185,20 @@ size_t OrienteeringMap::GetColorsAmount() const
     return colors_.size();
 }
 
-std::vector<std::shared_ptr<MapColor>>& OrienteeringMap::GetColors()
+std::vector<std::shared_ptr<MapColor>>& OrienteeringMap::colors()
 {
     return colors_;
+}
+
+std::vector<Object*> OrienteeringMap::GetObjects() const
+{
+    std::vector<Object*> objects;
+    for (auto& object: objects_)
+    {
+        objects.emplace_back(object.get());
+    }
+
+    return objects;
 }
 
 std::vector<Object*> OrienteeringMap::GetObjectsOfType(ObjectType type) const

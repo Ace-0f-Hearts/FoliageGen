@@ -45,3 +45,4 @@ build/*
 cmake-build-default/*
 cmake-build-default-system/*
 
+vcpkg_installed/*

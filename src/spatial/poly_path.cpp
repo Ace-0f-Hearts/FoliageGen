@@ -9,7 +9,8 @@
 #include <loguru.hpp>
 #include <spatial/poly_path.h>
 
-#include "utility/not_implemented_error.h"
+#include <utility/not_implemented_error.h>
+
 
 bool Spatial::PolyPath::IsClosed() const
 {
@@ -124,6 +125,11 @@ const std::vector<Spatial::Spatial2D>& Spatial::PolyPath::points() const
 size_t Spatial::PolyPath::size() const
 {
     return points_.size();
+}
+
+std::vector<Spatial::Spatial2D> Spatial::PolyPath::GetPoints() const
+{
+    return points_;
 }
 
 void Spatial::PolyPath::SetPoints(const std::vector<Spatial2D>& points)

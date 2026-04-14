@@ -22,7 +22,7 @@ TARGET_LINK_LIBRARIES(
         utility
         PRIVATE
         loguru::loguru
-        jsoncpp_lib
+        JsonCpp::JsonCpp
 )
 source_group(
         TREE "${PROJECT_SOURCE_DIR}/include"

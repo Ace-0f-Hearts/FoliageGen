@@ -3,8 +3,8 @@
 //
 #include <loguru.hpp>
 
-#include "../../include/foliage/map_parser.h"
-#include "ocad/file_format_registry.h"
+#include <foliage/map_parser.h>
+#include <ocad/file_format_registry.h>
 
 MapParser::MapParser(std::shared_ptr<Orienteering::OrienteeringMap> map) : map_(map)
 {

@@ -101,3 +101,7 @@ BoundingBox2D Object::bounding_box() const
     return bounding_box_;
 }
 
+std::vector<Spatial::Spatial2D> Object::GetPoints() const
+{
+    return coordinates_.GetPoints();
+}

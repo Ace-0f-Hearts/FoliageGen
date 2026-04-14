@@ -6,6 +6,7 @@
 #define PROCEDURALFOLIAGEGENERATOR_BEZIER_H
 #include "spatial_coordinates.h"
 #include <spatial/orienteering_path.h>
+#include <ocad/ocad_coordinate.h>
 
 
 namespace Spatial
@@ -28,6 +29,7 @@ namespace Spatial
          */
         PolyPath(const Spatial2D& point);
 
+        std::vector<Spatial2D> GetPoints() const;
         void SetPoints(const std::vector<Spatial2D>& points);
         void AppendPoint(const Spatial2D& point);
         bool RemovePoint(const Spatial2D& point);

@@ -64,7 +64,16 @@ void Generator::Start()
     {
         // FoliageMap mask(CImg<>(bbox.width(),bbox.height(),1,3,500.f));
 
+        std::vector<Spatial2D> points;
+        for (auto obj : map_->GetObjects())
+        {
+            auto p = obj->GetPoints();
+            points.insert(points.end(),p.begin(),p.end());
+        }
 
+        map_boundary_calculator_.ComputeAlphaShape(points);
+
+        map_boundary_calculator_.Write("../../testing/as.obj");
         map_->ClearObjectsOfFlag(Irrelevant);
     }
 

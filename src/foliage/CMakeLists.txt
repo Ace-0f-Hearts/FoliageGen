@@ -13,79 +13,6 @@ file(GLOB HEADER_LIST CONFIGURE_DEPENDS
         ${ProceduralFoliageGenerator_SOURCE_DIR}/include/foliage/*.hpp
 )
 
-FetchContent_Declare(zlib
-        GIT_REPOSITORY https://github.com/madler/zlib.git
-        GIT_TAG "v1.3.1"
-)
-FetchContent_MakeAvailable(zlib)
-
-
-if(NOT TARGET ZLIB::ZLIB)
- add_library(ZLIB::ZLIB INTERFACE IMPORTED GLOBAL)
- target_link_libraries(ZLIB::ZLIB INTERFACE zlibstatic)
- target_include_directories(ZLIB::ZLIB INTERFACE
-         ${zlib_SOURCE_DIR}
-         ${zlib_BINARY_DIR}
- )
-endif()
-
-set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "")
-set(ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
-set(ZLIB_FOUND TRUE CACHE INTERNAL "")
-
-include_directories(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
-
-message(STATUS "zlib_SOURCE_DIR: ${zlib_SOURCE_DIR}")
-message(STATUS "zlib_BINARY_DIR: ${zlib_BINARY_DIR}")
-message(STATUS "ZLIB_LIBRARY: ${ZLIB_LIBRARY}")
-message(STATUS "ZLIB_INCLUDE_DIR: ${ZLIB_INCLUDE_DIR}")
-
-FetchContent_Declare(libpng
-        GIT_REPOSITORY https://github.com/pnggroup/libpng.git
-        GIT_TAG "v1.6.43"
-)
-FetchContent_MakeAvailable(libpng)
-
-include(ExternalProject)
-set(LIBJPEG_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/libjpeg-turbo-install)
-
- ExternalProject_Add(
-        libjpeg_turbo
-        GIT_REPOSITORY https://github.com/libjpeg-turbo/libjpeg-turbo.git
-        GIT_TAG        3.0.3
-        CMAKE_ARGS
-        -DCMAKE_INSTALL_PREFIX=${LIBJPEG_INSTALL_DIR}
-        -DENABLE_SHARED=OFF
-        -DENABLE_STATIC=ON
-        BUILD_BYPRODUCTS
-        ${LIBJPEG_INSTALL_DIR}/lib64/libturbojpeg.a
-)
-
-# Create the directory so CMake doesn't complain at configure time
-file(MAKE_DIRECTORY ${LIBJPEG_INSTALL_DIR}/include)
-
-# Create imported target
-add_library(turbojpeg-static STATIC IMPORTED)
-set_target_properties(turbojpeg-static PROPERTIES
-        IMPORTED_LOCATION ${LIBJPEG_INSTALL_DIR}/lib64/libturbojpeg.a
-        INTERFACE_INCLUDE_DIRECTORIES ${LIBJPEG_INSTALL_DIR}/include
-)
-add_dependencies(turbojpeg-static libjpeg_turbo)
-FETCHCONTENT_DECLARE(cimg
-        GIT_REPOSITORY https://github.com/GreycLab/CImg.git
-        GIT_TAG "master"
-)
-
-FETCHCONTENT_MAKEAVAILABLE(cimg)
-
-FETCHCONTENT_DECLARE(
-        nanoflann
-        GIT_REPOSITORY https://github.com/jlblancoc/nanoflann
-        GIT_TAG v1.9.0
-        #        FIND_PACKAGE_ARGS
-)
-
-FETCHCONTENT_MAKEAVAILABLE(nanoflann)
 
 file(GLOB ALGLIB_SOURCES
         "${CMAKE_SOURCE_DIR}/external/alglib-cpp/src/*.cpp"
@@ -108,7 +35,6 @@ target_include_directories(foliage
         ${libpng_BINARY_DIR}
         ${cimg_SOURCE_DIR}
 )
-add_dependencies(foliage libjpeg_turbo)
 
 target_compile_features(foliage PUBLIC cxx_std_11)
 target_compile_definitions(foliage PRIVATE
@@ -121,15 +47,23 @@ target_compile_definitions(foliage PRIVATE
 target_link_libraries(foliage
         PUBLIC
         nanoflann::nanoflann
+        botanics_math
+        ocad
+        orienteering
+        spatial
         PRIVATE
         alglib
         loguru::loguru
-        jsoncpp_lib
-        png_static
-        turbojpeg-static
+        JsonCpp::JsonCpp
+        PNG::PNG
+        JPEG::JPEG
         glm::glm
         Boost::heap
-
+        CGAL::CGAL
+#        CGAL::CGAL_Qt6        # provides the draw() infrastructure
+#        Qt6::Widgets
+#        Qt6::OpenGL
+#        Qt6::OpenGLWidgets
 )
 source_group(
         TREE "${PROJECT_SOURCE_DIR}/include"

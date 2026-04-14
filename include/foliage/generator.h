@@ -12,6 +12,10 @@
 #include <spatial/bounding_box.h>
 #include <orienteering/object.h>
 
+#include <botanics_math/range.h>
+#include <botanics_math/gaussian.h>
+#include <botanics_math/dim.h>
+#include <botanics_math/coord.h>
 #include <foliage/diffusion_zone.h>
 #include <foliage/height_map.h>
 #include <foliage/seed.h>
@@ -21,6 +25,7 @@
 #include <nanoflann.hpp>
 
 #include "foliage_map.h"
+#include "map_boundary_calculator.h"
 #include "mask.h"
 
 
@@ -146,6 +151,7 @@ private:
     std::vector<size_t> initial_set_indices_;
 
     MaskMaker seed_masker_;
+    MapBoundaryCalculator map_boundary_calculator_;
 };
 
 

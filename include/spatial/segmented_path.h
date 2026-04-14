@@ -23,6 +23,7 @@ namespace Spatial
 
         [[nodiscard]] bool Contains(const Spatial2D& point) const;
 
+        std::vector<Spatial2D> GetPoints() const;
 
         BoundingBox<2> ComputeBoundingBox() const;
         void SetPoints(const std::vector<Spatial2D>& points);

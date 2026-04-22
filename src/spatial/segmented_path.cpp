@@ -26,17 +26,6 @@ bool Spatial::SegmentedPath::IsPointInsideArea(const Spatial2D& point) const
     return inside;
 }
 
-std::vector<Spatial::Spatial2D> Spatial::SegmentedPath::GetPoints() const
-{
-    std::vector<Spatial::Spatial2D> points;
-    for (const auto& path : paths())
-    {
-        auto p = path.GetPoints();
-        points.insert(points.end(), points.begin(), points.end());
-    }
-    return points;
-}
-
 bool Spatial::SegmentedPath::IsPointOnPath(const Spatial2D& point, float distance_threshold) const
 {
     return std::ranges::any_of(paths().begin(), paths().end(), [&point, distance_threshold](const auto& path) {return path.IsPointOnPath(point,distance_threshold);});

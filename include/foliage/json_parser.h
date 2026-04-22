@@ -4,7 +4,6 @@
 
 #ifndef GENERATOR_SPECIESATTRPARSER_H
 #define GENERATOR_SPECIESATTRPARSER_H
-#define LOGURU_WITH_STREAMS 1
 
 #include <fstream>
 #include <json/json.h>

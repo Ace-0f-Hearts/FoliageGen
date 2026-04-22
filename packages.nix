@@ -5,19 +5,19 @@
 , stdenv
 , cmake
 , ninja
+#, jsoncpp
 , libpkgconf
 , pkg-config
+#, cimg
+#, loguru
 , doxygen
-, autoconf
-, automake
-, libtool
-, autoconf-archive
-, bison
-, flex
-, python3
-, zlib
-, gperf
-, fontconfig
+#, boost
+# , zlib
+#, libpng
+#, libjpeg
+#, alglib
+#, glm
+#, nanoflann
 }:
 
 # stdenv.mkDerivation now accepts a list of named parameters that describe
@@ -39,21 +39,7 @@ stdenv.mkDerivation {
   # Distinguishing between `nativeBuildInputs` (runnable on the host
   # at compile time) and normal `buildInputs` (runnable on target
   # platform at run time) is an important preparation for cross-compilation.
-  nativeBuildInputs = [
-    cmake
-    ninja
-    pkg-config
-    autoconf
-    automake
-    libtool
-    autoconf-archive
-    bison
-    flex
-    python3
-    zlib
-    gperf
-    fontconfig
-    ];
+  nativeBuildInputs = [ cmake ninja ];
   buildInputs = [
 #    jsoncpp
 #    libpkgconf

@@ -38,8 +38,6 @@ namespace Orienteering
         Object& operator=(Object&& other) noexcept;
         virtual ~Object() = default;
 
-        [[nodiscard]] std::vector<Spatial::Spatial2D> GetPoints() const;
-
         void SetSymbol(Symbol* symbol);
         void SetType(ObjectType type);
         void AppendCoordinate(Spatial::Spatial2D coordinate);

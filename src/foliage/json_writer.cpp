@@ -4,6 +4,8 @@
 
 #include <foliage/json_writer.h>
 #include <fstream>
+#include <loguru.hpp>
+
 #include "json/writer.h"
 
 void JsonWriter::Run(const std::filesystem::path& output_file, const Json::Value& data)
@@ -19,9 +21,10 @@ void JsonWriter::Run(const std::filesystem::path& output_file, const Json::Value
     {
         of_stream << output_config;
         of_stream.close();
-    } else
+    }
+    else
     {
+        LOG_S(ERROR) << ("Failed to open output file for writing");
         throw std::runtime_error("Failed to open output file for writing");
     }
-
 }

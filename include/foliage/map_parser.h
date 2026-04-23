@@ -10,8 +10,8 @@
 #include <sstream>
 
 
-#include "orienteering/map.h"
-#include "orienteering/symbol_attribute.h"
+#include <orienteering/map.h>
+#include <orienteering/symbol_attribute.h>
 
 class MapParser
 {

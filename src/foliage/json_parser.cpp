@@ -2,7 +2,7 @@
 // Created by ace on 2026-01-08.
 //
 
-#include "foliage//json_parser.h"
+#include <foliage/json_parser.h>
 
 #include <filesystem>
 #include <iostream>
@@ -14,7 +14,7 @@ void JsonParser::Parse()
 {
     const Json::CharReaderBuilder builder;
     const auto reader = builder.newCharReader();
-    reader->parse(content_.c_str(),content_.c_str() + content_.size(),&root_,&err_);
+    reader->parse(content_.c_str(), content_.c_str() + content_.size(), &root_, &err_);
 }
 
 void JsonParser::Run(const char* filename)
@@ -34,7 +34,7 @@ bool JsonParser::Validate()
 {
     auto isValid = true;
 
-    CHECK_F(isValid = isValid && !root_.empty(),"Empty JSON parsed or empty JSON array.");
+    CHECK_F(isValid = isValid && !root_.empty(), "Empty JSON parsed or empty JSON array.");
 
     return isValid;
 }
@@ -45,7 +45,7 @@ void JsonParser::Open(const char* filename)
     if (!data_file_.is_open())
     {
         LOG_S(INFO) << std::filesystem::current_path();
-        LOG_F(ERROR,"%s could not be opened.",filename);
+        LOG_F(ERROR, "%s could not be opened.", filename);
         throw std::runtime_error("Could not open file " + string(filename));
     }
 }

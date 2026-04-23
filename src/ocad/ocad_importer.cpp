@@ -130,7 +130,7 @@ void OcadImporter::ImportObject(const O& ocad_object)
 
     if (!symbol)
     {
-        LOG_F(INFO,"Object's symbol not found in index");
+        LOG_F(INFO,"Object's symbol not found in index: %d",ocad_object.symbol);
         return;
     }
 

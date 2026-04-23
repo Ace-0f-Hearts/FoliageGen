@@ -62,9 +62,13 @@ void Generator::Start()
 
     LOG_SCOPE_F(INFO, "Forest masking started");
     {
-        // FoliageMap mask(CImg<>(bbox.width(),bbox.height(),1,3,500.f));
-
-
+        std::list<Spatial2D> points;
+        for (auto obj : map_->GetObjects())
+        {
+            auto p = obj->GetPoints();
+            points.insert(points.end(), p.begin(), p.end());
+        }
+        map_boundary_calculator_.ComputeAlphaShape(points);
         map_->ClearObjectsOfFlag(Irrelevant);
     }
 
@@ -75,9 +79,19 @@ void Generator::Start()
         seed_masker_.MaskObjects(map_->GetObstructingObjects());
     }
 
+    {
+        LOG_SCOPE_F(INFO,"Resize height map if necessary");
+
+        LOG_S(INFO) << bbox << " : " << height_map_->Width() << "," << height_map_->Height();
+        if (bbox.width() > height_map_->Width() || bbox.height() > height_map_->Height())
+        {
+            LOG_S(INFO) << "Resizing needed";
+            this->height_map_->map().resize(static_cast<float>(std::ceilf(bbox.width())),static_cast<float>(std::ceilf(bbox.height())),3);
+        }
+    }
+
     auto mask = seed_masker_.GetMask().value();
     InitializeSeeds();
-    mask.Write("../../testing/mask.jpeg");
     LOG_F(INFO,
           "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
           amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(), amount_of_classified_seeds());
@@ -109,17 +123,19 @@ void Generator::Start()
     }
 
     {
-        LOG_SCOPE_F(INFO, "Vegetation maximalization started!");
+        LOG_SCOPE_F(INFO, "Vegetation maximalization");
+        DLOG_S(INFO) << "Vegetation maximalization started!";
         MaximizeCoveredArea();
         DLOG_S(INFO) << "Vegetation maximalization finished!";
     }
 
-    auto snap = FoliageSnapshotMaker(2.f, map_->GetBoundingBox());
-    snap.RasterizeObjects(map_->GetObjectsOfType(PathO | AreaO), bbox);
-    snap.RasterizeSeeds(seeds_ref(), bbox, attributes_.size());
-    MapWriter::Write(snap.GetMap());
     LOG_F(INFO,
-          "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
+          "Seeds scaled: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
+          amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(), amount_of_classified_seeds());
+    PurgeInactiveSeeds();
+
+    LOG_F(INFO,
+          "Seeds result: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
           amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(), amount_of_classified_seeds());
 }
 
@@ -133,7 +149,6 @@ void Generator::PurgeInactiveSeeds()
     seeds_.erase(std::ranges::remove_if(seeds_, [](const auto& seed) { return !seed.IsActive(); }).begin(),
                  seeds_.end());
 }
-
 
 
 void Generator::InitializeSeeds()
@@ -159,11 +174,13 @@ void Generator::InitializeSeeds()
     //
     for (auto& object : map_->GetFreeAreas())
     {
-        LOG_S(INFO) << object->symbol()->GetId() << ":" << object->symbol()->GetColor();
         auto seeds = InitializeSeedsOnObject(density_, *object);
         seeds_.reserve(seeds_.size() + seeds.size());
         seeds_.insert(seeds_.end(), seeds.begin(), seeds.end());
     }
+    auto seeds = InitializeSeedsOnForestAreas(density_);
+    seeds_.reserve(seeds_.size() + seeds.size());
+    seeds_.insert(seeds_.end(), seeds.begin(), seeds.end());
 }
 
 std::vector<Seed> Generator::InitializeSeedsOnObject(float density, const Object& object)
@@ -198,7 +215,37 @@ std::vector<Seed> Generator::InitializeSeedsOnObject(float density, const Object
     return seeds;
 }
 
-void Generator::Randomize(std::vector<Seed>& seeds, float density, const float factor, [[maybe_unused]] const float angle) const
+std::vector<Seed> Generator::InitializeSeedsOnForestAreas(float density)
+{
+    const auto bounding_box = map_->GetBoundingBox();
+    std::vector<Seed> seeds;
+    const float offset = density / 2;
+
+    const size_t seeds_per_row = std::floor(bounding_box.width() / density);
+    const size_t seeds_per_column = std::floor(bounding_box.height() / density);
+    const size_t number_of_seeds = std::floor(bounding_box.width() * bounding_box.height() / density);
+
+    if (seeds_per_column == 0 || seeds_per_row == 0 || number_of_seeds == 0)
+        return seeds;
+
+    seeds.reserve(number_of_seeds);
+
+    for (size_t i = 0; i < seeds_per_column; i++)
+    {
+        for (size_t j = 0; j < seeds_per_row; j++)
+        {
+            Spatial2D list = {offset + j * density, offset + i * density};
+            list = bounding_box.min() + list;
+            seeds.emplace_back(list);
+        }
+    }
+    Randomize(seeds, density);
+    CullForestSeeds(seeds);
+    return seeds;
+}
+
+void Generator::Randomize(std::vector<Seed>& seeds, float density, const float factor,
+                          [[maybe_unused]] const float angle) const
 {
     std::random_device x_rd;
     std::random_device y_rd;
@@ -231,9 +278,6 @@ void Generator::Cull(std::vector<Seed>& seeds, const Object& object)
     auto mask = seed_masker_.GetMask().value();
     for (auto& seed : seeds)
     {
-        // auto coord = mask.SpatialToMaskCoordinate(seed.coordinate);
-        // auto value = mask.At(coord);
-
         int x, y;
         x = std::round(seed.coordinate[0] - std::round(map_->GetBoundingBox().min()[0])) * mask.resolution_mult();
         y = std::round(seed.coordinate[1] - std::round(map_->GetBoundingBox().min()[1])) * mask.resolution_mult();
@@ -241,7 +285,25 @@ void Generator::Cull(std::vector<Seed>& seeds, const Object& object)
 
         if (object.IsIntersecting(seed.coordinate) && !is_obstructed)
         {
-            seed.flags |= Active;
+            seed.SetActive();
+        }
+    }
+}
+
+void Generator::CullForestSeeds(std::vector<Seed>& seeds)
+{
+    auto mask = seed_masker_.GetMask().value();
+    for (auto& seed : seeds)
+    {
+        int x, y;
+        x = std::round(seed.coordinate[0] - std::round(map_->GetBoundingBox().min()[0])) * mask.resolution_mult();
+        y = std::round(seed.coordinate[1] - std::round(map_->GetBoundingBox().min()[1])) * mask.resolution_mult();
+        auto is_obstructed = mask.At({x, y}) > 0;
+
+        auto is_inside_map = map_boundary_calculator_.IsCoordinateInsideMap(seed.coordinate);
+        if (!is_obstructed && is_inside_map)
+        {
+            seed.SetActive();
         }
     }
 }
@@ -254,12 +316,16 @@ Generator::Generator(
     float density,
     bool random_initial_classification)
     : map_(map),
-height_map_(height_map),
-diffusion_zones_(diffusion_zones),
-attributes_(attributes),
-density_(density),
-max_growth_radius_(std::ranges::max_element(attributes_,[](const SpeciesAttribute& attr1, const SpeciesAttribute& attr2) {return attr1.growth.max() < attr2.growth.max();})->growth.max()),
-do_random_initial_classification_(random_initial_classification)
+      height_map_(height_map),
+      diffusion_zones_(diffusion_zones),
+      attributes_(attributes),
+      density_(density),
+      max_growth_radius_(std::ranges::max_element(attributes_,
+                                                  [](const SpeciesAttribute& attr1, const SpeciesAttribute& attr2)
+                                                  {
+                                                      return attr1.growth.max() < attr2.growth.max();
+                                                  })->growth.max()),
+      do_random_initial_classification_(random_initial_classification)
 {
 }
 
@@ -297,11 +363,14 @@ void Generator::LabelInitialSeeds()
     {
         /// In order to normalize the height and slope values in the later calculations,
         /// we need to find the highest and lowest height and slope values for each species
-        for (int attr_idx = 0; attr_idx < attributes_.size(); attr_idx++)
+        const auto& offset = map_->GetBoundingBox().min();
+        for (unsigned int attr_idx = 0; attr_idx < attributes_.size(); attr_idx++)
         {
             /// Initializing height and slope values for each species
             auto& seed = seeds_[0];
-            Coord2 seed_coord(std::round(seed.coordinate[0]), std::round(seed.coordinate[1]));
+
+            Coord2 seed_coord(std::round(seed.coordinate[0] - offset[0]), std::round(seed.coordinate[1] - offset[1]));
+
 
             auto height = height_map_->HeightAt(seed_coord);
             auto slope = height_map_->SlopeAt(seed_coord);
@@ -312,26 +381,30 @@ void Generator::LabelInitialSeeds()
             slope_extremities_per_species[attr_idx].max = slope;
         }
 
-        for (int attr_idx = 1; attr_idx < attributes_.size(); attr_idx++)
+
+        for (unsigned int attr_idx = 0; attr_idx < attributes_.size(); attr_idx++)
         {
             /// Finding the actual maximums for each species
 
             auto attr = attributes_[attr_idx];
+            auto& height_w_prev = height_extremities_per_species[attr_idx];
+            auto& slope_w_prev = height_extremities_per_species[attr_idx];
 
-            for (auto seed_idx : initial_set_indices_)
+
+            for (auto& seed_idx : initial_set_indices_)
             {
                 auto& seed = seeds_[seed_idx];
-                Coord2 seed_coord(std::round(seed.coordinate[0]), std::round(seed.coordinate[1]));
-
-                auto height = height_map_->HeightAt(seed_coord);
-                auto slope = height_map_->SlopeAt(seed_coord);
-
-                auto height_w = attr.elevation.CalcDistribution(height);
-                auto slope_w = attr.slope.CalcDistribution(slope);
 
 
-                auto& height_w_prev = height_extremities_per_species[attr_idx];
-                auto& slope_w_prev = height_extremities_per_species[attr_idx];
+                Coord2 seed_coord(std::round(seed.coordinate[0] - offset[0]),
+                                  std::round(seed.coordinate[1] - offset[1]));
+
+                const auto height = height_map_->HeightAt(seed_coord);
+                const auto slope = height_map_->SlopeAt(seed_coord);
+
+                const auto height_w = attr.elevation.CalcDistribution(height);
+                const auto slope_w = attr.slope.CalcDistribution(slope);
+
 
                 if (height_w_prev.min > height_w)
                 {
@@ -354,10 +427,12 @@ void Generator::LabelInitialSeeds()
         }
     }
 
+
     for (auto& seed_idx : initial_set_indices_)
     {
         auto& seed = seeds_[seed_idx];
-        Coord2 seed_coord(static_cast<int>(std::round(seed.coordinate[0])), static_cast<int>(std::round(seed.coordinate[1])));
+        auto offset = map_->GetBoundingBox().min();
+        Coord2 seed_coord(std::round(seed.coordinate[0] - offset[0]), std::round(seed.coordinate[1] - offset[1]));
 
         size_t max_idx = 0;
         float max_value = 0.f;
@@ -386,6 +461,7 @@ void Generator::LabelInitialSeeds()
 
             if (height_map_)
             {
+                // DLOG_F(INFO,"Height map used");
                 auto height_w = attr.elevation.CalcDistribution(height_map_->HeightAt(seed_coord));
                 auto slope_w = attr.slope.CalcDistribution(height_map_->SlopeAt(seed_coord));
                 height_w_normalized = (height_extremities_per_species[attr_idx].max - height_w) / (
@@ -450,10 +526,6 @@ void Generator::LabelRestOfSeeds()
         float query[] = {seeds_[seed_idx].coordinate[0], seeds_[seed_idx].coordinate[1]};
         initial_tree.findNeighbors(result_set, &query[0]);
 
-        for (size_t idx = 0; idx < kKnn_number; idx++)
-        {
-            // LOG_S(INFO) << ret_index[idx]  << "\t" << out_dist_sqr[idx];
-        }
 
         std::vector<int> species_counters(attributes_.size(), 0);
         for (size_t idx = 0; idx < result_set.size(); idx++)
@@ -461,7 +533,6 @@ void Generator::LabelRestOfSeeds()
             ++species_counters[seeds_[ret_index[idx]].species_id];
         }
         auto majority_idx = std::ranges::distance(species_counters.begin(), std::ranges::max_element(species_counters));
-        // LOG_S(INFO) << seed_idx << " GOT " << majority_idx;
         seeds_[seed_idx].species_id = majority_idx;
         seeds_[seed_idx].flags |= Classified;
     }
@@ -570,7 +641,11 @@ void Generator::MaximizeCoveredAreaOfSubgraph(std::vector<Constraints>& constrai
         {
             auto y = l.y;
             auto b = l.b;
-            size_t y_idx = std::ranges::distance(constraints.begin(),std::ranges::find_if(constraints,[y](const auto& c) { return c.x == y; }));
+            size_t y_idx = std::ranges::distance(constraints.begin(),
+                                                 std::ranges::find_if(constraints, [y](const auto& c)
+                                                 {
+                                                     return c.x == y;
+                                                 }));
 
             for (size_t idx = 0; idx < constraints.size(); idx++)
             {
@@ -586,11 +661,19 @@ void Generator::MaximizeCoveredAreaOfSubgraph(std::vector<Constraints>& constrai
         ++x_idx;
     }
 
-    auto opt_radii = MaximizeSeedRadii(radii, bnd_lower, bnd_upper, number_of_linear_constraints, radii.size() + 1,lin_constr);
+    auto opt_radii = MaximizeSeedRadii(radii, bnd_lower, bnd_upper, number_of_linear_constraints, radii.size() + 1,
+                                       lin_constr);
     size_t idx = 0;
     for (const auto& c : constraints)
     {
-        seeds_[c.x].scale = static_cast<float>(opt_radii[idx++]);
+        if (opt_radii[idx] == 0.f)
+        {
+            seeds_[c.x].SetInactive();
+        }
+        else
+        {
+            seeds_[c.x].scale = static_cast<float>(opt_radii[idx++]);
+        }
     }
 }
 
@@ -699,4 +782,9 @@ std::vector<double> Generator::MaximizeSeedRadii(std::vector<double> radii, std:
         std::cout << "ALGLIB Error: " << e.msg << std::endl;
     }
     return opt_radii;
+}
+
+std::vector<Seed>& Generator::attributes()
+{
+    return attributes();
 }

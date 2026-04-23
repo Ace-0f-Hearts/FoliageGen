@@ -6,10 +6,12 @@
 #include <cassert>
 #include <iostream>
 #define LOGURU_WITH_STREAMS 1
+#include <list>
 #include <loguru.hpp>
 #include <spatial/poly_path.h>
 
-#include "utility/not_implemented_error.h"
+#include <utility/not_implemented_error.h>
+
 
 bool Spatial::PolyPath::IsClosed() const
 {
@@ -124,6 +126,16 @@ const std::vector<Spatial::Spatial2D>& Spatial::PolyPath::points() const
 size_t Spatial::PolyPath::size() const
 {
     return points_.size();
+}
+
+std::list<Spatial::Spatial2D> Spatial::PolyPath::GetPoints() const
+{
+    std::list<Spatial2D> points;
+    for (auto p : points_)
+    {
+        points.emplace_back(p);
+    }
+    return points;
 }
 
 void Spatial::PolyPath::SetPoints(const std::vector<Spatial2D>& points)

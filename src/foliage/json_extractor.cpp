@@ -7,20 +7,18 @@
 #include <loguru.hpp>
 
 
-
 std::vector<SpeciesAttribute> JsonExtractor::ExtractSpeciesAttributes(Value& root)
 {
     std::vector<SpeciesAttribute> attributes;
-    for (auto item: root)
+    for (auto item : root)
     {
-
         const auto id = item["id"].asUInt();
         const auto name = item["name"].asString();
         const auto growth_radius = ParseRange(item["growth_radius"]);
         const auto slope = ParseGaussian(item["slope"]);
         const auto elevation = ParseGaussian(item["elevation"]);
 
-        SpeciesAttribute attr{id,name,growth_radius,slope,elevation};
+        SpeciesAttribute attr{id, name, growth_radius, slope, elevation};
         attributes.push_back(attr);
     }
 
@@ -48,12 +46,11 @@ Gaussian JsonExtractor::ParseGaussian(Value& root)
         throw std::runtime_error("Couldn't parse Gaussian value. Item was instead: " + root.toStyledString());
     }
 
-    return Gaussian{peak,avg,deviation};
+    return Gaussian{peak, avg, deviation};
 }
 
 Range JsonExtractor::ParseRange(Value& root)
 {
-
     float min, max;
     if (root.isArray())
     {
@@ -70,13 +67,13 @@ Range JsonExtractor::ParseRange(Value& root)
         throw std::runtime_error("Couldn't parse Range value. Item was instead: " + root.toStyledString());
     }
 
-    return Range{min,max};
+    return Range{min, max};
 }
 
 std::vector<SymbolAttribute> JsonExtractor::ExtractSymbolAttributes(Value& root)
 {
     std::vector<SymbolAttribute> attributes;
-    for (auto item: root)
+    for (auto item : root)
     {
         attributes.push_back(ParseSymbolAttribute(item));
     }
@@ -99,7 +96,7 @@ SymbolAttribute JsonExtractor::ParseSymbolAttribute(Value& root)
     {
         throw std::runtime_error("Couldn't parse SymbolAttribute. Item was instead: " + root.toStyledString());
     }
-    return SymbolAttribute{id,flags,radius};
+    return SymbolAttribute{id, flags, radius};
 }
 
 std::vector<DiffusionZone> JsonExtractor::ExtractDiffusionZones(Value& root)
@@ -125,5 +122,5 @@ DiffusionZone JsonExtractor::ParseDiffusionZone(Value& root)
         throw std::runtime_error("Couldn't parse DiffusionZone. Item was instead: " + root.toStyledString());
     }
 
-    return DiffusionZone{{x,y},r,id};
+    return DiffusionZone{{x, y}, r, id};
 }

@@ -17,14 +17,14 @@ HeightMap::HeightMap(const CImg<>& height_map, const float horizontal_scale, con
 
 };
 
-float HeightMap::HeightAt(const Coord2 coord) const
+float HeightMap::HeightAt(const Coord2& coord) const
 {
     assert(coord.x >= 0 && coord.y >= 0 && coord.x < map().width() && coord.y < map().height());
-
+    // DLOG_S(INFO) <<  At_(coord) * vertical_scale() << "\t" << "Calculated at " << coord;
     return At_(coord) * vertical_scale();
 }
 
-Spatial::Spatial3D HeightMap::NormalVecAt(const Coord2 coord) const
+Spatial::Spatial3D HeightMap::NormalVecAt(const Coord2& coord) const
 {
     const auto h11 = HeightAt(coord);
     const auto h01 = HeightAtOrValue(coord - Coord2{1,0},h11);
@@ -39,8 +39,9 @@ Spatial::Spatial3D HeightMap::NormalVecAt(const Coord2 coord) const
     return Normalize(cross);
 }
 
-float HeightMap::SlopeAt(const Coord2 coord) const
+float HeightMap::SlopeAt(const Coord2& coord) const
 {
+
     const auto normal = NormalVecAt(coord);
     const float dot = Dot(normal,kUp);
     assert(!std::isnan(dot));
@@ -48,7 +49,7 @@ float HeightMap::SlopeAt(const Coord2 coord) const
     return result;
 }
 
-float HeightMap::HeightAtOrValue(const Coord2 coord, const float value) const
+float HeightMap::HeightAtOrValue(const Coord2& coord, const float value) const
 {
     if (coord.x < 0 || coord.y < 0 || coord.x >= map().width() || coord.y >= map().height())
     {

@@ -29,6 +29,10 @@ struct Seed
     [[nodiscard]] bool IsInitial() const {return flags & Initial; };
     [[nodiscard]] bool IsClassified() const { return flags & Classified; };
 
+    void SetInactive() { flags &= ~Active; };
+    void SetActive() { flags |= Active; };
+
+
     float DistanceTo(const Seed& other) const
     {
         float dist = coordinate.DistanceTo(other.coordinate);

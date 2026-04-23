@@ -1,0 +1,80 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Default",
+      "inherits": "vcpkg",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      },
+      "environment": {
+        "VCPKG_ROOT": "./vcpkg"
+      }
+    },
+    {
+      "inherits": "default",
+      "name": "debug",
+      "displayName": "Debug",
+      "description": "Build as Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+
+    },
+    {
+      "inherits": [
+        "default",
+        "debug"
+      ],
+      "name": "dev",
+      "displayName": "Developer",
+      "description": "Build as Debug, with warnings enabled.",
+      "cacheVariables": {
+        "ENABLE_WARNINGS": "TRUE"
+      },
+      "warnings": {
+        "dev": true,
+        "deprecated": true,
+        "uninitialized": true,
+        "systemVars": true
+      },
+      "errors": {
+        "dev": true,
+        "deprecated": true
+      }
+    },
+    {
+      "inherits": "default",
+      "name": "release",
+      "displayName": "Release",
+      "description": "Build as Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug",
+      "jobs": 4,
+      "targets": "App"
+    },
+    {
+      "name": "dev",
+      "configurePreset": "dev",
+      "jobs": 4,
+      "targets": "App"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "jobs": 4,
+      "targets": "App"
+    }
+  ]
+}

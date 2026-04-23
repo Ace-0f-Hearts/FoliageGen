@@ -22,11 +22,14 @@ public:
     TextureMap(CImg<> const& map);
     ~TextureMap() = default;
     [[nodiscard]] Dim2 Dim() const;
+    [[nodiscard]] int Width() const;
+    [[nodiscard]] int Height() const;
+    [[nodiscard]] const CImg<>& map() const;
+    [[nodiscard]] CImg<>& map();
 protected:
     [[nodiscard]] float At_(Coord2 const& coord) const;
     void At_(Coord2 const& coord, float value);
-    [[nodiscard]] CImg<> map() const;
-    [[nodiscard]] CImg<>& map();
+
 private:
     CImg<> map_;
 };

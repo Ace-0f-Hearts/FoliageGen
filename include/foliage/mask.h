@@ -24,7 +24,7 @@ public:
     void At(Coord2 const& coord, int value, int  channel = 0);
     Coord2 SpatialToMaskCoordinate(Spatial::Spatial2D const& coord) const;
 
-    void Write(std::filesystem::path path);
+    void Write(const std::filesystem::path& path) const;
 
     float resolution_mult() const;
     float x_offset() const;

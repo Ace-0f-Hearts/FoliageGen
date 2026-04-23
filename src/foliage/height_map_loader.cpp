@@ -7,7 +7,6 @@
 HeightMap HeightMapLoader::LoadHeightMap(std::filesystem::path path)
 {
     CImg img(path.c_str());
-    // TODO: Add scaling
     return HeightMap(std::move(img));
 }
 

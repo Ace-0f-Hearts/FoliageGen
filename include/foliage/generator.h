@@ -12,6 +12,10 @@
 #include <spatial/bounding_box.h>
 #include <orienteering/object.h>
 
+#include <botanics_math/range.h>
+#include <botanics_math/gaussian.h>
+#include <botanics_math/dim.h>
+#include <botanics_math/coord.h>
 #include <foliage/diffusion_zone.h>
 #include <foliage/height_map.h>
 #include <foliage/seed.h>
@@ -21,6 +25,7 @@
 #include <nanoflann.hpp>
 
 #include "foliage_map.h"
+#include "map_boundary_calculator.h"
 #include "mask.h"
 
 
@@ -89,6 +94,7 @@ public:
 
     [[nodiscard]] std::vector<Seed> seeds();
     [[nodiscard]] std::vector<Seed>& seeds_ref();
+    [[nodiscard]] std::vector<Seed>& attributes();
 
     [[nodiscard]] size_t amount_of_seeds() const;
     [[nodiscard]] size_t amount_of_active_seeds() const;
@@ -110,10 +116,11 @@ private:
 
     void InitializeSeeds();
     [[nodiscard]] std::vector<Seed> InitializeSeedsOnObject(float density, const Object& object);
+    [[nodiscard]] std::vector<Seed> InitializeSeedsOnForestAreas(float density);
     void PurgeInactiveSeeds();
     void Randomize(std::vector<Seed>& seeds, float density, float factor = 1.f, float angle = 0) const;
     void Cull(std::vector<Seed>& seeds, const Object& area);
-
+    void CullForestSeeds(std::vector<Seed>& seeds);
 
     void ChooseInitialSeeds();
     void LabelInitialSeeds();
@@ -133,7 +140,7 @@ private:
     std::vector<DiffusionZone> diffusion_zones_;
     std::vector<SpeciesAttribute> attributes_;
 
-    static constexpr float kInitial_percentage{0.1f};
+    static constexpr float kInitial_percentage{0.2f};
     static constexpr int kKnn_number{3};
 
     float density_;
@@ -146,6 +153,7 @@ private:
     std::vector<size_t> initial_set_indices_;
 
     MaskMaker seed_masker_;
+    MapBoundaryCalculator map_boundary_calculator_;
 };
 
 

@@ -9,7 +9,9 @@
 #include <utility>
 #include <foliage/generator.h>
 
+#include "foliage/foliage_snapshot_maker.h"
 #include "foliage/global_settings.h"
+#include "foliage/map_writer.h"
 
 using string = std::string;
 
@@ -49,7 +51,19 @@ void App::Init()
         auto value = json_parser_.GetAttributes();
         json_parser_.Cleanup();
         auto attributes = JsonExtractor::ExtractSpeciesAttributes(value);
+        number_of_attributes_ = attributes.size();
         DLOG_F(INFO,"Species descriptors extracted");
+
+        DLOG_F(INFO,"Height map loading started ");
+
+        if (settings_.height_map_file.has_value())
+        {
+            CImg<> hm;
+            hm.load(settings_.height_map_file.value().c_str());
+            height_map_ = std::make_shared<HeightMap>(hm);
+        }
+
+        DLOG_F(INFO,"Height map loading finished");
 
 
         DLOG_F(INFO,"Symbol set extraction started");
@@ -66,6 +80,9 @@ void App::Init()
         DLOG_F(INFO,"Map parsing started");
         map_parser_.Run(settings_.ocad_map_file->c_str(), symbol_set);
         DLOG_F(INFO,"Map parsing successful");
+
+
+
 
         std::vector<DiffusionZone> zones;
         if (settings_.random_diffusion_zones.value() > 0)
@@ -122,13 +139,47 @@ void App::Generate()
 
         auto seeds = generator_builder_.generator()->seeds();
 
+        if (settings_.save_foliage_img)
+        {
+            LOG_S(INFO) << "Saving foliage img";
+            auto bbox = map_->GetBoundingBox();
+            auto snap = FoliageSnapshotMaker(1.f, bbox);
+            LOG_S(INFO) << bbox.width() << " : " << bbox.height();
+            snap.RasterizeObjects(map_->GetObjectsOfType(PathO | AreaO), bbox);
+            snap.RasterizeSeeds(seeds, bbox,number_of_attributes_);
+
+            MapWriter::Write(snap.GetMap(),settings_.foliage_img_file.value());
+        }
+
         auto value = JsonBuilder::FromGeneratedDataVec(seeds);
-        settings_.output_file = "../../testing/seeds.json";
-        JsonWriter::Run(*settings_.output_file,value);
+        JsonWriter::Run(*settings_.instances_output_file,value);
+
 
         LOG_F(INFO,"Generation successful");
-
     }
+
+    if (settings_.map_data_output_file.has_value())
+    {
+        auto offset = map_->GetBoundingBox().min();
+        MapData data {map_->GetBoundingBox().width(),map_->GetBoundingBox().height(),offset[0],offset[1]};
+
+        auto value = JsonBuilder::FromMapData(data);
+        JsonWriter::Run(*settings_.map_data_output_file,value);
+    }
+
+    {
+        OutputConfig output_config;
+        output_config.heightMap = settings_.height_map_file.value_or("");
+        output_config.mapData = settings_.map_data_output_file.value();
+        output_config.instances = settings_.instances_output_file.value();
+        output_config.species = settings_.species_file.value();
+
+        auto value = JsonBuilder::FromConfig(output_config);
+        JsonWriter::Run(*settings_.output_config_file,value);
+    }
+
+
+
 
     DLOG_F(INFO,"Generation ended");
 }
@@ -136,5 +187,7 @@ void App::Generate()
 void App::Cleanup()
 {
     DLOG_F(INFO,"App cleanup started");
+
+
     DLOG_F(INFO,"App cleanup successful");
 }

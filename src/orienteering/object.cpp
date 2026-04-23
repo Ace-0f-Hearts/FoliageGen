@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <list>
 #include <orienteering/object.h>
 
 #include <stdexcept>
@@ -101,3 +102,7 @@ BoundingBox2D Object::bounding_box() const
     return bounding_box_;
 }
 
+std::list<Spatial::Spatial2D> Object::GetPoints() const
+{
+    return coordinates_.GetPoints();
+}

@@ -47,6 +47,7 @@ namespace Orienteering
         [[nodiscard]] size_t GetObjectAmount() const;
         [[nodiscard]] size_t GetObjectOfSymbolAmount(Symbol* symbol) const;
 
+        [[nodiscard]] std::vector<Object*> GetObjects() const;
         [[nodiscard]] std::vector<Object*> GetObjectsOfType(ObjectType type) const;
         [[nodiscard]] std::vector<Object*> GetObjectsOfType(uint8_t type) const;
         [[nodiscard]] std::vector<Object*> GetObstructingObjects() const;
@@ -56,9 +57,9 @@ namespace Orienteering
         Symbol* GetSymbolById(size_t id);
         [[nodiscard]] BoundingBox2D GetBoundingBox() const;
 
-        [[nodiscard]] std::vector<std::shared_ptr<MapColor>>& GetColors();
-        [[nodiscard]] std::vector<std::unique_ptr<Symbol>>& GetSymbols();
-        [[nodiscard]] std::vector<std::unique_ptr<Object>>& GetObjects();
+        [[nodiscard]] std::vector<std::shared_ptr<MapColor>>& colors();
+        [[nodiscard]] std::vector<std::unique_ptr<Symbol>>& symbols();
+        [[nodiscard]] std::vector<std::unique_ptr<Object>>& objects();
         void UpdateBoundingBox();
 
         void ClearSymbols();

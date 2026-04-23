@@ -12,6 +12,8 @@
 #include "spatial/bounding_box.h"
 #include <memory>
 
+#include "map_boundary_calculator.h"
+
 
 class FoliageSnapshotMaker
 {
@@ -19,9 +21,9 @@ public:
 
     FoliageSnapshotMaker(float resolution_mult, const BoundingBox2D& bbox, float default_value = 500);
 
-    void RasterizeSeeds(std::vector<Seed>& seeds, const BoundingBox2D& bbox, size_t number_of_species);
+    void RasterizeSeeds(const std::vector<Seed>& seeds, const BoundingBox2D& bbox, size_t number_of_species);
     void RasterizeObjects(const std::vector<Object*>& areas, const BoundingBox2D& bbox, bool write_id = false, bool write_cmyk = false);
-
+    void RasterizeUnmarkedForests(const MapBoundaryCalculator& boundary, const BoundingBox2D& bbox);
     FoliageMap& GetMap();
 private:
     glm::vec3 GetColorValue(size_t point, size_t number_of_species);

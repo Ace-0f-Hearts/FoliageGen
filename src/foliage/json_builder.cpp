@@ -21,16 +21,31 @@ Json::Value JsonBuilder::FromGeneratedData(const Seed& data)
 
 Json::Value JsonBuilder::FromGeneratedDataVec(const std::vector<Seed>& datas)
 {
-
     Json::Value result = Json::arrayValue;
-    int idx = 0;
     for (const auto& data : datas)
     {
-
         result.append(FromGeneratedData(data));
     }
 
     return result;
 }
 
+Json::Value JsonBuilder::FromMapData(const MapData data)
+{
+    Json::Value result = Json::objectValue;
+    result["width"] = data.width;
+    result["height"] = data.height;
+    result["h_offset"] = data.h_offset;
+    result["v_offset"] = data.v_offset;
+    return result;
+}
 
+Json::Value JsonBuilder::FromConfig(const OutputConfig output)
+{
+    Json::Value result = Json::objectValue;
+    result["instances"] = output.instances.string();
+    result["height_map"] = output.heightMap.string();
+    result["map_data"] = output.mapData.string();
+    result["species"] = output.species.string();
+    return result;
+}

@@ -8,6 +8,8 @@
 #include <loguru.hpp>
 #include <spatial/segmented_path.h>
 #include <cassert>
+#include <list>
+
 #include "utility/not_implemented_error.h"
 
 
@@ -24,6 +26,17 @@ bool Spatial::SegmentedPath::IsPointInsideArea(const Spatial2D& point) const
     }
 
     return inside;
+}
+
+std::list<Spatial::Spatial2D> Spatial::SegmentedPath::GetPoints() const
+{
+    std::list<Spatial::Spatial2D> points;
+    for (const auto& path : paths())
+    {
+        auto p = path.GetPoints();
+        points.insert(points.end(), p.begin(), p.end());
+    }
+    return points;
 }
 
 bool Spatial::SegmentedPath::IsPointOnPath(const Spatial2D& point, float distance_threshold) const

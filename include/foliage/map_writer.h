@@ -18,7 +18,7 @@ class MapWriter
 
 
 };
-static const std::string kDefault_path = "../../testing/snapshot.jpeg";
+static const std::string kDefault_path = "./snapshot.jpeg";
 
 inline void MapWriter::Write(FoliageMap map)
 {

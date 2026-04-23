@@ -29,11 +29,23 @@ void TextureMap::At_(Coord2 const& coord, float value)
     map_(coord.x, coord.y) = value;
 }
 
-CImg<> TextureMap::map() const
+
+const CImg<>& TextureMap::map() const
 {
     return map_;
 }
+
 CImg<>& TextureMap::map()
 {
     return map_;
+}
+
+int TextureMap::Width() const
+{
+    return map_.width();
+}
+
+int TextureMap::Height() const
+{
+    return map_.height();
 }

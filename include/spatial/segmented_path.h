@@ -3,6 +3,7 @@
 
 #ifndef PROCEDURALFOLIAGEGENERATOR_PATH_PART_H
 #define PROCEDURALFOLIAGEGENERATOR_PATH_PART_H
+#include <list>
 #include <vector>
 
 #include "bounding_box.h"
@@ -23,6 +24,7 @@ namespace Spatial
 
         [[nodiscard]] bool Contains(const Spatial2D& point) const;
 
+        std::list<Spatial2D> GetPoints() const;
 
         BoundingBox<2> ComputeBoundingBox() const;
         void SetPoints(const std::vector<Spatial2D>& points);

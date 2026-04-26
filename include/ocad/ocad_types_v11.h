@@ -41,8 +41,8 @@ namespace Ocad
             using IndexEntryType = SymbolIndexEntry;
 
 
-            i32 size;
-            i32 sym_num;
+            u32 size;
+            u32 sym_num;
             u8 object_type;
             u8 flags;
             u8 selected;

@@ -107,10 +107,10 @@ namespace Ocad
             u8 cs_mode;
             u8 cs_type;
             u8 cd_flags;
-            u32 extent;
-            u32 file_pos;
+            i32 extent;
+            i32 file_pos;
             u16 group;
-            u16 num_colors;
+            i16 num_colors;
             u16 colors[14];
             Generic::PascalString<31> name;
             Icon icon;

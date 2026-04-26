@@ -57,10 +57,10 @@ namespace Ocad
             u8 customer;
             i16 angle;
             i32 color; // Graphics relevant
-            i16 line_width; // Graphics relevant
-            i16 diam_flags; // Graphics relevant
-            i32 server_object_id;
-            i32 height;
+            u16 line_width; // Graphics relevant
+            u16 diam_flags; // Graphics relevant
+            u32 server_object_id;
+            u32 height;
             u64 creation_date;
             u32 multi_rep_id;
             u64 modification_date;

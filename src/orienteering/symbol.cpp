@@ -176,3 +176,8 @@ void Orienteering::Symbol::SetColor(std::shared_ptr<MapColor>& color)
 {
     color_ = color;
 }
+
+Orienteering::Symbol::~Symbol()
+{
+    color_.reset();
+}

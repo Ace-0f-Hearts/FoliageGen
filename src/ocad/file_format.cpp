@@ -8,7 +8,7 @@
 
 #include "orienteering/symbol_attribute.h"
 
-FileFormat::FileFormat(std::string name,std::vector<string> extensions) : name_(name),extensions_(std::move(extensions))
+FileFormat::FileFormat(std::string name,std::vector<std::string> extensions) : name_(name),extensions_(std::move(extensions))
 {
 }
 
@@ -26,12 +26,8 @@ bool FileFormat::UnderstandsHeader(const char* buffer, int total_read) const
     return false;
 }
 
-std::vector<FileFormat::string> FileFormat::extensions() const
-{
-    return extensions_;
-}
 
-std::vector<FileFormat::string> FileFormat::extensions()
+std::vector<std::string> const& FileFormat::extensions() const
 {
     return extensions_;
 }

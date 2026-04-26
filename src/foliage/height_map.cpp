@@ -6,7 +6,7 @@
 #include <loguru.hpp>
 #include <foliage/height_map.h>
 
-#include "spatial/spatial_coordinates.h"
+#include "spatial/spatial_coordinate.h"
 
 using namespace Spatial;
 

@@ -108,18 +108,18 @@ void MaskMaker::MaskObjects(std::vector<Object*> objects)
     }
     for (const auto& obj : objects)
     {
-        size_t width = std::ceil(obj->bounding_box().width() * mask_resolution_);
-        size_t height = std::ceil(obj->bounding_box().height() * mask_resolution_);
+        int width = std::ceil(obj->bounding_box().width() * mask_resolution_);
+        int height = std::ceil(obj->bounding_box().height() * mask_resolution_);
 
         float fi = 0.f;
-        for (size_t i = 0; i < width; i++, fi += 1.0f / mask_resolution_)
+        for (int i = 0; i < width; i++, fi += 1.0f / mask_resolution_)
         {
             float fj = 0.f;
-            for (size_t j = 0; j < height; j++, fj += 1.0f / mask_resolution_)
+            for (int j = 0; j < height; j++, fj += 1.0f / mask_resolution_)
             {
                 int x, y;
-                x = i + x_offset + std::round(obj->bounding_box().min()[0] * mask_resolution_);
-                y = j + y_offset + std::round(obj->bounding_box().min()[1] * mask_resolution_);
+                x = std::clamp(i + x_offset + static_cast<int>(std::round(obj->bounding_box().min()[0] * mask_resolution_)),0,mask_->width() -1);
+                y = std::clamp(j + y_offset + static_cast<int>(std::round(obj->bounding_box().min()[1] * mask_resolution_)),0, mask_->height() -1);
 
                 Spatial::Spatial2D pix({
                     static_cast<float>(i / mask_resolution_), static_cast<float>(j / mask_resolution_)

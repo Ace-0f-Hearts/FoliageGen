@@ -8,7 +8,7 @@
 #include <boost/heap/priority_queue.hpp>
 #include <loguru.hpp>
 #include <spatial/quadtree.h>
-#include <spatial/spatial_coordinates.h>
+#include <spatial/spatial_coordinate.h>
 #include <spatial/bounding_box.h>
 
 #include <utility/not_implemented_error.h>

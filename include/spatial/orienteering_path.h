@@ -6,7 +6,7 @@
 #define PROCEDURALFOLIAGEGENERATOR_OCAD_BEZIER_H
 #include <vector>
 
-#include "../ocad/ocad_coordinate.h"
+#include "object_coordinate.h"
 
 namespace Spatial
 {

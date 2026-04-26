@@ -1,31 +1,26 @@
 [
   {
-    "id": 101,
+    "id": 101000,
     "flags": 8,
     "radius": 0
   },
   {
-    "id": 101,
+    "id": 102000,
     "flags": 8,
     "radius": 0
   },
   {
-    "id": 102,
+    "id": 103000,
     "flags": 8,
     "radius": 0
   },
   {
-    "id": 103,
+    "id": 104000,
     "flags": 8,
     "radius": 0
   },
   {
-    "id": 104,
-    "flags": 8,
-    "radius": 0
-  },
-  {
-    "id": 106,
+    "id": 106000,
     "flags": 8,
     "radius": 0
   },
@@ -56,12 +51,12 @@
     "radius": 0
   },
   {
-    "id": 107,
+    "id": 107000,
     "flags": 8,
     "radius": 0
   },
   {
-    "id": 108,
+    "id": 108000,
     "flags": 8,
     "radius": 0
   },
@@ -72,37 +67,37 @@
   },
 
   {
-    "id": 109,
+    "id": 109000,
     "flags": 8,
     "radius": 0
   },
 
   {
-    "id": 110,
+    "id": 110000,
     "flags": 8,
     "radius": 0
   },
 
   {
-    "id": 112,
+    "id": 112000,
     "flags": 8,
     "radius": 0
   },
 
   {
-    "id": 113,
+    "id": 113000,
     "flags": 8,
     "radius": 0
   },
 
   {
-    "id": 115,
+    "id": 115000,
     "flags": 8,
     "radius": 0
   },
 
   {
-    "id": 116,
+    "id": 116000,
     "flags": 8,
     "radius": 0
   },
@@ -120,12 +115,12 @@
   },
 
   {
-    "id": 118,
+    "id": 118000,
     "flags": 8,
     "radius": 0
   },
   {
-    "id": 201,
+    "id": 201000,
     "flags": 1,
     "radius": 3
   },
@@ -150,12 +145,12 @@
     "radius": 2
   },
     {
-    "id": 202,
+    "id": 202000,
     "flags": 1,
     "radius": 0
   },
   {
-    "id": 203,
+    "id": 203000,
     "flags": 1,
     "radius": 3
   },
@@ -185,17 +180,17 @@
     "radius": 3
   },
   {
-    "id": 204,
+    "id": 204000,
     "flags": 1,
     "radius": 3
   },
   {
-    "id": 205,
+    "id": 205000,
     "flags": 1,
     "radius": 3
   },
   {
-    "id": 206,
+    "id": 206000,
     "flags": 1,
     "radius": 3
   },
@@ -205,12 +200,12 @@
     "radius": 3
   },
   {
-    "id": 207,
+    "id": 207000,
     "flags": 1,
     "radius": 3
   },
   {
-    "id": 208,
+    "id": 208000,
     "flags": 1,
     "radius": 3
   },
@@ -220,7 +215,7 @@
     "radius": 3
   },
   {
-    "id": 209,
+    "id": 209000,
     "flags": 1,
     "radius": 3
   },
@@ -230,7 +225,7 @@
     "radius": 3
   },
   {
-    "id": 210,
+    "id": 210000,
     "flags": 1,
     "radius": 3
   },
@@ -245,17 +240,17 @@
     "radius": 3
   },
   {
-    "id": 211,
+    "id": 211000,
     "flags": 1,
     "radius": 0
   },
   {
-    "id": 212,
+    "id": 212000,
     "flags": 1,
     "radius": 0
   },
   {
-    "id": 301,
+    "id": 301000,
     "flags": 1,
     "radius": 0
   },
@@ -270,12 +265,12 @@
     "radius": 0
   },
   {
-    "id": 302,
+    "id": 302000,
     "flags": 1,
     "radius": 0
   },
   {
-    "id": 303,
+    "id": 303000,
     "flags": 1,
     "radius": 4
   },
@@ -305,7 +300,7 @@
     "radius": 0
   },
   {
-    "id": 305,
+    "id": 305000,
     "flags": 1,
     "radius": 5
   },
@@ -315,22 +310,22 @@
     "radius": 0
   },
   {
-    "id": 306,
+    "id": 306000,
     "flags": 1,
     "radius": 3
   },
   {
-    "id": 307,
+    "id": 307000,
     "flags": 1,
     "radius": 2
   },
   {
-    "id": 308,
+    "id": 308000,
     "flags": 1,
     "radius": 1.5
   },
   {
-    "id": 309,
+    "id": 309000,
     "flags": 1,
     "radius": 0
   },
@@ -355,7 +350,7 @@
     "radius": 0
   },
   {
-    "id": 310,
+    "id": 310000,
     "flags": 1,
     "radius": 0
   },
@@ -365,7 +360,7 @@
     "radius": 3
   },
   {
-    "id": 311,
+    "id": 311000,
     "flags": 1,
     "radius": 0
   },
@@ -375,47 +370,47 @@
     "radius": 3
   },
   {
-    "id": 312,
+    "id": 312000,
     "flags": 1,
     "radius": 2
   },
   {
-    "id": 313,
+    "id": 313000,
     "flags": 1,
     "radius": 3
   },
   {
-    "id": 314,
+    "id": 314000,
     "flags": 1,
     "radius": 4
   },
   {
-    "id": 401,
+    "id": 401000,
     "flags": 1,
     "radius": 0
   },
   {
-    "id": 402,
+    "id": 402000,
     "flags": 0,
     "radius": 0
   },
   {
-    "id": 403,
+    "id": 403000,
     "flags": 1,
     "radius": 0
   },
   {
-    "id": 404,
+    "id": 404000,
     "flags": 0,
     "radius": 0
   },
   {
-    "id": 405,
+    "id": 405000,
     "flags": 0,
     "radius": 0
   },
   {
-    "id": 406,
+    "id": 406000,
     "flags": 0,
     "radius": 0
   },
@@ -425,12 +420,12 @@
     "radius": 4
   },
   {
-    "id": 407,
+    "id": 407000,
     "flags": 1,
     "radius": 0
   },
   {
-    "id": 408,
+    "id": 408000,
     "flags": 0,
     "radius": 0
   },
@@ -440,12 +435,12 @@
     "radius": 0
   },
   {
-    "id": 409,
+    "id": 409000,
     "flags": 1,
     "radius": 0
   },
   {
-    "id": 410,
+    "id": 410000,
     "flags": 0,
     "radius": 0
   },
@@ -475,52 +470,52 @@
     "radius": 0
   },
   {
-    "id": 412,
+    "id": 412000,
     "flags": 0,
     "radius": 0
   },
   {
-    "id": 413,
+    "id": 413000,
     "flags": 1,
     "radius": 0
   },
   {
-    "id": 414,
+    "id": 414000,
     "flags": 8,
     "radius": 0
   },
   {
-    "id": 415,
+    "id": 415000,
     "flags": 1,
     "radius": 0
   },
   {
-    "id": 416,
+    "id": 416000,
     "flags": 8,
     "radius": 0
   },
   {
-    "id": 418,
+    "id": 418000,
     "flags": 0,
     "radius": 2
   },
   {
-    "id": 419,
+    "id": 419000,
     "flags": 0,
     "radius": 2
   },
   {
-    "id": 420,
+    "id": 420000,
     "flags": 0,
     "radius": 2
   },
   {
-    "id": 421,
+    "id": 421000,
     "flags": 0,
     "radius": 0
   },
   {
-    "id": 421,
+    "id": 421000,
     "flags": 8,
     "radius": 3
   },
@@ -535,7 +530,7 @@
     "radius": 10
   },
   {
-    "id": 502,
+    "id": 502000,
     "flags": 1,
     "radius": 7
   },
@@ -545,7 +540,7 @@
     "radius": 7
   },
   {
-    "id": 503,
+    "id": 503000,
     "flags": 1,
     "radius": 5
   },
@@ -555,17 +550,17 @@
     "radius": 5
   },
   {
-    "id": 504,
+    "id": 504000,
     "flags": 1,
     "radius": 4
   },
   {
-    "id": 505,
+    "id": 505000,
     "flags": 1,
     "radius": 4
   },
   {
-    "id": 506,
+    "id": 506000,
     "flags": 1,
     "radius": 3
   },
@@ -590,22 +585,22 @@
     "radius": 3
   },
   {
-    "id": 507,
+    "id": 507000,
     "flags": 1,
     "radius": 1.5
   },
   {
-    "id": 508,
+    "id": 508000,
     "flags": 1,
     "radius": 1.2
   },
   {
-    "id": 509,
+    "id": 509000,
     "flags": 1,
     "radius": 0.5
   },
   {
-    "id": 512,
+    "id": 512000,
     "flags": 1,
     "radius": 4
   },
@@ -630,22 +625,22 @@
     "radius": 4
   },
   {
-    "id": 515,
+    "id": 515000,
     "flags": 1,
     "radius": 8
   },
   {
-    "id": 516,
+    "id": 516000,
     "flags": 1,
     "radius": 4
   },
   {
-    "id": 517,
+    "id": 517000,
     "flags": 1,
     "radius": 6
   },
   {
-    "id": 518,
+    "id": 518000,
     "flags": 1,
     "radius": 4
   },
@@ -655,7 +650,7 @@
     "radius": 3
   },
   {
-    "id": 519,
+    "id": 519000,
     "flags": 1,
     "radius": 4
   },
@@ -670,12 +665,12 @@
     "radius": 0
   },
   {
-    "id": 520,
+    "id": 520000,
     "flags": 1,
     "radius": 4
   },
   {
-    "id": 521,
+    "id": 521000,
     "flags": 1,
     "radius": 4
   },
@@ -690,7 +685,7 @@
     "radius": 0
   },
   {
-    "id": 522,
+    "id": 522000,
     "flags": 1,
     "radius": 4
   },
@@ -700,22 +695,22 @@
     "radius": 4
   },
   {
-    "id": 523,
+    "id": 523000,
     "flags": 1,
     "radius": 4
   },
   {
-    "id": 524,
+    "id": 524000,
     "flags": 1,
     "radius": 4
   },
   {
-    "id": 525,
+    "id": 525000,
     "flags": 8,
     "radius": 0
   },
   {
-    "id": 526,
+    "id": 526000,
     "flags": 1,
     "radius": 0
   },
@@ -760,7 +755,7 @@
     "radius": 3
   },
   {
-    "id": 527,
+    "id": 527000,
     "flags": 1,
     "radius": 0
   },
@@ -770,7 +765,7 @@
     "radius": 0
   },
   {
-    "id": 528,
+    "id": 528000,
     "flags": 8,
     "radius": 0
   },
@@ -780,7 +775,7 @@
     "radius": 0
   },
   {
-    "id": 529,
+    "id": 529000,
     "flags": 1,
     "radius": 0
   },
@@ -875,7 +870,7 @@
     "radius": 3
   },
   {
-    "id": 530,
+    "id": 530000,
     "flags": 1,
     "radius": 0
   },
@@ -890,52 +885,52 @@
     "radius": 6
   },
   {
-    "id": 532,
+    "id": 532000,
     "flags": 1,
     "radius": 3
   },
   {
-    "id": 533,
+    "id": 533000,
     "flags": 1,
     "radius": 4
   },
   {
-    "id": 534,
+    "id": 534000,
     "flags": 1,
     "radius": 4
   },
   {
-    "id": 535,
+    "id": 535000,
     "flags": 1,
     "radius": 5
   },
   {
-    "id": 536,
+    "id": 536000,
     "flags": 1,
     "radius": 5
   },
   {
-    "id": 537,
+    "id": 537000,
     "flags": 1,
     "radius": 5
   },
   {
-    "id": 538,
+    "id": 538000,
     "flags": 1,
     "radius": 5
   },
   {
-    "id": 531,
+    "id": 531000,
     "flags": 8,
     "radius": 0
   },
   {
-    "id": 539,
+    "id": 539000,
     "flags": 8,
     "radius": 3
   },
   {
-    "id": 540,
+    "id": 540000,
     "flags": 8,
     "radius": 3
   },

@@ -15,84 +15,83 @@ void FoliageSnapshotMaker::RasterizeSeeds(const std::vector<Seed>& seeds, const 
     x_offset = -(std::floor(bbox.min()[0] * kResolution_mult));
     y_offset = -(std::floor(bbox.min()[1] * kResolution_mult));
 
-    int c = 0;
     for (const auto &seed: seeds)
     {
 
-        glm::vec3 value;
-
+        unsigned char r;
+        unsigned char g;
+        unsigned char b;
         if (seed.IsActive())
         {
-            if (seed.IsClassified())
-            {
-                value = GetColorValue(seed.species_id + 1, number_of_species);
-            }
-            else
-            {
-                value = {220.4f,220.4f,220.4f};
-            }
+            float ratio = static_cast<float>(seed.species_id + 1) / static_cast<float>(number_of_species);
+            r = std::round(256.f * ratio);
+            g = std::round(256.f - 256.f * ratio);
+            b = std::round(sin(ratio + (seed.species_id + 1) * M_PI) * 256.f);
         }
         else
         {
-            value = {0.0f, 0.0f, 0.0f};
+            r = 0; g = 0; b = 0;
         }
 
         int x, y;
         x = std::clamp(static_cast<int>(std::round(seed.coordinate[0] * kResolution_mult) + x_offset),0,f_map_.map().width() - 1);
         y = std::clamp(static_cast<int>(std::round(seed.coordinate[1] * kResolution_mult) + y_offset),0,f_map_.map().height() - 1);
 
-        if (seed.scale * kResolution_mult > 1.f)
-        {
-            int x1, y1;
-            for (int i = -seed.scale * std::round(kResolution_mult / 2.f); i < seed.scale * std::round(kResolution_mult / 2.0f); i++)
-            {
-                for (int j = -seed.scale * std::round(kResolution_mult / 2.f); j < seed.scale * std::round(kResolution_mult / 2.0f); j++)
-                {
-                    x1 = x + i;
-                    y1 = y + j;
 
-                    if (x1 < 0 || y1 < 0 || x1 >= f_map_.Dim().x || y1 >= f_map_.Dim().y)
-                        continue;
 
-                    if (std::pow(i,2) + std::pow(j,2) > seed.scale * kResolution_mult)
-                        continue;
-                    f_map_.map()(x1,y1,0,0) = value.x;
-                    f_map_.map()(x1,y1,0,1) = value.y;
-                    f_map_.map()(x1,y1,0,2) = value.z;
-                }
-            }
-        }
-        f_map_.map()(x,y,0,0) = value.x;
-        f_map_.map()(x,y,0,1) = value.y;
-        f_map_.map()(x,y,0,2) = value.z;
+        const unsigned char color[] = {r,g,b};
+        f_map_.map().draw_circle(x,y,seed.scale / 2.f,color);
     }
 
 
 }
 
 
-void FoliageSnapshotMaker::RasterizeObjects(const std::vector<Object*>& areas, const BoundingBox2D& bbox, bool write_id, bool write_cmyk)
+void FoliageSnapshotMaker::RasterizeObjects(const std::vector<Object*>& objects, const BoundingBox2D& bbox, bool write_id, bool write_cmyk)
 {
     int x_offset, y_offset;
 
-    x_offset = -std::floor(bbox.min()[0] * kResolution_mult);
-    y_offset = -std::floor(bbox.min()[1] * kResolution_mult);
+    x_offset = std::floor(bbox.min()[0] * kResolution_mult);
+    y_offset = std::floor(bbox.min()[1] * kResolution_mult);
+    unsigned char disallow[] = {255,0,0};
+    unsigned char allow[] = {0,255,0};
 
-    for (const auto& obj: areas)
+    for (const auto& obj: objects)
     {
+        // if (obj->symbol()->type() == PointS)
+        // {
+        //     auto center = obj->GetPoints().front();
+        //
+        //     int x,y;
+        //     x = std::clamp(static_cast<int>(x_offset + center[0] * kResolution_mult),0,f_map_.map().width()-1);
+        //     y = std::clamp(static_cast<int>(y_offset + center[1] * kResolution_mult),0,f_map_.map().height()-1);
+        //
+        //     if (obj->symbol()->IsObstructing())
+        //     {
+        //         f_map_.map().draw_circle(x,y,obj->symbol()->GetRadiusOfInfluence(),disallow);
+        //     } else
+        //     {
+        //         f_map_.map().draw_circle(x,y,obj->symbol()->GetRadiusOfInfluence(),allow);
+        //     }
+        //     continue;
+        // }
 
-        size_t width = std::ceil(obj->bounding_box().width() * kResolution_mult);
-        size_t height = std::ceil(obj->bounding_box().height() * kResolution_mult);
 
-        for (size_t i = 0; i < width; i++)
+
+        int width = std::ceil(obj->bounding_box().width() * kResolution_mult);
+        int height = std::ceil(obj->bounding_box().height() * kResolution_mult);
+
+        for (int i = 0; i < width; i++)
         {
-            for (size_t j = 0; j < height; j++)
+            for (int j = 0; j < height; j++)
             {
                 Spatial::Spatial2D pix({static_cast<float>(i / kResolution_mult),static_cast<float>(j / kResolution_mult)});
 
-                int x,y;
-                x = std::clamp(static_cast<int>(i + x_offset + std::round(obj->bounding_box().min()[0] * kResolution_mult)),0,f_map_.map().width()-1);
-                y = std::clamp(static_cast<int>(j + y_offset + std::round(obj->bounding_box().min()[1] * kResolution_mult)),0,f_map_.map().height()-1);
+                int x = std::clamp(static_cast<int>(i - x_offset + std::round(obj->bounding_box().min()[0] * kResolution_mult)), 0,
+                                   f_map_.map().width() - 1);
+                int y = std::clamp(static_cast<int>(j - y_offset + std::round(obj->bounding_box().min()[1] * kResolution_mult)), 0,
+                                   f_map_.map().height() - 1);
+
 
                 pix += obj->bounding_box().min();
                 if (obj->IsIntersecting(pix))
@@ -133,36 +132,18 @@ void FoliageSnapshotMaker::RasterizeObjects(const std::vector<Object*>& areas, c
     }
 }
 
-glm::vec3 FoliageSnapshotMaker::GetColorValue(size_t point, size_t number_of_species)
-{
-    glm::vec3 value;
-    float ratio = static_cast<float>(point) / static_cast<float>(number_of_species);
-    value.x = 256.f * ratio;
-    if (point % 2 == 0)
-    {
-        value.y = 256.f * .6f * ratio;
-    }
-    else
-    {
-        value.y = 256.f - 256.f * 0.8f * ratio;
-    }
-
-    value.z = 256.f * ratio - value.x * ratio;
-
-    return value;
-}
 
 void FoliageSnapshotMaker::RasterizeUnmarkedForests(const MapBoundaryCalculator& boundary, const BoundingBox2D& bbox)
 {
     const int x_offset = -std::floor(bbox.min()[0] * kResolution_mult);
     const int y_offset = -std::floor(bbox.min()[1] * kResolution_mult);
 
-    size_t width = std::ceil(bbox.width() * kResolution_mult);
-    size_t height = std::ceil(bbox.height() * kResolution_mult);
+    int width = std::ceil(bbox.width() * kResolution_mult);
+    int height = std::ceil(bbox.height() * kResolution_mult);
 
-        for (size_t i = 0; i < width; i++)
+        for (int i = 0; i < width; i++)
         {
-            for (size_t j = 0; j < height; j++)
+            for (int j = 0; j < height; j++)
             {
                 Spatial::Spatial2D pix({static_cast<float>(i / kResolution_mult),static_cast<float>(j / kResolution_mult)});
 

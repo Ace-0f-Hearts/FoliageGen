@@ -5,7 +5,7 @@
 #define PROCEDURALFOLIAGEGENERATOR_OCAD_COORDINATE_H
 #include <cstdint>
 
-#include <spatial/spatial_coordinates.h>
+#include <spatial/spatial_coordinate.h>
 
 
 
@@ -14,7 +14,7 @@
  * Has a number of flags which can be set to indicate the type of point.
  */
 
-class OcadCoordinate
+class ObjectCoordinate
 {
 public:
 
@@ -28,10 +28,10 @@ public:
     };
 
 
-    OcadCoordinate() = default;
-    OcadCoordinate(Spatial::Spatial2D& coordinate, uint8_t flags = 0);
-    OcadCoordinate(Spatial::Spatial2D coordinate, uint8_t flags = 0);
-    OcadCoordinate(const OcadCoordinate& coordinate);
+    ObjectCoordinate() = default;
+    ObjectCoordinate(Spatial::Spatial2D& coordinate, uint8_t flags = 0);
+    ObjectCoordinate(Spatial::Spatial2D coordinate, uint8_t flags = 0);
+    ObjectCoordinate(const ObjectCoordinate& coordinate);
 
     void SetClosePoint(bool set);
     void SetHolePoint(bool set);
@@ -40,7 +40,7 @@ public:
     void SetDashPoint(bool set);
 
     [[nodiscard]] bool PositionEqualTo(const Spatial::Spatial2D& coordinate ) const;
-    [[nodiscard]] bool PositionEqualTo(const OcadCoordinate& rhs) const;
+    [[nodiscard]] bool PositionEqualTo(const ObjectCoordinate& rhs) const;
 
     void SetFlags(uint8_t flags);
     [[nodiscard]] bool IsHolePoint() const;
@@ -59,7 +59,7 @@ private:
     uint8_t flags_ = 0;
 };
 
-inline std::ostream& operator<<(std::ostream& os, const OcadCoordinate& coordinate)
+inline std::ostream& operator<<(std::ostream& os, const ObjectCoordinate& coordinate)
 {
     os << coordinate.coordinate();
     return os;

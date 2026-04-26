@@ -9,12 +9,12 @@
 #include <orienteering/symbol.h>
 
 
-void OrienteeringMap::AppendSymbol(std::unique_ptr<Symbol> symbol)
+void OrienteeringMap::AppendSymbol(std::shared_ptr<Symbol> symbol)
 {
     assert(symbol.get());
 
     auto id_to_search = symbol->GetId();
-    auto predicate = [id_to_search](const std::unique_ptr<Symbol>& s){ return id_to_search == s->GetId(); };
+    auto predicate = [id_to_search](const std::shared_ptr<Symbol>& s){ return id_to_search == s->GetId(); };
 
     if (auto ptr = std::ranges::find_if(symbols_,predicate); ptr != symbols_.end())
     {
@@ -25,7 +25,7 @@ void OrienteeringMap::AppendSymbol(std::unique_ptr<Symbol> symbol)
         }
     } else
     {
-        symbols_.push_back(std::move(symbol));
+        symbols_.emplace_back(symbol);
     }
 
 }
@@ -39,7 +39,7 @@ void OrienteeringMap::AppendObject(std::unique_ptr<Object> obj)
 
 size_t Orienteering::OrienteeringMap::GetSymbolOfTypeAmount(SymbolType type) const
 {
-    auto predicate = [type](const std::unique_ptr<Symbol>& symbol) -> bool {return symbol->flags() & type;};
+    auto predicate = [type](const std::shared_ptr<Symbol>& symbol) -> bool {return symbol->flags() & type;};
 
     return std::ranges::count_if(symbols_,predicate);
 }
@@ -67,14 +67,14 @@ size_t Orienteering::OrienteeringMap::GetObjectAmount() const
 
 size_t Orienteering::OrienteeringMap::GetObjectOfSymbolAmount(Symbol* symbol) const
 {
-    auto predicate = [symbol](const std::unique_ptr<Object>& object) -> bool {return object->symbol() == symbol;};
+    auto predicate = [symbol](const std::unique_ptr<Object>& object) -> bool {return object->symbol()->GetId() == symbol->GetId();};
 
     return std::ranges::count_if(objects_,predicate);
 }
 
 Symbol* Orienteering::OrienteeringMap::GetSymbolById(size_t id)
 {
-    auto predicate = [id](const std::unique_ptr<Symbol>& symbol) -> bool {return symbol->GetId() == id;};
+    auto predicate = [id](const std::shared_ptr<Symbol>& symbol) -> bool {return symbol->GetId() == id;};
     auto symbol = std::ranges::find_if(symbols_,predicate);
 
     if (symbol != symbols_.end())
@@ -89,7 +89,7 @@ BoundingBox2D OrienteeringMap::GetBoundingBox() const
     return bounding_box_;
 }
 
-std::vector<std::unique_ptr<Symbol>>& OrienteeringMap::symbols()
+std::vector<std::shared_ptr<Symbol>>& OrienteeringMap::symbols()
 {
     return symbols_;
 }
@@ -131,8 +131,10 @@ void Orienteering::OrienteeringMap::RemoveSymbol(Symbol& symbol)
 void OrienteeringMap::UpdateBoundingBox()
 {
     Spatial::Spatial2D min, max;
-    min = bounding_box_.min();
-    max = bounding_box_.max();
+
+
+    min = objects_.front()->bounding_box().min();
+    max = objects_.front()->bounding_box().max();
     for (auto& object: objects_)
     {
         auto bbox = object->bounding_box();
@@ -275,4 +277,28 @@ void OrienteeringMap::ClearObjectsOfFlag(SymbolFlag flag)
 void OrienteeringMap::ClearObjectsOfFlag(uint8_t flag)
 {
     objects_.erase(std::ranges::remove_if(objects_,[flag](const auto& object) {return object->symbol()->flags() & flag;}).begin(), objects_.end());
+}
+
+bool OrienteeringMap::ObjectsCanBeOrdered()
+{
+    return std::ranges::all_of(symbols_,[](auto symbol) {return symbol->HasColor(); });
+}
+
+OrienteeringMap::~OrienteeringMap()
+{
+    for (auto& color: colors_)
+    {
+        color.reset();
+    }
+
+    for (auto& symbol: symbols_)
+    {
+        symbol.reset();
+    }
+
+    for (auto& object: objects_)
+    {
+        object.reset();
+    }
+
 }

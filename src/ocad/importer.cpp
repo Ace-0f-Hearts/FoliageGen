@@ -16,8 +16,7 @@ Importer::~Importer()
 bool Importer::DoImport()
 {
 
-    ImportImplementation();
-    return true;
+    return ImportImplementation();
 }
 
 bool Importer::ImportImplementation()

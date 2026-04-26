@@ -48,14 +48,12 @@ class App
 
 public:
     App() = delete;
-    App(std::filesystem::path path_to_description_file, std::filesystem::path path_to_map_file, std::filesystem::path symbol_set_file_path = "../../example_assets/symbol_attributes/isom_2017.json");
     App(Settings settings);
     App(const App &);
     ~App();
     void Run();
 private:
     Settings settings_;
-
     JsonParser json_parser_;
 
     std::shared_ptr<Orienteering::OrienteeringMap> map_;
@@ -65,6 +63,7 @@ private:
     GeneratorBuilder generator_builder_;
 
     size_t number_of_attributes_ = 0;
+    bool terminating_{false};
 
     void Init();
     void Generate();

@@ -4,9 +4,9 @@
 
 #ifndef PROCEDURALFOLIAGEGENERATOR_BEZIER_H
 #define PROCEDURALFOLIAGEGENERATOR_BEZIER_H
-#include "spatial_coordinates.h"
+#include "spatial_coordinate.h"
 #include <spatial/orienteering_path.h>
-#include <ocad/ocad_coordinate.h>
+#include <spatial/object_coordinate.h>
 #include <list>
 
 namespace Spatial
@@ -41,7 +41,7 @@ namespace Spatial
 
         void Clear();
 
-        size_t FromBezier(std::vector<OcadCoordinate>& curve, size_t path_start, float bezier_error = kBezier_error, float max_segment_length = kBezier_max_segment_length);
+        size_t FromBezier(std::vector<ObjectCoordinate>& curve, size_t path_start, float bezier_error = kBezier_error, float max_segment_length = kBezier_max_segment_length);
         [[nodiscard]] const std::vector<Spatial2D>& points() const;
         [[nodiscard]] std::vector<Spatial2D>& points();
         [[nodiscard]] size_t size() const;

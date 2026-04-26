@@ -34,7 +34,7 @@ namespace Orienteering
     class Symbol{
     public:
         Symbol();
-        ~Symbol() = default;
+        ~Symbol();
 
         void SetName(const string& name);
         void SetNumber(uint32_t value);

@@ -125,8 +125,8 @@ void OcadImporter::ImportObjects(OcadFile<F>& file)
 template <class O>
 void OcadImporter::ImportObject(const O& ocad_object)
 {
-    Symbol* symbol = symbol_index_[ocad_object.symbol];
     std::unique_ptr<Object> object;
+    std::shared_ptr<Symbol> symbol = symbol_index_[ocad_object.symbol];
 
     if (!symbol)
     {
@@ -140,14 +140,14 @@ void OcadImporter::ImportObject(const O& ocad_object)
         //
         FillPathCoords(path_object.get(),true,ocad_object.num_items,reinterpret_cast<const Generic::OcadCoord *>(ocad_object.coords));
         object = std::move(path_object);
-        LOG_F(INFO,"Area object with symbol %d imported",ocad_object.symbol);
+        LOG_S(INFO) << "Imported area object with symbol " << ocad_object.symbol;
     }
     else if (symbol->IsPath())
     {
         auto path_object = std::make_unique<PathObject>(symbol);
         FillPathCoords(path_object.get(),false,ocad_object.num_items,reinterpret_cast<const Generic::OcadCoord *>(ocad_object.coords));
         object = std::move(path_object);
-        LOG_F(INFO,"Path object with symbol %d imported",ocad_object.symbol);
+        LOG_S(INFO) << "Imported path object with symbol " << ocad_object.symbol;
     }
     else if (symbol->IsPoint())
     {
@@ -156,11 +156,11 @@ void OcadImporter::ImportObject(const O& ocad_object)
         SetPointCoord(point_object.get(),pos);
         object = std::move(point_object);
 
-        LOG_F(INFO,"Point object with symbol %d imported",ocad_object.symbol);
+        LOG_S(INFO) << "Imported point object with symbol " << ocad_object.symbol;
     }
     else
     {
-        LOG_F(INFO,"Object with irrelevant type found");
+        LOG_S(WARNING) << "Object of irrelevant type found";
         return;
     }
 
@@ -170,7 +170,7 @@ void OcadImporter::ImportObject(const O& ocad_object)
 
 
 
-void OcadImporter::SetPointCoord(PointObject* object, const OcadCoordinate& ocad_point)
+void OcadImporter::SetPointCoord(PointObject* object, const ObjectCoordinate& ocad_point)
 {
     object->SetPoint(ocad_point.coordinate());
 }
@@ -213,9 +213,10 @@ void OcadImporter::ImportSymbols(OcadFile<F>& file)
 template <class S>
 void OcadImporter::ImportPointSymbol(const S& ocad_symbol)
 {
-    auto symbol = std::make_unique<Symbol>();
+    auto symbol = std::make_shared<Symbol>();
 
-    if (SetupSymbol(symbol.get(), ocad_symbol))
+
+    if (SetupSymbol(symbol, ocad_symbol))
     {
         symbol->type(PointS);
 
@@ -224,19 +225,19 @@ void OcadImporter::ImportPointSymbol(const S& ocad_symbol)
         {
             symbol->SetColor(color);
         }
-        symbol_index_.emplace(symbol->GetId(),symbol.get());
-        map_->AppendSymbol(std::move(symbol));
+        symbol_index_.emplace(symbol->GetId(),symbol);
+        map_->AppendSymbol(symbol);
     }
 }
 
 template <class S>
 void OcadImporter::ImportLineSymbol(const S& ocad_symbol)
 {
-    auto symbol = std::make_unique<Symbol>();
+    auto symbol = std::make_shared<Symbol>();
 
 
 
-    if (SetupSymbol(symbol.get(), ocad_symbol))
+    if (SetupSymbol(symbol, ocad_symbol))
     {
         symbol->type(PathS);
         auto color = ComputeLineColor(ocad_symbol,ocad_symbol.generic);
@@ -244,18 +245,18 @@ void OcadImporter::ImportLineSymbol(const S& ocad_symbol)
         {
             symbol->SetColor(color);
         }
-        symbol_index_.emplace(symbol->GetId(),symbol.get());
-        map_->AppendSymbol(std::move(symbol));
+        symbol_index_.emplace(symbol->GetId(),symbol);
+        map_->AppendSymbol(symbol);
     }
 }
 
 template <class S>
 void OcadImporter::ImportAreaSymbol(const S& ocad_symbol)
 {
-    auto symbol = std::make_unique<Symbol>();
+    auto symbol = std::make_shared<Symbol>();
 
 
-    if (SetupSymbol(symbol.get(), ocad_symbol))
+    if (SetupSymbol(symbol, ocad_symbol))
     {
         symbol->type(AreaS);
 
@@ -266,8 +267,8 @@ void OcadImporter::ImportAreaSymbol(const S& ocad_symbol)
             symbol->SetColor(color);
         }
 
-        symbol_index_.emplace(symbol->GetId(),symbol.get());
-        map_->AppendSymbol(std::move(symbol));
+        symbol_index_.emplace(symbol->GetId(),symbol);
+        map_->AppendSymbol(symbol);
     }
 }
 
@@ -275,7 +276,7 @@ void OcadImporter::ImportAreaSymbol(const S& ocad_symbol)
 
 
 template <class OcadBaseSymbol>
-bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
+bool OcadImporter::SetupSymbol(std::shared_ptr<Symbol> symbol, const OcadBaseSymbol& base)
 {
     bool symbol_is_relevant = false;
 
@@ -303,7 +304,7 @@ bool OcadImporter::SetupSymbol(Symbol* symbol, const OcadBaseSymbol& base)
 void OcadImporter::FillPathCoords(PathObject* object, bool is_area, uint32_t num_points,
                                   const Generic::OcadCoord* ocad_points)
 {
-    std::vector<OcadCoordinate> path;
+    std::vector<ObjectCoordinate> path;
     path.resize(num_points);
 
     for (auto i = 0u; i < num_points; i++)
@@ -363,7 +364,7 @@ void OcadImporter::FillPathCoords(PathObject* object, bool is_area, uint32_t num
     object->BuildCurve(path);
 }
 
-void OcadImporter::SetPointFlags(std::vector<OcadCoordinate>& object, uint32_t pos, bool is_area,
+void OcadImporter::SetPointFlags(std::vector<ObjectCoordinate>& object, uint32_t pos, bool is_area,
                                  Generic::OcadCoord ocd_point)
 {
     if (ocd_point.IsFirstCurvePoint() && pos > 0)
@@ -380,9 +381,9 @@ void OcadImporter::SetPointFlags(std::vector<OcadCoordinate>& object, uint32_t p
     }
 }
 
-OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_point)
+ObjectCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_point)
 {
-    OcadCoordinate result;
+    ObjectCoordinate result;
 
     int32_t ocad_x = ocad_point.x >> 8;
     int32_t ocad_y = ocad_point.y >> 8;
@@ -395,19 +396,19 @@ OcadCoordinate OcadImporter::ConvertOcadPoint(const Generic::OcadCoord& ocad_poi
     uint8_t flags = 0;
     if (ocad_point.IsFirstCurvePoint())
     {
-        flags |= OcadCoordinate::CurveStart;
+        flags |= ObjectCoordinate::CurveStart;
     }
     if (ocad_point.IsFirstHolePoint())
     {
-        flags |= OcadCoordinate::HolePoint;
+        flags |= ObjectCoordinate::HolePoint;
     }
     if (ocad_point.IsDashPoint())
     {
-        flags |= OcadCoordinate::DashPoint;
+        flags |= ObjectCoordinate::DashPoint;
     }
 
     auto map_coord = Spatial2D({static_cast<float>(ocad_x), static_cast<float>(ocad_y)});
-    auto proj_coord = georef_.ToProjectedCoords(map_coord) / 100.;
+    auto proj_coord = georef_.ToProjectedCoords(map_coord) / 100.f;
 
 
     result.coordinate() = proj_coord;

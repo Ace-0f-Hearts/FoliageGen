@@ -4,7 +4,7 @@
 
 #ifndef PROCEDURALFOLIAGEGENERATOR_SEED_H
 #define PROCEDURALFOLIAGEGENERATOR_SEED_H
-#include "spatial/spatial_coordinates.h"
+#include "spatial/spatial_coordinate.h"
 #include <cstdint>
 using uint8_t = std::uint8_t;
 
@@ -46,7 +46,7 @@ struct Seed
     }
 
     Spatial::Spatial2D coordinate;
-    float scale;
+    float scale =1.f;
     uint8_t flags;
     uint32_t species_id;
 

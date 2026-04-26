@@ -5,7 +5,7 @@
 
 #include "loguru.hpp"
 
-PointObject::PointObject(Symbol* symbol) : Object(symbol)
+PointObject::PointObject(std::shared_ptr<Symbol> symbol) : Object(symbol)
 {
 }
 

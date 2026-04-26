@@ -5,7 +5,7 @@
 #include <orienteering/path_object.h>
 #include <ranges>
 
-PathObject::PathObject(Symbol* symbol) : Object(symbol)
+PathObject::PathObject(std::shared_ptr<Symbol> symbol) : Object(symbol)
 {
     switch (symbol->type())
     {
@@ -46,7 +46,7 @@ bool PathObject::IsIntersecting(const Spatial::Spatial2D& point) const
     return intersecting;
 }
 
-void PathObject::BuildCurve(std::vector<OcadCoordinate>& curve)
+void PathObject::BuildCurve(std::vector<ObjectCoordinate>& curve)
 {
     coordinates_.FromBezier(curve);
     UpdateBoundingBox();

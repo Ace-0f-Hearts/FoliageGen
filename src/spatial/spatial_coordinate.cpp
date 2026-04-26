@@ -2,7 +2,7 @@
 // Created by ace on 2026-02-13.
 //
 
-#include <spatial/spatial_coordinates.h>
+#include <spatial/spatial_coordinate.h>
 
 
 float Spatial::Dot(Spatial2D const& a, Spatial2D const& b)

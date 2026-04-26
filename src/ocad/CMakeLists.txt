@@ -21,6 +21,7 @@ target_link_libraries(ocad PUBLIC
         orienteering
         PRIVATE
         loguru::loguru
+        pugixml
 )
 target_compile_features(ocad PUBLIC cxx_std_11)
 

@@ -60,8 +60,18 @@ void Generator::Start()
     auto bbox = map_->GetBoundingBox();
 
 
-    LOG_SCOPE_F(INFO, "Forest masking started");
+    if (height_map_ && (bbox.width() > height_map_->Width() || bbox.height() > height_map_->Height()))
     {
+        LOG_SCOPE_F(INFO,"Resizing height map...");
+        auto z = height_map_->map().depth();
+        auto c = height_map_->map().spectrum();
+        auto interpol = 3;
+        this->height_map_->map().resize(static_cast<int>(std::ceilf(bbox.width())),static_cast<int>(std::ceilf(bbox.height())),z,c,interpol);
+
+    }
+
+    {
+        LOG_SCOPE_F(INFO, "Forest masking...");
         std::list<Spatial2D> points;
         for (auto obj : map_->GetObjects())
         {
@@ -69,46 +79,35 @@ void Generator::Start()
             points.insert(points.end(), p.begin(), p.end());
         }
         map_boundary_calculator_.ComputeAlphaShape(points);
+
+        map_boundary_calculator_.Write("./alpha_shape.svg");
         map_->ClearObjectsOfFlag(Irrelevant);
     }
 
-
-    seed_masker_.CreateNewMask(map_->GetBoundingBox(), 2, 1);
-    LOG_SCOPE_F(INFO, "Diffusion zones");
     {
+        LOG_SCOPE_F(INFO, "Masking obstructing objects for intersection tests...");
+        seed_masker_.CreateNewMask(map_->GetBoundingBox(), 2, 1);
         seed_masker_.MaskObjects(map_->GetObstructingObjects());
     }
 
     {
-        LOG_SCOPE_F(INFO,"Resize height map if necessary");
+        LOG_SCOPE_F(INFO, "Seeds initialization...");
+        InitializeSeeds();
 
-        LOG_S(INFO) << bbox << " : " << height_map_->Width() << "," << height_map_->Height();
-        if (bbox.width() > height_map_->Width() || bbox.height() > height_map_->Height())
-        {
-            LOG_S(INFO) << "Resizing needed";
-            this->height_map_->map().resize(static_cast<float>(std::ceilf(bbox.width())),static_cast<float>(std::ceilf(bbox.height())),3);
-        }
     }
 
-    auto mask = seed_masker_.GetMask().value();
-    InitializeSeeds();
-    LOG_F(INFO,
-          "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
-          amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(), amount_of_classified_seeds());
+
     {
-        LOG_SCOPE_F(INFO, "Labeling of initial set of seeds started!");
+        LOG_SCOPE_F(INFO, "Labeling of initial set of seeds...");
 
         PurgeInactiveSeeds();
         ChooseInitialSeeds();
         LabelInitialSeeds();
-        LOG_F(INFO,
-              "Seeds initialized: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
-              amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(), amount_of_classified_seeds());
+
         for (uint32_t i = 0; i < attributes_.size(); i++)
         {
-            LOG_S(INFO) << "Number of " << attributes_[i].name << " seeds: " << CountSeedOfSpecies(i);
+            DLOG_S(INFO) << "Number of " << attributes_[i].name << " seeds: " << CountSeedOfSpecies(i);
         }
-        DLOG_S(INFO) << "Labeling of initial set of seeds finished";
     }
 
 
@@ -119,24 +118,32 @@ void Generator::Start()
         {
             LOG_S(INFO) << "Number of " << attributes_[i].name << " seeds: " << CountSeedOfSpecies(i);
         }
-        DLOG_S(INFO) << "Labeling of seeds finished!";
+    }
+
+    LOG_F(INFO,
+      "Seeds result: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
+      amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(), amount_of_classified_seeds());
+    {
+        LOG_SCOPE_F(INFO, "Vegetation maximalization");
+        MaximizeCoveredArea();
+        PurgeInactiveSeeds();
+        LOG_F(INFO,
+        "Seeds scaled: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
+        amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(), amount_of_classified_seeds());
     }
 
     {
         LOG_SCOPE_F(INFO, "Vegetation maximalization");
-        DLOG_S(INFO) << "Vegetation maximalization started!";
         MaximizeCoveredArea();
-        DLOG_S(INFO) << "Vegetation maximalization finished!";
-    }
-
-    LOG_F(INFO,
+        PurgeInactiveSeeds();
+        LOG_F(INFO,
           "Seeds scaled: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
           amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(), amount_of_classified_seeds());
-    PurgeInactiveSeeds();
 
-    LOG_F(INFO,
-          "Seeds result: %lu\n\tNumber of active seeds: %lu\n\tNumber of inactive seeds: %lu\n\tNumber of classified seeds: %lu",
-          amount_of_seeds(), amount_of_active_seeds(), amount_of_inactive_seeds(), amount_of_classified_seeds());
+    }
+
+
+
 }
 
 unsigned int Generator::CountSeedOfSpecies(uint32_t idx)
@@ -582,7 +589,7 @@ std::vector<size_t> Generator::ProcessSeed(const kd_tree& tree, size_t seed_idx,
     tree.radiusSearch(query, search_radius * search_radius, indices_list);
 
     c.x = seed_idx;
-    c.box_lc = 0.f;
+    c.box_lc = attributes_[seed.species_id].growth.min();
     c.box_uc = attributes_[seed.species_id].growth.max();
 
     std::vector<size_t> indices;
@@ -634,7 +641,8 @@ void Generator::MaximizeCoveredAreaOfSubgraph(std::vector<Constraints>& constrai
 
         auto x = c.x;
 
-        radii.emplace_back((c.box_uc + c.box_lc) / 2.f);
+        // radii.emplace_back((c.box_uc + c.box_lc) / 2.f);
+        radii.emplace_back(0.25f);
 
         number_of_linear_constraints += c.l_const.size();
         for (auto& l : c.l_const)
@@ -647,6 +655,7 @@ void Generator::MaximizeCoveredAreaOfSubgraph(std::vector<Constraints>& constrai
                                                      return c.x == y;
                                                  }));
 
+
             for (size_t idx = 0; idx < constraints.size(); idx++)
             {
                 if (idx == x_idx || idx == y_idx)
@@ -654,6 +663,8 @@ void Generator::MaximizeCoveredAreaOfSubgraph(std::vector<Constraints>& constrai
                 else
                     lin_constr.emplace_back(0);
             }
+
+
 
             lin_constr.emplace_back(b);
             ++y_idx;
@@ -666,14 +677,15 @@ void Generator::MaximizeCoveredAreaOfSubgraph(std::vector<Constraints>& constrai
     size_t idx = 0;
     for (const auto& c : constraints)
     {
-        if (opt_radii[idx] == 0.f)
+        if (opt_radii[idx] < 1.0e-6)
         {
             seeds_[c.x].SetInactive();
         }
         else
         {
-            seeds_[c.x].scale = static_cast<float>(opt_radii[idx++]);
+            seeds_[c.x].scale = static_cast<float>(opt_radii[idx]);
         }
+        ++idx;
     }
 }
 
@@ -702,8 +714,8 @@ void GradientFunc(const real_1d_array& x, double& func, real_1d_array& grad, voi
     func = 0.;
     for (int i = 0; i < x.length(); ++i)
     {
-        func -= M_PI * pow(x[i], 2);
-        grad[i] = -2.f * x[i] * M_PI;
+        func -= pow(x[i], 2);
+        grad[i] = -2.f * x[i] ;
     }
 }
 
@@ -725,9 +737,9 @@ std::vector<double> Generator::MaximizeSeedRadii(std::vector<double> radii, std:
         real_1d_array r;
         r.attach_to_ptr(radii.size(), radii.data());
 
-        double epsg = 1e-7;
+        double epsg = 0;
         double epsf = 0.0;
-        double epsx = 0.0;
+        double epsx = 0.00001;
         ae_int_t maxits = 0;
 
         minbleicstate state;
@@ -739,7 +751,6 @@ std::vector<double> Generator::MaximizeSeedRadii(std::vector<double> radii, std:
         bndl.attach_to_ptr(static_cast<long>(bnd_lower.size()), bnd_lower.data());
         real_1d_array bndu;
         bndu.attach_to_ptr(static_cast<long>(bnd_upper.size()), bnd_upper.data());
-
 
         minbleicsetbc(state, bndl, bndu);
 
@@ -775,6 +786,7 @@ std::vector<double> Generator::MaximizeSeedRadii(std::vector<double> radii, std:
 #endif
 
         opt_radii.assign(out.getcontent(), out.getcontent() + out.length());
+
     }
     catch (alglib::ap_error& e)
     {

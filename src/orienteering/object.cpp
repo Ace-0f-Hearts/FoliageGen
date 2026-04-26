@@ -12,7 +12,7 @@ Object::Object() : angle_(0), type_(UnknownO), symbol_(nullptr), coordinates_(fa
 {
 }
 
-Object::Object(Symbol* symbol) : angle_(0),
+Object::Object(std::shared_ptr<Symbol> symbol) : angle_(0),
                                  type_(symbol->IsPath()
                                            ? PathO
                                            : symbol->IsArea()
@@ -54,7 +54,7 @@ Object& Object::operator=(Object&& other) noexcept
 }
 
 
-void Object::SetSymbol(Symbol* symbol)
+void Object::SetSymbol(std::shared_ptr<Symbol> symbol)
 {
     symbol_ = symbol;
 
@@ -74,7 +74,7 @@ void Object::AppendCoordinate(Spatial::Spatial2D coordinate)
 
 bool Object::HasSymbolOf(const Symbol* symbol) const
 {
-    return this->symbol_ == symbol;
+    return *this->symbol_ == *symbol;
 }
 
 void Object::UpdateBoundingBox()
@@ -87,7 +87,7 @@ ObjectType Object::type() const
     return type_;
 }
 
-const Symbol* Object::symbol() const
+const std::shared_ptr<Symbol> Object::symbol() const
 {
     return symbol_;
 }
@@ -105,4 +105,9 @@ BoundingBox2D Object::bounding_box() const
 std::list<Spatial::Spatial2D> Object::GetPoints() const
 {
     return coordinates_.GetPoints();
+}
+
+Object::~Object()
+{
+    symbol_.reset();
 }

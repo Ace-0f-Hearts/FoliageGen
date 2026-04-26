@@ -17,7 +17,7 @@ class MapParser
 {
 public:
     MapParser(std::shared_ptr<Orienteering::OrienteeringMap> map);
-    void Run(const std::filesystem::path  filename, const std::vector<SymbolAttribute>& attributes);
+    bool Run(const std::filesystem::path  filename, const std::vector<SymbolAttribute>& attributes);
 private:
     std::shared_ptr<Orienteering::OrienteeringMap> map_;
 };

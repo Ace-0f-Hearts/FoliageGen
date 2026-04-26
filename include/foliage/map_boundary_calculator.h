@@ -12,7 +12,7 @@
 #include <CGAL/Alpha_shape_vertex_base_2.h>
 #include <CGAL/Alpha_shape_face_base_2.h>
 #include <CGAL/Delaunay_triangulation_2.h>
-#include "spatial/spatial_coordinates.h"
+#include "spatial/spatial_coordinate.h"
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Gt;
 

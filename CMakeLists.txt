@@ -47,6 +47,7 @@ find_package(CImg REQUIRED)
 find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(CGAL REQUIRED COMPONENTS Core)
+find_package(pugixml REQUIRED)
 
 
 

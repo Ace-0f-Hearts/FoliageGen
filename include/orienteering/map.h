@@ -32,13 +32,15 @@ namespace Orienteering
     public:
 
         OrienteeringMap() = default;
-        ~OrienteeringMap() = default;
+        ~OrienteeringMap();
 
         OrienteeringMap(const OrienteeringMap&) = default;
 
         void AppendColor(std::shared_ptr<MapColor> color);
-        void AppendSymbol(std::unique_ptr<Symbol> symbol);
+        void AppendSymbol(std::shared_ptr<Symbol> symbol);
         void AppendObject(std::unique_ptr<Object> obj);
+
+        [[nodiscard]] bool ObjectsCanBeOrdered();
 
         [[nodiscard]] size_t GetColorsAmount() const;
         [[nodiscard]] size_t GetSymbolOfTypeAmount(SymbolType type) const;
@@ -58,7 +60,7 @@ namespace Orienteering
         [[nodiscard]] BoundingBox2D GetBoundingBox() const;
 
         [[nodiscard]] std::vector<std::shared_ptr<MapColor>>& colors();
-        [[nodiscard]] std::vector<std::unique_ptr<Symbol>>& symbols();
+        [[nodiscard]] std::vector<std::shared_ptr<Symbol>>& symbols();
         [[nodiscard]] std::vector<std::unique_ptr<Object>>& objects();
         void UpdateBoundingBox();
 
@@ -74,10 +76,9 @@ namespace Orienteering
         void RemoveSymbol(Symbol& symbol);
     private:
         std::vector<std::shared_ptr<MapColor>> colors_;
-        std::vector<std::unique_ptr<Symbol>> symbols_;
+        std::vector<std::shared_ptr<Symbol>> symbols_;
         std::vector<std::unique_ptr<Object>> objects_;
         BoundingBox2D bounding_box_;
-
     };
 }
 

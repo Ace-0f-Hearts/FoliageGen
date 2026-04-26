@@ -44,7 +44,7 @@ bool Spatial::SegmentedPath::IsPointOnPath(const Spatial2D& point, float distanc
     return std::ranges::any_of(paths().begin(), paths().end(), [&point, distance_threshold](const auto& path) {return path.IsPointOnPath(point,distance_threshold);});
 }
 
-void Spatial::SegmentedPath::FromBezier(std::vector<OcadCoordinate>& curve)
+void Spatial::SegmentedPath::FromBezier(std::vector<ObjectCoordinate>& curve)
 {
     size_t path_start = 0u;
     size_t size = curve.size();

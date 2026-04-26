@@ -15,6 +15,8 @@ OcadFileFormat::~OcadFileFormat()
 
 std::unique_ptr<Importer> OcadFileFormat::CreateImporter(std::filesystem::path path, std::shared_ptr<OrienteeringMap> map, const std::vector<SymbolAttribute>& attributes) const
 {
+
+    DLOG_S(INFO) << "Found OCAD file format...";
     return std::make_unique<Ocad::OcadImporter>(path, map,attributes);
 }
 

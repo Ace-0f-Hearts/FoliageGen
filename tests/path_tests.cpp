@@ -15,7 +15,7 @@ using namespace Spatial;
 
     BOOST_AUTO_TEST_CASE(Test_PolyPath_ConstructionFromBezier)
     {
-        std::vector<OcadCoordinate> bezier {{{{0,0},OcadCoordinate::CurveStart},{{1,1}},{{0,2},},{{1,3},}}};
+        std::vector<ObjectCoordinate> bezier {{{{0,0},ObjectCoordinate::CurveStart},{{1,1}},{{0,2},},{{1,3},}}};
         PolyPath p_path;
         p_path.FromBezier(bezier,0);
 

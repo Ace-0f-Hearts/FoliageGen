@@ -9,7 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "file_format.h"
+#include "ocad_file_format.h"
+#include "omap_file_format.h"
 #include "orienteering/map.h"
 #include "orienteering/symbol_attribute.h"
 
@@ -26,11 +27,11 @@ public:
     [[nodiscard]] std::unique_ptr<Importer>  CreateImporter(const std::filesystem::path& path, std::shared_ptr<Orienteering::OrienteeringMap> map, const std::vector<
                                                             SymbolAttribute>& attributes) const;
 
-    std::vector<FileFormat*>& file_formats();
+    std::vector<FileFormat*>file_formats();
 private:
-    const FileFormat* FindFormat(std::function<bool (const FileFormat*)> predicate) const;
+    const FileFormat* FindFormat(const std::function<bool (const FileFormat*)>& predicate,std::string) const;
     [[nodiscard]] const FileFormat* FindFormatForData(const std::filesystem::path& path) const;
-    std::vector<FileFormat*> file_formats_;
+    std::vector<FileFormat*> file_formats_{};
 };
 
 #endif //PROCEDURALFOLIAGEGENERATOR_FILE_FORMAT_REGISTRY_H

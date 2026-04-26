@@ -33,13 +33,10 @@ bool Spatial::PolyPath::IsPointInsideArea(Spatial2D point) const
                   (point[1] - curr[1]) / (prev[1] - curr[1]) + curr[0])
             {
                 inside = !inside;
-                // LOG_S(INFO) << point << "\t" << prev << "\t" << curr;
             }
-            // LOG_S(INFO) << "Not intersecting\t" << prev << "\t" << curr;
             prev = curr;
         }
     }
-    // LOG_S(INFO) << "Debug";
     return inside;
 }
 
@@ -62,7 +59,7 @@ bool Spatial::PolyPath::IsPointOnPath(Spatial2D point, float threshold_radius) c
 
 }
 
-size_t Spatial::PolyPath::FromBezier(std::vector<OcadCoordinate>& curve, size_t path_start = 0, float bezier_error, float max_segment_length)
+size_t Spatial::PolyPath::FromBezier(std::vector<ObjectCoordinate>& curve, size_t path_start = 0, float bezier_error, float max_segment_length)
 {
     // assert(curve.size() > 1);
 

@@ -4,7 +4,7 @@
 
 #ifndef PROCEDURALFOLIAGEGENERATOR_DIFFUSION_ZONE_H
 #define PROCEDURALFOLIAGEGENERATOR_DIFFUSION_ZONE_H
-#include "spatial/spatial_coordinates.h"
+#include "spatial/spatial_coordinate.h"
 
 struct DiffusionZone
 {

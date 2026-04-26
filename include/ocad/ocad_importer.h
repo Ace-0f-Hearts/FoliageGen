@@ -10,12 +10,13 @@
 #include <vector>
 
 #include "importer.h"
-#include "ocad_coordinate.h"
 #include "ocad_helper.h"
 #include "ocad_types.h"
 #include "ocad_types_v9.h"
-#include "orienteering/georeferencing.h"
-#include "orienteering/point_object.h"
+
+#include <orienteering/georeferencing.h>
+#include <spatial/object_coordinate.h>
+#include <orienteering/point_object.h>
 
 namespace Ocad
 {
@@ -71,15 +72,15 @@ namespace Ocad
         MapColor* ComputeAreaColor(bool fill_on, const OcadTypesV9::AreaSymbolGeneric& ocad_symbol, std::size_t data_size, const OcadTypesV9::PointSymbolElement* elements);
 
         template<class OcadBaseSymbol>
-        bool SetupSymbol(Symbol* ocad_symbol, const OcadBaseSymbol& base);
+        bool SetupSymbol(std::shared_ptr<Symbol>ocad_symbol, const OcadBaseSymbol& base);
 
         void FillPathCoords(PathObject* object, bool is_area, uint32_t num_points,
                     const Generic::OcadCoord* ocad_points);
 
-        void SetPointCoord(PointObject* object, const OcadCoordinate& ocad_point);
-        void SetPointFlags(std::vector<OcadCoordinate>& object, uint32_t pos, bool is_area, Generic::OcadCoord ocd_point);
+        void SetPointCoord(PointObject* object, const ObjectCoordinate& ocad_point);
+        void SetPointFlags(std::vector<ObjectCoordinate>& object, uint32_t pos, bool is_area, Generic::OcadCoord ocd_point);
 
-        OcadCoordinate ConvertOcadPoint(const Generic::OcadCoord& ocad_point);
+        ObjectCoordinate ConvertOcadPoint(const Generic::OcadCoord& ocad_point);
 
         int ConvertLength(int16_t ocad_length) const;
         int ConvertLength(uint16_t ocad_length) const;
@@ -111,8 +112,7 @@ namespace Ocad
         Georeferencing georef_;
 
         uint8_t ocad_version_;
-        // TODO: Take care of pointer at delete
-        std::map<unsigned int, Symbol*> symbol_index_;
+        std::map<unsigned int, std::shared_ptr<Symbol>> symbol_index_;
         std::map<int, std::shared_ptr<MapColor>> color_index_;
 
         std::vector<std::shared_ptr<MapColor>> spot_colors_;

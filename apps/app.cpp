@@ -26,6 +26,8 @@ map_parser_(map_)
 
 App::~App()
 {
+    height_map_.reset();
+    map_.reset();
 }
 
 App::App(const App& other) :
@@ -58,9 +60,16 @@ void App::Init()
 
         if (settings_.height_map_file.has_value())
         {
-            CImg<> hm;
-            hm.load(settings_.height_map_file.value().c_str());
-            height_map_ = std::make_shared<HeightMap>(hm);
+            try
+            {
+                CImg<> hm;
+                hm.load(settings_.height_map_file.value().c_str());
+                height_map_ = std::make_shared<HeightMap>(hm);
+            } catch (std::exception& e)
+            {
+                LOG_S(ERROR) << "Error loading height_map: " << e.what();
+            }
+
         }
 
         DLOG_F(INFO,"Height map loading finished");
@@ -78,10 +87,21 @@ void App::Init()
         //TODO: Implemenent Diffusion Zone parsing
 
         DLOG_F(INFO,"Map parsing started");
-        map_parser_.Run(settings_.ocad_map_file->c_str(), symbol_set);
-        DLOG_F(INFO,"Map parsing successful");
+        if (!map_parser_.Run(settings_.ocad_map_file->c_str(), symbol_set))
+        {
+            terminating_ = true;
+            LOG_S(ERROR) << "Map couldn't be parsed. Terminating...";
+            return;
+        }
+        LOG_F(INFO,"Map parsing successful");
 
 
+        if (map_->GetObjectAmount() == 0)
+        {
+            terminating_ = true;
+            LOG_S(ERROR) << "No object found on the map. Terminating...";
+            return;
+        }
 
 
         std::vector<DiffusionZone> zones;
@@ -108,7 +128,7 @@ void App::Init()
             }
         } else
         {
-
+            LOG_S(ERROR) << "Incorrect argument for number of diffusion points: " << settings_.random_diffusion_zones.value() << "\nMust be greater than 0.";
         }
 
 
@@ -123,7 +143,11 @@ void App::Init()
 
 
         if (!generator_builder_.Build())
-            throw std::logic_error("Error building generator");
+        {
+            terminating_ = true;
+            LOG_S(ERROR) << "Error building generator";
+            return;
+        }
 
         DLOG_F(INFO,"Generator building successful");
     }
@@ -132,22 +156,28 @@ void App::Init()
 
 void App::Generate()
 {
+    if (terminating_)
     {
+        return;
+    }
 
+    {
         LOG_SCOPE_F(INFO,"Generation started");
         generator_builder_.generator()->Start();
 
         auto seeds = generator_builder_.generator()->seeds();
 
+
+
         if (settings_.save_foliage_img)
         {
             LOG_S(INFO) << "Saving foliage img";
             auto bbox = map_->GetBoundingBox();
+            LOG_S(INFO) << bbox << " : " << bbox.width() << " : " << bbox.height();
             auto snap = FoliageSnapshotMaker(1.f, bbox);
-            LOG_S(INFO) << bbox.width() << " : " << bbox.height();
             snap.RasterizeObjects(map_->GetObjectsOfType(PathO | AreaO), bbox);
             snap.RasterizeSeeds(seeds, bbox,number_of_attributes_);
-
+            snap.GetMap().map().normalize(0,255);
             MapWriter::Write(snap.GetMap(),settings_.foliage_img_file.value());
         }
 
@@ -169,15 +199,14 @@ void App::Generate()
 
     {
         OutputConfig output_config;
-        output_config.heightMap = settings_.height_map_file.value_or("");
-        output_config.mapData = settings_.map_data_output_file.value();
-        output_config.instances = settings_.instances_output_file.value();
-        output_config.species = settings_.species_file.value();
+        output_config.heightMap = absolute(settings_.height_map_file.value_or(""));
+        output_config.mapData = absolute(settings_.map_data_output_file.value());
+        output_config.instances = absolute(settings_.instances_output_file.value());
+        output_config.species = absolute(settings_.species_file.value());
 
         auto value = JsonBuilder::FromConfig(output_config);
         JsonWriter::Run(*settings_.output_config_file,value);
     }
-
 
 
 
@@ -191,3 +220,4 @@ void App::Cleanup()
 
     DLOG_F(INFO,"App cleanup successful");
 }
+

@@ -10,7 +10,7 @@
 #include <iosfwd>
 #include <ostream>
 #include <vector>
-#include <spatial/spatial_coordinates.h>
+#include <spatial/spatial_coordinate.h>
 
 template <unsigned int D>
 class BoundingBox

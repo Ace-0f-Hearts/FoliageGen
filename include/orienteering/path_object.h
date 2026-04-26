@@ -13,7 +13,7 @@ namespace Orienteering
     {
     public:
         PathObject() = delete;
-        PathObject(Symbol* symbol);
+        PathObject(std::shared_ptr<Symbol> symbol);
 
         ~PathObject() override = default;
 
@@ -30,7 +30,7 @@ namespace Orienteering
          * Computes a path consisting of poly lines from a series of coordinates representing a Bezier spline.
          * @param curve
          */
-        void BuildCurve(std::vector<OcadCoordinate>& curve);
+        void BuildCurve(std::vector<ObjectCoordinate>& curve);
         void SetCurve(const std::vector<Spatial::Spatial2D>& points);
         void AppendPoint(const Spatial::Spatial2D& point);
         void RemovePoint(const Spatial::Spatial2D& point);

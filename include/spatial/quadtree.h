@@ -4,7 +4,7 @@
 #ifndef GENERATOR_QUADTREE_H
 #define GENERATOR_QUADTREE_H
 #include <vector>
-#include <spatial/spatial_coordinates.h>
+#include <spatial/spatial_coordinate.h>
 #include <spatial/bounding_box.h>
 #include <spatial/quadtree.h>
 

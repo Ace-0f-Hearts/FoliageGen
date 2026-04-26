@@ -8,23 +8,29 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <loguru.hpp>
 #include <utility>
 
-#include "ocad/ocad_file_format.h"
+
 #include "orienteering/symbol_attribute.h"
 #include "utility/not_implemented_error.h"
 
-FileFormatRegistry::FileFormatRegistry() : file_formats_({new OcadFileFormat()})
+FileFormatRegistry::FileFormatRegistry() : file_formats_()
 {
+    file_formats_.emplace_back(new OcadFileFormat());
+    file_formats_.emplace_back(new OmapFileFormat());
+
 }
 
 std::unique_ptr<Importer> FileFormatRegistry::CreateImporter(const std::filesystem::path& path, std::shared_ptr<Orienteering::OrienteeringMap> map, const std::vector<
                                                              SymbolAttribute>& attributes) const
 {
     auto extension = path.extension().string();
-    std::cout << extension << std::endl;
-    auto predicate = [extension](const FileFormat* format){return format->extensions().cend() != std::find(format->extensions().cbegin(), format->extensions().cend(),extension);};
-    auto format = FindFormat(predicate);
+    auto predicate = [extension](const FileFormat* format){return format->extensions().cend() != std::find(format->extensions().cbegin(),format->extensions().cend(),extension);};
+    auto format = FindFormat(predicate,extension);
+
+    LOG_IF_S(WARNING,format == nullptr) << "Extension not supported by any format";
+
 
     if (!format)
     {
@@ -35,17 +41,20 @@ std::unique_ptr<Importer> FileFormatRegistry::CreateImporter(const std::filesyst
         return nullptr;
     }
 
+    LOG_IF_S(INFO, format != nullptr) << "Found supported format";
+
     return format ? format->CreateImporter(path, std::move(map),attributes) : nullptr;
 }
 
-std::vector<FileFormat*>& FileFormatRegistry::file_formats()
+std::vector<FileFormat*> FileFormatRegistry::file_formats()
 {
     return file_formats_;
 }
 
-const FileFormat* FileFormatRegistry::FindFormat(std::function<bool(const FileFormat*)> predicate) const
+const FileFormat* FileFormatRegistry::FindFormat(const std::function<bool(const FileFormat*)>& predicate,std::string extension) const
 {
     auto found = std::ranges::find_if(file_formats_,predicate);
+
     return (found != file_formats_.cend()) ? *found : nullptr;
 }
 
@@ -63,7 +72,9 @@ const FileFormat* FileFormatRegistry::FindFormatForData(const std::filesystem::p
     for (auto format : file_formats_)
     {
         if (format->UnderstandsHeader(buffer, total_read))
+        {
             return format;
+        }
     }
     return nullptr;
 }

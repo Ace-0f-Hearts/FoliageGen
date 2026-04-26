@@ -26,9 +26,12 @@ public:
 
     void Write(const std::filesystem::path& path) const;
 
-    float resolution_mult() const;
-    float x_offset() const;
-    float y_offset() const;
+    [[nodiscard]] float resolution_mult() const;
+    [[nodiscard]] float x_offset() const;
+    [[nodiscard]] float y_offset() const;
+
+    int width() { return img_.width();};
+    int height() { return img_.height();};
 private:
     BoundingBox2D bbox_;
     float resolution_mult_;

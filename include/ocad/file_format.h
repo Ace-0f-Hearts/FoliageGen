@@ -12,23 +12,23 @@
 
 class FileFormat
 {
-    using string = std::string;
 public:
     FileFormat() = delete;
-    FileFormat(std::string name,std::vector<string> extensions);
+    FileFormat(std::string name,std::vector<std::string> extensions);
     virtual ~FileFormat() = default;
 
     [[nodiscard]] virtual std::unique_ptr<Importer> CreateImporter(std::filesystem::path path, std::shared_ptr<Orienteering::OrienteeringMap> map, const std::vector<SymbolAttribute>&
                                                                    attributes) const;
     virtual bool UnderstandsHeader(const char *buffer, int total_read) const;
 
-    [[nodiscard]] std::vector<string> extensions() const;
-    std::vector<string> extensions();
+    std::vector<std::string> const& extensions() const;
     bool operator==(const FileFormat& format) const;
+
+    std::string name() const { return name_;}
 
 protected:
 
-    std::vector<string> extensions_;
+    std::vector<string> extensions_{};
     std::string name_;
 };
 

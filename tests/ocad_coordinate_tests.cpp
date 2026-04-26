@@ -4,14 +4,14 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <ocad/ocad_coordinate.h>
+#include <../include/spatial/object_coordinate.h>
 
 
 BOOST_AUTO_TEST_SUITE(OcadCoordinateTestSuite)
 
 BOOST_AUTO_TEST_CASE(Test_OcadCoordiante_FlagsSetCorrectly)
 {
-    OcadCoordinate close_point, curve_start, hole_point, dash_point, gap_point;
+    ObjectCoordinate close_point, curve_start, hole_point, dash_point, gap_point;
     close_point.SetClosePoint(true);
     hole_point.SetHolePoint(true);
     dash_point.SetDashPoint(true);
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(Test_OcadCoordiante_FlagsSetCorrectly)
 
 BOOST_AUTO_TEST_CASE(Test_OcadCoordinate_AllFlagsSet)
 {
-    OcadCoordinate point;
+    ObjectCoordinate point;
     point.SetClosePoint(true);
     point.SetCurveStart(true);
     point.SetDashPoint(true);
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(Test_OcadCoordinate_AllFlagsSet)
 
 BOOST_AUTO_TEST_CASE(Test_OcadCoordinate_FlagUnsetsCorrectly)
 {
-    OcadCoordinate close_point, curve_start, hole_point, dash_point, gap_point;
+    ObjectCoordinate close_point, curve_start, hole_point, dash_point, gap_point;
     close_point.SetClosePoint(true);
     hole_point.SetHolePoint(true);
     dash_point.SetDashPoint(true);
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(Test_OcadCoordinate_FlagUnsetsCorrectly)
 
 BOOST_AUTO_TEST_CASE(Test_OcadCoordinate_FlagsSetsAtConstruction)
 {
-    OcadCoordinate point {Spatial::Spatial2D({0,0}),OcadCoordinate::GapPoint | OcadCoordinate::ClosePoint | OcadCoordinate::HolePoint | OcadCoordinate::DashPoint | OcadCoordinate::CurveStart};
+    ObjectCoordinate point {Spatial::Spatial2D({0,0}),ObjectCoordinate::GapPoint | ObjectCoordinate::ClosePoint | ObjectCoordinate::HolePoint | ObjectCoordinate::DashPoint | ObjectCoordinate::CurveStart};
 
     BOOST_CHECK(point.IsClosePoint());
     BOOST_CHECK(point.IsCurveStart());

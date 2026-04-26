@@ -12,7 +12,7 @@
 
 #include <foliage/texture_map.h>
 #include "botanics_math/coord.h"
-#include "spatial/spatial_coordinates.h"
+#include "spatial/spatial_coordinate.h"
 using namespace cimg_library;
 using namespace Spatial;
 

@@ -30,17 +30,17 @@ namespace Orienteering
     {
     public:
         Object();
-        Object(Symbol* symbol);
+        Object(std::shared_ptr<Symbol> symbol);
         Object(const Object& other);
         Object(const Object&& other) noexcept;
 
         Object& operator=(const Object& other);
         Object& operator=(Object&& other) noexcept;
-        virtual ~Object() = default;
+        virtual ~Object();
 
         [[nodiscard]] std::list<Spatial::Spatial2D> GetPoints() const;
 
-        void SetSymbol(Symbol* symbol);
+        void SetSymbol(std::shared_ptr<Symbol> symbol);
         void SetType(ObjectType type);
         void AppendCoordinate(Spatial::Spatial2D coordinate);
 
@@ -49,7 +49,7 @@ namespace Orienteering
         virtual bool IsIntersecting(const Spatial::Spatial2D& point) const = 0;
 
         [[nodiscard]] ObjectType type() const;
-        [[nodiscard]] const Symbol* symbol() const;
+        [[nodiscard]] const std::shared_ptr<Symbol> symbol() const;
         [[nodiscard]] Spatial::SegmentedPath coordinates() const;
         [[nodiscard]] BoundingBox2D bounding_box() const;
 
@@ -58,7 +58,7 @@ namespace Orienteering
 
         float angle_;
         ObjectType type_;
-        Symbol* symbol_;
+        std::shared_ptr<Symbol> symbol_;
 
         Spatial::SegmentedPath coordinates_;
         BoundingBox2D bounding_box_;

@@ -33,7 +33,7 @@ namespace Spatial
         void RemovePoint(const Spatial2D& point);
         void Clear();
 
-        void FromBezier(std::vector<OcadCoordinate>& curve);
+        void FromBezier(std::vector<ObjectCoordinate>& curve);
 
         [[nodiscard]] const std::vector<PolyPath>& paths() const;
         std::vector<PolyPath>& paths();

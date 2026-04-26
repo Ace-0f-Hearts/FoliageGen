@@ -4,7 +4,7 @@
 
 #ifndef PROCEDURALFOLIAGEGENERATOR_GEOREFERENCING_H
 #define PROCEDURALFOLIAGEGENERATOR_GEOREFERENCING_H
-#include "spatial/spatial_coordinates.h"
+#include "spatial/spatial_coordinate.h"
 
 #include <glm/ext/matrix_double2x2.hpp>
 

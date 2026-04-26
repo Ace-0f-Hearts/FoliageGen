@@ -17,6 +17,8 @@
 , python3
 , gperf
 , fontconfig
+, valgrind
+, gdb
 
 }:
 
@@ -50,6 +52,8 @@ stdenv.mkDerivation {
     bison
     flex
     python3
+    valgrind
+    gdb
     ];
   buildInputs = [
     gperf

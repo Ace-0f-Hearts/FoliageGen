@@ -44,8 +44,9 @@ Json::Value JsonBuilder::FromConfig(const OutputConfig output)
 {
     Json::Value result = Json::objectValue;
     result["instances"] = output.instances.string();
-    result["height_map"] = output.heightMap.string();
-    result["map_data"] = output.mapData.string();
+    result["height_map"] = output.height_map.string();
+    result["map_data"] = output.map_data.string();
     result["species"] = output.species.string();
+    result["map_texture"] = output.map_texture.string();
     return result;
 }

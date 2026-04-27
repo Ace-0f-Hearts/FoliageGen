@@ -199,10 +199,11 @@ void App::Generate()
 
     {
         OutputConfig output_config;
-        output_config.heightMap = absolute(settings_.height_map_file.value_or(""));
-        output_config.mapData = absolute(settings_.map_data_output_file.value());
-        output_config.instances = absolute(settings_.instances_output_file.value());
-        output_config.species = absolute(settings_.species_file.value());
+        output_config.height_map = settings_.height_map_file.value_or("");
+        output_config.map_data = settings_.map_data_output_file.value();
+        output_config.instances = settings_.instances_output_file.value();
+        output_config.species = settings_.species_file.value();
+        output_config.map_texture = settings_.foliage_img_file.value_or("");
 
         auto value = JsonBuilder::FromConfig(output_config);
         JsonWriter::Run(*settings_.output_config_file,value);

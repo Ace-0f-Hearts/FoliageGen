@@ -12,3 +12,10 @@ target_compile_options(App PRIVATE
         -Wextra
         -Wpedantic
 )
+
+install(
+        TARGETS App
+        FILE_SET HEADERS
+)
+
+

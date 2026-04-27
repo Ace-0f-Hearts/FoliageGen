@@ -20,8 +20,9 @@ struct OutputConfig
 {
     std::filesystem::path instances;
     std::filesystem::path species;
-    std::filesystem::path mapData;
-    std::filesystem::path heightMap;
+    std::filesystem::path map_data;
+    std::filesystem::path height_map;
+    std::filesystem::path map_texture;
 };
 
 #endif //PROCEDURALFOLIAGEGENERATOR_CONFIG_H

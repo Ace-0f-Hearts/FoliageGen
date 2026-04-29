@@ -2,7 +2,7 @@
 // Created by ace on 2026-02-07.
 //
 #include <botanics_math/gaussian.h>
-
+#include <cmath>
 Gaussian::Gaussian(const float peak, const float mean, const float std_deviation) : peak_(peak), mean_(mean),
     std_deviation_(std_deviation)
 {
@@ -12,7 +12,7 @@ Gaussian::Gaussian(const float peak, const float mean, const float std_deviation
 
 float Gaussian::CalcDistribution(const float value) const
 {
-    return peak_ * std::powf(std::numbers::e, -std::powf(value - mean_, 2) / std::powf(std_deviation_, 2));
+    return peak_ * powf(std::numbers::e, -powf(value - mean_, 2) / powf(std_deviation_, 2));
 }
 
 float Gaussian::peak() const

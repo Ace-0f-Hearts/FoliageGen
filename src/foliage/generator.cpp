@@ -80,7 +80,6 @@ void Generator::Start()
         }
         map_boundary_calculator_.ComputeAlphaShape(points);
 
-        map_boundary_calculator_.Write("./alpha_shape.svg");
         map_->ClearObjectsOfFlag(Irrelevant);
     }
 

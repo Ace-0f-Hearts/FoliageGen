@@ -33,7 +33,6 @@ public:
 
     void ComputeAlphaShape(const std::list<Spatial::Spatial2D>& points);
     bool IsCoordinateInsideMap(Spatial::Spatial2D coord) const;
-    void Write(std::filesystem::path output_path,double width = 800.0, double height = 800.0) const;
 private:
     std::optional<Alpha_shape_2> map_shape_;
 };

@@ -94,7 +94,7 @@ public:
 
     [[nodiscard]] std::vector<Seed> seeds();
     [[nodiscard]] std::vector<Seed>& seeds_ref();
-    [[nodiscard]] std::vector<Seed>& attributes();
+    [[nodiscard]] std::vector<SpeciesAttribute>& attributes();
 
     [[nodiscard]] size_t amount_of_seeds() const;
     [[nodiscard]] size_t amount_of_active_seeds() const;

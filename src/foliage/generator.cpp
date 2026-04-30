@@ -676,7 +676,9 @@ void Generator::MaximizeCoveredAreaOfSubgraph(std::vector<Constraints>& constrai
     size_t idx = 0;
     for (const auto& c : constraints)
     {
-        if (opt_radii[idx] < 1.0e-6)
+        auto species = attributes()[seeds_[c.x].species_id];
+
+        if (opt_radii[idx] < species.growth.min())
         {
             seeds_[c.x].SetInactive();
         }
@@ -795,7 +797,7 @@ std::vector<double> Generator::MaximizeSeedRadii(std::vector<double> radii, std:
     return opt_radii;
 }
 
-std::vector<Seed>& Generator::attributes()
+std::vector<SpeciesAttribute>& Generator::attributes()
 {
-    return attributes();
+    return attributes_;
 }

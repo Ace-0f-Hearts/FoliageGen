@@ -31,7 +31,6 @@ void Georeferencing::UpdateTransformation()
 
 
     to_projected_ = transform;
-
 }
 
 Spatial2D Georeferencing::ToProjectedCoords(Spatial2D coord) const

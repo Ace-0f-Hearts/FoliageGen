@@ -715,8 +715,8 @@ void GradientFunc(const real_1d_array& x, double& func, real_1d_array& grad, voi
     func = 0.;
     for (int i = 0; i < x.length(); ++i)
     {
-        func -= pow(x[i], 2);
-        grad[i] = -2.f * x[i] ;
+        func -= pow(x[i], 2) * M_PI;
+        grad[i] = -2.f * x[i] * M_PI;
     }
 }
 

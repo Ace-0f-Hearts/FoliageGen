@@ -38,4 +38,3 @@ bool MapBoundaryCalculator::IsCoordinateInsideMap(Spatial::Spatial2D coord) cons
     return type != Alpha_shape_2::EXTERIOR;
 }
 
-

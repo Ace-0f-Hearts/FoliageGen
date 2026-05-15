@@ -25,8 +25,7 @@ public:
     void SetSpeciesAttributes(const std::vector<SpeciesAttribute>& attributes) { attributes_ = attributes; }
     void SetDensity(float density)
     {
-        if (density <= 0.0f)
-            throw std::invalid_argument("Density must be greater than 0.0");
+        assert(density > 0.f);
         density_ = density;
     }
     void SetRandomInitialClassification(bool random_initial_classification)
@@ -34,6 +33,17 @@ public:
         random_initial_classification_ = random_initial_classification;
     }
 
+    void SetAbioticFactor(float abiotic_factor)
+    {
+        assert(abiotic_factor >= 0.f);
+        abiotic_factor_ = abiotic_factor;
+    }
+
+    void SetDiffusionFactor(float diffusion_factor)
+    {
+        assert(diffusion_factor >= 0.f);
+        diffusion_factor_ = diffusion_factor;
+    }
 
     std::unique_ptr<Generator>& generator();
 private:
@@ -43,6 +53,8 @@ private:
     std::vector<SpeciesAttribute> attributes_;
     bool random_initial_classification_{false};
     float density_ = 10.f;
+    float abiotic_factor_ = 1.f;
+    float diffusion_factor_ = 1.f;
 
     std::unique_ptr<Generator> generator_;
 

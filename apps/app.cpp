@@ -138,7 +138,9 @@ void App::Init()
         generator_builder_.SetHeightMap(height_map_);
         generator_builder_.SetDiffusionZones(zones);
         generator_builder_.SetSpeciesAttributes(attributes);
-        generator_builder_.SetDensity(10.f);
+        generator_builder_.SetDensity(settings_.density);
+        generator_builder_.SetAbioticFactor(settings_.abiotic_factor);
+        generator_builder_.SetDiffusionFactor(settings_.diffusion_factor);
         generator_builder_.SetRandomInitialClassification(settings_.random_initial_classification);
 
 

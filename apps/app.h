@@ -38,6 +38,7 @@ struct Settings
     float diffusion_factor{1.f};
     float max_random_radius{2000.f};
     float min_random_radius{500.f};
+    float density{10.f};
 };
 
 /*!

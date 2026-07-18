@@ -189,6 +189,11 @@ void Generator::InitializeSeeds()
     seeds_.insert(seeds_.end(), seeds.begin(), seeds.end());
 }
 
+void Generator::InitializeSeedsOnExplicitPoints()
+{
+    auto point_objects = map_->GetObjectsOfType(ObjectType::PointO);
+}
+
 std::vector<Seed> Generator::InitializeSeedsOnObject(float density, const Object& object)
 {
     const auto bounding_box = object.bounding_box();

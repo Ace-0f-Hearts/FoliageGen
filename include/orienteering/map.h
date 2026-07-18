@@ -5,6 +5,7 @@
 #ifndef GENERATOR_MAP_H
 #define GENERATOR_MAP_H
 #include <array>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -26,6 +27,37 @@ namespace Orienteering
     struct PointSymbol;
     struct PathObject;
 
+    template <class O>
+        class FilterIterator
+    {
+    public:
+        FilterIterator(const std::vector<std::unique_ptr<O>>* objects, std::function<bool(O*)> predicate)
+        {
+            if (objects == nullptr)
+                throw std::logic_error("FilterIterator: objects is nullptr");
+
+            predicate_ = predicate;
+            objects_ = objects;
+        }
+
+        O* next()
+        {
+            auto it = objects_->cbegin();
+            for (; it != objects_->cend() && !predicate_(*it); ++it)
+            {
+                // Find next item that matches our predicate
+            }
+
+            if (it == objects_->cend())
+                return nullptr;
+
+            return objects_->at(idx_++).get();
+        }
+    private:
+        std::function<bool(O*)> predicate_;
+        size_t idx_ = 0;
+        const std::vector<std::unique_ptr<O>>* objects_;
+    };
 
     class OrienteeringMap
     {
@@ -52,6 +84,13 @@ namespace Orienteering
         [[nodiscard]] std::vector<Object*> GetObjects() const;
         [[nodiscard]] std::vector<Object*> GetObjectsOfType(ObjectType type) const;
         [[nodiscard]] std::vector<Object*> GetObjectsOfType(uint8_t type) const;
+        [[nodiscard]] FilterIterator<Object> GetObjectsOf(ObjectType oType, SymbolFlag sFlag) const;
+
+        //TODO: Create an iterator with filtering
+
+
+
+
         [[nodiscard]] std::vector<Object*> GetObstructingObjects() const;
         [[nodiscard]] std::vector<Object*> GetFreeAreas() const;
         [[nodiscard]] std::vector<Object*> GetIrrelevantFeatures() const;

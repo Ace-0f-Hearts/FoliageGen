@@ -203,6 +203,16 @@ std::vector<Object*> OrienteeringMap::GetObjects() const
     return objects;
 }
 
+FilterIterator<Object> OrienteeringMap::GetObjectsOf(ObjectType oType, SymbolFlag sFlag) const
+{
+    FilterIterator<Object> it(&objects_,[oType, sFlag](Object* o)
+    {
+        return o->symbol()->flags() & sFlag && o->type() == oType;
+    });
+    return it;
+}
+
+
 std::vector<Object*> OrienteeringMap::GetObjectsOfType(ObjectType type) const
 {
     std::vector<Object*> objects;

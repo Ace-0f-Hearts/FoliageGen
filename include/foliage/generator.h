@@ -115,6 +115,7 @@ private:
     };
 
     void InitializeSeeds();
+    void InitializeSeedsOnExplicitPoints();
     [[nodiscard]] std::vector<Seed> InitializeSeedsOnObject(float density, const Object& object);
     [[nodiscard]] std::vector<Seed> InitializeSeedsOnForestAreas(float density);
     void PurgeInactiveSeeds();

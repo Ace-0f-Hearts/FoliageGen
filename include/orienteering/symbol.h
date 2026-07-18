@@ -65,6 +65,7 @@ namespace Orienteering
         [[nodiscard]] bool IsCultivated() const;
         [[nodiscard]] bool IsObstructing() const;
         [[nodiscard]] bool IsDirectional() const;
+        [[nodiscard]] bool IsExplicitTree() const;
 
         void type(SymbolType type);
         [[nodiscard]] SymbolType type() const;

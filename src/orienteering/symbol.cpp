@@ -118,6 +118,11 @@ bool Orienteering::Symbol::IsDirectional() const
     return flags_ & Directional;
 }
 
+bool Orienteering::Symbol::IsExplicitTree() const
+{
+    return flags_ & ExplicitTree;
+}
+
 void Orienteering::Symbol::type(SymbolType type)
 {
     type_ = type;

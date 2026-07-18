@@ -28,8 +28,8 @@ namespace Orienteering
         Cultivated  = 0x2, /// reduces the amount of randomization in the seed positions //TODO
         Directional = 0x4, /// introduces some bias to the direction of randomization //TODO
         Irrelevant = 0x8, /// symbol defining features on the map itself, used for isolating empty areas which would be designated as forests otherwise
+        ExplicitTree = 0x16
     };
-
 
     class Symbol{
     public:
